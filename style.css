@@ -5,9 +5,36 @@
 body {
   margin: 0;
   font-family: Montserrat, sans-serif;
-  background: linear-gradient(135deg, #12372a, #2f4f4f);
   color: white;
   min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  background-image: url("ALD-1000007.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  filter: blur(20px);
+  transform: scale(1);
+
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.4);
+
+  z-index: -1;
 }
 
 .topbar {
