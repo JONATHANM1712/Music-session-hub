@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Counter</title>
 
   <style>
@@ -18,30 +18,58 @@
     }
 
     .box {
-      width: 420px;
-      padding: 35px;
+      width: 700px;
+      padding: 30px;
       border-radius: 25px;
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(18px);
       text-align: center;
-      box-shadow: 0 0 30px rgba(0,0,0,0.4);
     }
 
     h1 {
       margin-bottom: 20px;
     }
 
-    #number {
-      font-size: 110px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-
-    #presetName {
+    .usage {
       font-size: 28px;
       font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
       margin-bottom: 25px;
+      color: white;
+      font-weight: bold;
+    }
+
+    th, td {
+      border: 2px solid white;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background: black;
+    }
+
+    .red { background: red; }
+    .orange { background: orange; color: black; }
+    .yellow { background: yellow; color: black; }
+    .green { background: lime; color: black; }
+    .blue { background: blue; }
+    .purple { background: purple; }
+    .pink { background: pink; color: black; }
+    .brown { background: #8b4a00; }
+    .cream { background: #e5c18c; color: black; }
+    .cyan { background: cyan; color: black; }
+
+    .active {
+      outline: 5px solid white;
+      filter: brightness(1.25);
+      transform: scale(1.02);
     }
 
     button {
@@ -71,7 +99,7 @@
 
     a {
       display: inline-block;
-      margin-top: 25px;
+      margin-top: 20px;
       color: white;
       text-decoration: none;
       font-weight: bold;
@@ -84,8 +112,66 @@
   <div class="box">
     <h1>Music Session Counter</h1>
 
-    <div id="number">1</div>
-    <div id="presetName">Merah</div>
+    <div class="usage">
+      Usage: <span id="usageNumber">1</span> / 2
+    </div>
+
+    <table>
+      <tr>
+        <th>No</th>
+        <th>Preset Name</th>
+      </tr>
+
+      <tr id="row1" class="red">
+        <td>1</td>
+        <td>CountryPopDuo</td>
+      </tr>
+
+      <tr id="row2" class="orange">
+        <td>2</td>
+        <td>ChartPianoShuffle</td>
+      </tr>
+
+      <tr id="row3" class="yellow">
+        <td>3</td>
+        <td>60sVintageRumba</td>
+      </tr>
+
+      <tr id="row4" class="green">
+        <td>4</td>
+        <td>90sHardRockBallad</td>
+      </tr>
+
+      <tr id="row5" class="blue">
+        <td>5</td>
+        <td>60sClassicSoftRock</td>
+      </tr>
+
+      <tr id="row6" class="purple">
+        <td>6</td>
+        <td>PopWaltz</td>
+      </tr>
+
+      <tr id="row7" class="pink">
+        <td>7</td>
+        <td>EpicDivaBallad</td>
+      </tr>
+
+      <tr id="row8" class="brown">
+        <td>8</td>
+        <td>BoyBandPop</td>
+      </tr>
+
+      <tr id="row9" class="cream">
+        <td>9</td>
+        <td>OrchRockBallad1</td>
+      </tr>
+
+      <tr id="row10" class="cyan">
+        <td>10</td>
+        <td>70sGlamPiano</td>
+      </tr>
+    </table>
 
     <button class="minus" onclick="minusOne()">-1</button>
     <button class="plus" onclick="plusOne()">+1</button>
@@ -98,25 +184,14 @@
   <script>
     let counter = 1;
 
-    const presets = {
-      1: { name: "Merah", color: "red" },
-      2: { name: "Oranye", color: "orange" },
-      3: { name: "Kuning", color: "yellow" },
-      4: { name: "Hijau", color: "lightgreen" },
-      5: { name: "Biru", color: "blue" },
-      6: { name: "Ungu", color: "purple" },
-      7: { name: "Pink", color: "pink" },
-      8: { name: "Coklat", color: "brown" },
-      9: { name: "Abu-abu", color: "tan" },
-      10: { name: "Cyan", color: "cyan" }
-    };
-
     function updateDisplay() {
-      document.getElementById("number").innerText = counter;
-      document.getElementById("presetName").innerText = presets[counter].name;
+      document.getElementById("usageNumber").innerText = counter;
 
-      document.getElementById("number").style.color = presets[counter].color;
-      document.getElementById("presetName").style.color = presets[counter].color;
+      for (let i = 1; i <= 10; i++) {
+        document.getElementById("row" + i).classList.remove("active");
+      }
+
+      document.getElementById("row" + counter).classList.add("active");
     }
 
     function plusOne() {
