@@ -19,8 +19,8 @@
     }
 
     .box {
-      width: 850px;
-      max-width: 92%;
+      width: 900px;
+      max-width: 94%;
       padding: 35px;
       border-radius: 25px;
       background: rgba(255, 255, 255, 0.12);
@@ -41,7 +41,7 @@
 
     textarea {
       width: 95%;
-      height: 130px;
+      height: 120px;
       padding: 15px;
       font-size: 22px;
       border-radius: 15px;
@@ -62,15 +62,23 @@
 
     th,
     td {
-      padding: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.8);
+      padding: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.85);
       font-size: 20px;
       font-weight: bold;
+      text-align: center;
     }
 
     th {
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.78);
       color: white;
+    }
+
+    .qty {
+      background: rgba(255, 255, 255, 0.9);
+      color: black;
+      width: 90px;
+      font-size: 26px;
     }
 
     .red {
@@ -99,8 +107,8 @@
     }
 
     .violet {
-      background: violet;
-      color: black;
+      background: #8a2be2;
+      color: white;
     }
 
     .pink {
@@ -121,10 +129,6 @@
     .cyan {
       background: cyan;
       color: black;
-    }
-
-    .count {
-      font-size: 26px;
     }
 
     .buttons {
@@ -158,7 +162,7 @@
     <h1>Music Session Counter</h1>
 
     <div class="subtitle">
-      Type numbers here. The counter will count how many times each digit appears.
+      Type numbers here. Each digit will be counted based on its preset.
     </div>
 
     <textarea
@@ -169,86 +173,56 @@
 
     <table>
       <tr>
-        <th>Digit</th>
-        <th>Preset Color</th>
-        <th>Preset Name</th>
+        <th>Left Preset</th>
+        <th>Qty</th>
+        <th>Right Preset</th>
         <th>Qty</th>
       </tr>
 
-      <tr class="red">
-        <td>1</td>
-        <td>Red</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count1">0</td>
+      <tr>
+        <td class="red">1 - CountryPopDuo</td>
+        <td class="qty" id="count1">0</td>
+
+        <td class="violet">6 - PopWaltz</td>
+        <td class="qty" id="count6">0</td>
       </tr>
 
-      <tr class="orange">
-        <td>2</td>
-        <td>Orange</td>
-        <td>ChartPianoShuffle</td>
-        <td class="count" id="count2">0</td>
+      <tr>
+        <td class="orange">2 - ChartPianoShuffle</td>
+        <td class="qty" id="count2">0</td>
+
+        <td class="pink">7 - EpicDivaBallad</td>
+        <td class="qty" id="count7">0</td>
       </tr>
 
-      <tr class="yellow">
-        <td>3</td>
-        <td>Yellow</td>
-        <td>60sVintageRumba</td>
-        <td class="count" id="count3">0</td>
+      <tr>
+        <td class="yellow">3 - 60sVintageRumba</td>
+        <td class="qty" id="count3">0</td>
+
+        <td class="brown">8 - BoyBandPop</td>
+        <td class="qty" id="count8">0</td>
       </tr>
 
-      <tr class="green">
-        <td>4</td>
-        <td>Green</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count4">0</td>
+      <tr>
+        <td class="green">4 - 90sHardRockBallad</td>
+        <td class="qty" id="count4">0</td>
+
+        <td class="tan">9 - OrchRockBallad1</td>
+        <td class="qty" id="count9">0</td>
       </tr>
 
-      <tr class="blue">
-        <td>5</td>
-        <td>Blue</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count5">0</td>
-      </tr>
+      <tr>
+        <td class="blue">5 - 60sClassicSoftRock</td>
+        <td class="qty" id="count5">0</td>
 
-      <tr class="violet">
-        <td>6</td>
-        <td>Violet</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count6">0</td>
-      </tr>
-
-      <tr class="pink">
-        <td>7</td>
-        <td>Pink</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count7">0</td>
-      </tr>
-
-      <tr class="brown">
-        <td>8</td>
-        <td>Brown</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count8">0</td>
-      </tr>
-
-      <tr class="tan">
-        <td>9</td>
-        <td>Tan</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count9">0</td>
-      </tr>
-
-      <tr class="cyan">
-        <td>0</td>
-        <td>Cyan</td>
-        <td>CountryPopDuo</td>
-        <td class="count" id="count0">0</td>
+        <td class="cyan">0 - 70sGlamPiano</td>
+        <td class="qty" id="count0">0</td>
       </tr>
     </table>
 
-<div class="buttons">
-  <button onclick="resetCounter()">🗑️Clear</button>
-</div>
+    <div class="buttons">
+      <button onclick="resetCounter()">🗑️Clear</button>
+    </div>
 
     <a href="index.html">← Back to Home</a>
   </div>
