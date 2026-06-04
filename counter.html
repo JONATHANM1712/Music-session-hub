@@ -272,48 +272,71 @@ body {
     <a href="index.html">← Back to Home</a>
   </div>
 
-  <script>
-    function updateCounter() {
-      const text = document.getElementById("inputData").value;
+<script>
+  let isDirty = false;
 
-      const counts = {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      };
+  function updateCounter() {
+    const input = document.getElementById("inputData");
 
-      for (let char of text) {
-        if (char >= "0" && char <= "9") {
-          counts[char]++;
-        }
-      }
+    let rawText = input.value.replace(/[^0-9]/g, "");
+    let formattedText = rawText.match(/.{1,5}/g)?.join(" ") || "";
 
-      document.getElementById("count0").innerHTML = counts["0"];
-      document.getElementById("count1").innerHTML = counts["1"];
-      document.getElementById("count2").innerHTML = counts["2"];
-      document.getElementById("count3").innerHTML = counts["3"];
-      document.getElementById("count4").innerHTML = counts["4"];
-      document.getElementById("count5").innerHTML = counts["5"];
-      document.getElementById("count6").innerHTML = counts["6"];
-      document.getElementById("count7").innerHTML = counts["7"];
-      document.getElementById("count8").innerHTML = counts["8"];
-      document.getElementById("count9").innerHTML = counts["9"];
+    input.value = formattedText;
+
+    const counts = {
+      "0": 0, "1": 0, "2": 0, "3": 0, "4": 0,
+      "5": 0, "6": 0, "7": 0, "8": 0, "9": 0
+    };
+
+    for (let char of rawText) {
+      counts[char]++;
     }
 
-    function resetCounter() {
+    document.getElementById("count0").innerHTML = counts["0"];
+    document.getElementById("count1").innerHTML = counts["1"];
+    document.getElementById("count2").innerHTML = counts["2"];
+    document.getElementById("count3").innerHTML = counts["3"];
+    document.getElementById("count4").innerHTML = counts["4"];
+    document.getElementById("count5").innerHTML = counts["5"];
+    document.getElementById("count6").innerHTML = counts["6"];
+    document.getElementById("count7").innerHTML = counts["7"];
+    document.getElementById("count8").innerHTML = counts["8"];
+    document.getElementById("count9").innerHTML = counts["9"];
+
+    isDirty = rawText.length > 0;
+  }
+
+  function resetCounter() {
+    const confirmDelete = confirm("Yakin mau hapus semuanya?");
+
+    if (confirmDelete) {
       document.getElementById("inputData").value = "";
+      isDirty = false;
       updateCounter();
     }
+  }
 
-    updateCounter();
-  </script>
+window.addEventListener("beforeunload", function (event) {
+
+  const data =
+    document.getElementById("inputData")
+    .value
+    .trim();
+
+  if (data.length > 0) {
+
+    event.preventDefault();
+
+    event.returnValue =
+      "Data akan hilang jika tab ditutup.";
+
+    return event.returnValue;
+  }
+
+});
+
+  updateCounter();
+</script>
 
 </body>
 </html>
