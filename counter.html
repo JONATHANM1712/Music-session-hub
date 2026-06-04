@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Counter</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Music Session Counter</title>
 
   <style>
     body {
@@ -18,88 +19,60 @@
     }
 
     .box {
-      width: 700px;
-      padding: 30px;
+      width: 420px;
+      padding: 35px;
       border-radius: 25px;
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(18px);
       text-align: center;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
     }
 
     h1 {
       margin-bottom: 20px;
     }
 
-    .usage {
-      font-size: 28px;
-      font-weight: bold;
+    input {
+      width: 260px;
+      padding: 12px;
+      font-size: 24px;
+      text-align: center;
+      border-radius: 12px;
+      border: none;
+      outline: none;
       margin-bottom: 20px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 25px;
-      color: white;
+    #presetName {
+      font-size: 32px;
       font-weight: bold;
+      margin-top: 15px;
     }
 
-    th, td {
-      border: 2px solid white;
-      padding: 12px;
-      text-align: center;
-    }
-
-    th {
-      background: black;
-    }
-
-    .red { background: red; }
-    .orange { background: orange; color: black; }
-    .yellow { background: yellow; color: black; }
-    .green { background: lime; color: black; }
-    .blue { background: blue; }
-    .purple { background: purple; }
-    .pink { background: pink; color: black; }
-    .brown { background: #8b4a00; }
-    .cream { background: #e5c18c; color: black; }
-    .cyan { background: cyan; color: black; }
-
-    .active {
-      outline: 5px solid white;
-      filter: brightness(1.25);
-      transform: scale(1.02);
-    }
-
-    button {
-      font-size: 22px;
+    #qty {
+      font-size: 120px;
       font-weight: bold;
-      padding: 12px 25px;
-      margin: 8px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
+      margin-top: 10px;
+      line-height: 1;
     }
 
-    .minus {
-      background: #ff4d4d;
-      color: white;
+    .label {
+      font-size: 20px;
+      margin-top: 10px;
+      opacity: 0.9;
     }
 
-    .plus {
-      background: #32cd32;
-      color: white;
-    }
-
-    .reset {
-      background: #00cfff;
-      color: white;
+    .hint {
+      font-size: 14px;
+      margin-top: 20px;
+      opacity: 0.8;
+      line-height: 1.5;
     }
 
     a {
       display: inline-block;
-      margin-top: 20px;
+      margin-top: 25px;
       color: white;
       text-decoration: none;
       font-weight: bold;
@@ -112,114 +85,77 @@
   <div class="box">
     <h1>Music Session Counter</h1>
 
-    <div class="usage">
-      Usage: <span id="usageNumber">1</span> / 2
+    <input
+      type="text"
+      id="numberInput"
+      placeholder="Example: 11111"
+      maxlength="100"
+      inputmode="numeric"
+      oninput="updateCounter()"
+    />
+
+    <div id="presetName">-</div>
+
+    <div id="qty">0</div>
+
+    <div class="label">Quantity</div>
+
+    <div class="hint">
+      0 = Cyan<br>
+      1 = Red<br>
+      2 = Orange<br>
+      3 = Yellow<br>
+      4 = Green<br>
+      5 = Blue<br>
+      6 = Purple<br>
+      7 = Pink<br>
+      8 = Brown<br>
+      9 = Gray
     </div>
 
-    <table>
-      <tr>
-        <th>No</th>
-        <th>Preset Name</th>
-      </tr>
-
-      <tr id="row1" class="red">
-        <td>1</td>
-        <td>CountryPopDuo</td>
-      </tr>
-
-      <tr id="row2" class="orange">
-        <td>2</td>
-        <td>ChartPianoShuffle</td>
-      </tr>
-
-      <tr id="row3" class="yellow">
-        <td>3</td>
-        <td>60sVintageRumba</td>
-      </tr>
-
-      <tr id="row4" class="green">
-        <td>4</td>
-        <td>90sHardRockBallad</td>
-      </tr>
-
-      <tr id="row5" class="blue">
-        <td>5</td>
-        <td>60sClassicSoftRock</td>
-      </tr>
-
-      <tr id="row6" class="purple">
-        <td>6</td>
-        <td>PopWaltz</td>
-      </tr>
-
-      <tr id="row7" class="pink">
-        <td>7</td>
-        <td>EpicDivaBallad</td>
-      </tr>
-
-      <tr id="row8" class="brown">
-        <td>8</td>
-        <td>BoyBandPop</td>
-      </tr>
-
-      <tr id="row9" class="cream">
-        <td>9</td>
-        <td>OrchRockBallad1</td>
-      </tr>
-
-      <tr id="row10" class="cyan">
-        <td>10</td>
-        <td>70sGlamPiano</td>
-      </tr>
-    </table>
-
-    <button class="minus" onclick="minusOne()">-1</button>
-    <button class="plus" onclick="plusOne()">+1</button>
-    <button class="reset" onclick="resetCounter()">Reset</button>
-
-    <br>
     <a href="index.html">← Back to Home</a>
   </div>
 
   <script>
-    let counter = 1;
+    function updateCounter() {
+      const input = document.getElementById("numberInput");
 
-    function updateDisplay() {
-      document.getElementById("usageNumber").innerText = counter;
+      input.value = input.value.replace(/[^0-9]/g, "");
 
-      for (let i = 1; i <= 10; i++) {
-        document.getElementById("row" + i).classList.remove("active");
+      const text = input.value;
+      const qty = text.length;
+
+      const presetName = document.getElementById("presetName");
+      const qtyDisplay = document.getElementById("qty");
+
+      qtyDisplay.innerHTML = qty;
+
+      if (qty === 0) {
+        presetName.innerHTML = "-";
+        presetName.style.color = "white";
+        qtyDisplay.style.color = "white";
+        return;
       }
 
-      document.getElementById("row" + counter).classList.add("active");
+      const digit = text[0];
+
+      const presets = {
+        "0": { name: "Cyan", color: "cyan" },
+        "1": { name: "Red", color: "red" },
+        "2": { name: "Orange", color: "orange" },
+        "3": { name: "Yellow", color: "yellow" },
+        "4": { name: "Green", color: "lime" },
+        "5": { name: "Blue", color: "dodgerblue" },
+        "6": { name: "Purple", color: "purple" },
+        "7": { name: "Pink", color: "hotpink" },
+        "8": { name: "Brown", color: "saddlebrown" },
+        "9": { name: "Gray", color: "gray" }
+      };
+
+      presetName.innerHTML = presets[digit].name;
+      presetName.style.color = presets[digit].color;
+      qtyDisplay.style.color = presets[digit].color;
     }
-
-    function plusOne() {
-      counter++;
-
-      if (counter > 10) {
-        counter = 1;
-      }
-
-      updateDisplay();
-    }
-
-    function minusOne() {
-      counter--;
-
-      if (counter < 1) {
-        counter = 10;
-      }
-
-      updateDisplay();
-    }
-
-    function resetCounter() {
-      counter = 1;
-      updateDisplay();
-    }
-
-    updateDisplay();
   </script>
 
 </body>
