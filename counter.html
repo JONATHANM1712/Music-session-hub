@@ -19,7 +19,8 @@
     }
 
     .box {
-      width: 420px;
+      width: 850px;
+      max-width: 92%;
       padding: 35px;
       border-radius: 25px;
       background: rgba(255, 255, 255, 0.12);
@@ -30,44 +31,115 @@
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
-    input {
-      width: 260px;
-      padding: 12px;
-      font-size: 24px;
-      text-align: center;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-      margin-bottom: 20px;
-    }
-
-    #presetName {
-      font-size: 32px;
-      font-weight: bold;
-      margin-top: 15px;
-    }
-
-    #qty {
-      font-size: 120px;
-      font-weight: bold;
-      margin-top: 10px;
-      line-height: 1;
-    }
-
-    .label {
-      font-size: 20px;
-      margin-top: 10px;
+    .subtitle {
+      margin-bottom: 25px;
       opacity: 0.9;
     }
 
-    .hint {
-      font-size: 14px;
-      margin-top: 20px;
-      opacity: 0.8;
-      line-height: 1.5;
+    textarea {
+      width: 95%;
+      height: 130px;
+      padding: 15px;
+      font-size: 22px;
+      border-radius: 15px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 15px;
+    }
+
+    th,
+    td {
+      padding: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+    }
+
+    .red {
+      background: red;
+      color: white;
+    }
+
+    .orange {
+      background: orange;
+      color: black;
+    }
+
+    .yellow {
+      background: yellow;
+      color: black;
+    }
+
+    .green {
+      background: limegreen;
+      color: white;
+    }
+
+    .blue {
+      background: dodgerblue;
+      color: white;
+    }
+
+    .violet {
+      background: violet;
+      color: black;
+    }
+
+    .pink {
+      background: hotpink;
+      color: white;
+    }
+
+    .brown {
+      background: saddlebrown;
+      color: white;
+    }
+
+    .tan {
+      background: tan;
+      color: black;
+    }
+
+    .cyan {
+      background: cyan;
+      color: black;
+    }
+
+    .count {
+      font-size: 26px;
+    }
+
+    .buttons {
+      margin-top: 25px;
+    }
+
+    button {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #00cfff;
+      color: black;
     }
 
     a {
@@ -85,77 +157,143 @@
   <div class="box">
     <h1>Music Session Counter</h1>
 
-    <input
-      type="text"
-      id="numberInput"
-      placeholder="Example: 11111"
-      maxlength="100"
-      inputmode="numeric"
-      oninput="updateCounter()"
-    />
-
-    <div id="presetName">-</div>
-
-    <div id="qty">0</div>
-
-    <div class="label">Quantity</div>
-
-    <div class="hint">
-      0 = Cyan<br>
-      1 = Red<br>
-      2 = Orange<br>
-      3 = Yellow<br>
-      4 = Green<br>
-      5 = Blue<br>
-      6 = Purple<br>
-      7 = Pink<br>
-      8 = Brown<br>
-      9 = Gray
+    <div class="subtitle">
+      Type numbers here. The counter will count how many times each digit appears.
     </div>
+
+    <textarea
+      id="inputData"
+      placeholder="Example: 11111 22222 23333 33333"
+      oninput="updateCounter()"
+    ></textarea>
+
+    <table>
+      <tr>
+        <th>Digit</th>
+        <th>Preset Color</th>
+        <th>Preset Name</th>
+        <th>Qty</th>
+      </tr>
+
+      <tr class="red">
+        <td>1</td>
+        <td>Red</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count1">0</td>
+      </tr>
+
+      <tr class="orange">
+        <td>2</td>
+        <td>Orange</td>
+        <td>ChartPianoShuffle</td>
+        <td class="count" id="count2">0</td>
+      </tr>
+
+      <tr class="yellow">
+        <td>3</td>
+        <td>Yellow</td>
+        <td>60sVintageRumba</td>
+        <td class="count" id="count3">0</td>
+      </tr>
+
+      <tr class="green">
+        <td>4</td>
+        <td>Green</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count4">0</td>
+      </tr>
+
+      <tr class="blue">
+        <td>5</td>
+        <td>Blue</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count5">0</td>
+      </tr>
+
+      <tr class="violet">
+        <td>6</td>
+        <td>Violet</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count6">0</td>
+      </tr>
+
+      <tr class="pink">
+        <td>7</td>
+        <td>Pink</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count7">0</td>
+      </tr>
+
+      <tr class="brown">
+        <td>8</td>
+        <td>Brown</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count8">0</td>
+      </tr>
+
+      <tr class="tan">
+        <td>9</td>
+        <td>Tan</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count9">0</td>
+      </tr>
+
+      <tr class="cyan">
+        <td>0</td>
+        <td>Cyan</td>
+        <td>CountryPopDuo</td>
+        <td class="count" id="count0">0</td>
+      </tr>
+    </table>
+
+<div class="buttons">
+  <button onclick="resetCounter()">🗑️Clear</button>
+</div>
 
     <a href="index.html">← Back to Home</a>
   </div>
 
   <script>
     function updateCounter() {
-      const input = document.getElementById("numberInput");
+      const text = document.getElementById("inputData").value;
 
-      input.value = input.value.replace(/[^0-9]/g, "");
-
-      const text = input.value;
-      const qty = text.length;
-
-      const presetName = document.getElementById("presetName");
-      const qtyDisplay = document.getElementById("qty");
-
-      qtyDisplay.innerHTML = qty;
-
-      if (qty === 0) {
-        presetName.innerHTML = "-";
-        presetName.style.color = "white";
-        qtyDisplay.style.color = "white";
-        return;
-      }
-
-      const digit = text[0];
-
-      const presets = {
-        "0": { name: "Cyan", color: "cyan" },
-        "1": { name: "Red", color: "red" },
-        "2": { name: "Orange", color: "orange" },
-        "3": { name: "Yellow", color: "yellow" },
-        "4": { name: "Green", color: "lime" },
-        "5": { name: "Blue", color: "dodgerblue" },
-        "6": { name: "Purple", color: "purple" },
-        "7": { name: "Pink", color: "hotpink" },
-        "8": { name: "Brown", color: "saddlebrown" },
-        "9": { name: "Gray", color: "gray" }
+      const counts = {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
       };
 
-      presetName.innerHTML = presets[digit].name;
-      presetName.style.color = presets[digit].color;
-      qtyDisplay.style.color = presets[digit].color;
+      for (let char of text) {
+        if (char >= "0" && char <= "9") {
+          counts[char]++;
+        }
+      }
+
+      document.getElementById("count0").innerHTML = counts["0"];
+      document.getElementById("count1").innerHTML = counts["1"];
+      document.getElementById("count2").innerHTML = counts["2"];
+      document.getElementById("count3").innerHTML = counts["3"];
+      document.getElementById("count4").innerHTML = counts["4"];
+      document.getElementById("count5").innerHTML = counts["5"];
+      document.getElementById("count6").innerHTML = counts["6"];
+      document.getElementById("count7").innerHTML = counts["7"];
+      document.getElementById("count8").innerHTML = counts["8"];
+      document.getElementById("count9").innerHTML = counts["9"];
     }
+
+    function resetCounter() {
+      document.getElementById("inputData").value = "";
+      updateCounter();
+    }
+
+    updateCounter();
   </script>
 
 </body>
