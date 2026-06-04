@@ -7,16 +7,61 @@
   <title>Music Session Counter</title>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #050026, #2b005c);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: white;
+
+  overflow-x: hidden;
+
+  position: relative;
+}
+
+    body::before {
+  content: "";
+
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-image: url("Aladdin 08.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  filter: blur(10px);
+
+  transform: scale(1);
+
+  z-index: -2;
+}
+
+    body::after {
+  content: "";
+
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  z-index: -1;
+}
 
     .box {
       width: 900px;
@@ -180,42 +225,42 @@
       </tr>
 
       <tr>
-        <td class="red">1 - CountryPopDuo</td>
+        <td class="red">CountryPopDuo</td>
         <td class="qty" id="count1">0</td>
 
-        <td class="violet">6 - PopWaltz</td>
+        <td class="violet">PopWaltz</td>
         <td class="qty" id="count6">0</td>
       </tr>
 
       <tr>
-        <td class="orange">2 - ChartPianoShuffle</td>
+        <td class="orange">ChartPianoShuffle</td>
         <td class="qty" id="count2">0</td>
 
-        <td class="pink">7 - EpicDivaBallad</td>
+        <td class="pink">EpicDivaBallad</td>
         <td class="qty" id="count7">0</td>
       </tr>
 
       <tr>
-        <td class="yellow">3 - 60sVintageRumba</td>
+        <td class="yellow">60sVintageRumba</td>
         <td class="qty" id="count3">0</td>
 
-        <td class="brown">8 - BoyBandPop</td>
+        <td class="brown">BoyBandPop</td>
         <td class="qty" id="count8">0</td>
       </tr>
 
       <tr>
-        <td class="green">4 - 90sHardRockBallad</td>
+        <td class="green">90sHardRockBallad</td>
         <td class="qty" id="count4">0</td>
 
-        <td class="tan">9 - OrchRockBallad1</td>
+        <td class="tan">OrchRockBallad1</td>
         <td class="qty" id="count9">0</td>
       </tr>
 
       <tr>
-        <td class="blue">5 - 60sClassicSoftRock</td>
+        <td class="blue">60sClassicSoftRock</td>
         <td class="qty" id="count5">0</td>
 
-        <td class="cyan">0 - 70sGlamPiano</td>
+        <td class="cyan">70sGlamPiano</td>
         <td class="qty" id="count0">0</td>
       </tr>
     </table>
