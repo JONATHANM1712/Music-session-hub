@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Counter</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #050026, #2b005c);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .box {
+      width: 420px;
+      padding: 35px;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(18px);
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #number {
+      font-size: 110px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    #presetName {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
+
+    button {
+      font-size: 22px;
+      font-weight: bold;
+      padding: 12px 25px;
+      margin: 8px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .minus {
+      background: #ff4d4d;
+      color: white;
+    }
+
+    .plus {
+      background: #32cd32;
+      color: white;
+    }
+
+    .reset {
+      background: #00cfff;
+      color: white;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 25px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>Music Session Counter</h1>
+
+    <div id="number">1</div>
+    <div id="presetName">Merah</div>
+
+    <button class="minus" onclick="minusOne()">-1</button>
+    <button class="plus" onclick="plusOne()">+1</button>
+    <button class="reset" onclick="resetCounter()">Reset</button>
+
+    <br>
+    <a href="index.html">← Back to Home</a>
+  </div>
+
+  <script>
+    let counter = 1;
+
+    const presets = {
+      1: { name: "Merah", color: "red" },
+      2: { name: "Oranye", color: "orange" },
+      3: { name: "Kuning", color: "yellow" },
+      4: { name: "Hijau", color: "lightgreen" },
+      5: { name: "Biru", color: "blue" },
+      6: { name: "Ungu", color: "purple" },
+      7: { name: "Pink", color: "pink" },
+      8: { name: "Coklat", color: "brown" },
+      9: { name: "Abu-abu", color: "tan" },
+      10: { name: "Cyan", color: "cyan" }
+    };
+
+    function updateDisplay() {
+      document.getElementById("number").innerText = counter;
+      document.getElementById("presetName").innerText = presets[counter].name;
+
+      document.getElementById("number").style.color = presets[counter].color;
+      document.getElementById("presetName").style.color = presets[counter].color;
+    }
+
+    function plusOne() {
+      counter++;
+
+      if (counter > 10) {
+        counter = 1;
+      }
+
+      updateDisplay();
+    }
+
+    function minusOne() {
+      counter--;
+
+      if (counter < 1) {
+        counter = 10;
+      }
+
+      updateDisplay();
+    }
+
+    function resetCounter() {
+      counter = 1;
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+
+</body>
+</html>
