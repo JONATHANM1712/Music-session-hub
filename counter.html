@@ -34,7 +34,7 @@ body {
   width: 100%;
   height: 100%;
 
-  background-image: url("images/Screencap - Prince Ali clip/Prince Ali-04.jpg");
+  background-image: url("images/Screencap - Main clip/Aladdin 41.jpg");
 
   background-size: cover;
   background-position: center;
@@ -181,13 +181,13 @@ body {
     }
 
     button {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
       padding: 12px 28px;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      background: #00cfff;
+      background: E44D2E;
       color: black;
     }
 
@@ -218,49 +218,49 @@ body {
 
     <table>
       <tr>
-        <th>Left Preset</th>
+        <th></th>
         <th>Qty</th>
-        <th>Right Preset</th>
+        <th></th>
         <th>Qty</th>
       </tr>
 
       <tr>
-        <td class="red">BigRockBallad</td>
+        <td class="red">90sHardRockBallad</td>
         <td class="qty" id="count1">0</td>
 
-        <td class="violet">60sClassicSoftRock</td>
+        <td class="violet">70sUK DiscoPop</td>
         <td class="qty" id="count6">0</td>
       </tr>
 
       <tr>
-        <td class="orange">70sGlamPiano</td>
+        <td class="orange">60sPianoPop</td>
         <td class="qty" id="count2">0</td>
 
-        <td class="pink">60sPopR&B</td>
+        <td class="pink">BritPopDiva</td>
         <td class="qty" id="count7">0</td>
       </tr>
 
       <tr>
-        <td class="yellow">VocalPopBallad</td>
+        <td class="yellow">BigRockBallad</td>
         <td class="qty" id="count3">0</td>
 
-        <td class="brown">60sChartSwing</td>
+        <td class="brown">VocalPopBallad</td>
         <td class="qty" id="count8">0</td>
       </tr>
 
       <tr>
-        <td class="green">CanadianTeenPop</td>
+        <td class="green">70s8BeatBallad</td>
         <td class="qty" id="count4">0</td>
 
-        <td class="tan">90sRockBallad</td>
+        <td class="tan">60sChartSwing</td>
         <td class="qty" id="count9">0</td>
       </tr>
 
       <tr>
-        <td class="blue">BritRockPop</td>
+        <td class="blue">60sVintageRumba</td>
         <td class="qty" id="count5">0</td>
 
-        <td class="cyan">80sClassic6-8</td>
+        <td class="cyan">60sPopR&B</td>
         <td class="qty" id="count0">0</td>
       </tr>
     </table>
@@ -307,7 +307,7 @@ body {
   }
 
   function resetCounter() {
-    const confirmDelete = confirm("Yakin mau hapus semuanya?");
+    const confirmDelete = confirm("Are you sure you want to clear the results?");
 
     if (confirmDelete) {
       document.getElementById("inputData").value = "";
