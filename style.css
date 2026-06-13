@@ -14,7 +14,7 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: url("images/Main%20background/ALD-1000007.jpg") center/cover no-repeat;
+    background: url("images/Main%20background/ALD-1000018.jpg") center/cover no-repeat;
     filter: blur(10px) brightness(1);
     z-index: -2;
 }
