@@ -7,66 +7,48 @@
   <title>Music Session Counter</title>
 
   <style>
-body {
-  margin: 0;
-  font-family: Montserrat, sans-serif;
-  min-height: 100vh;
+    * {
+      box-sizing: border-box;
+    }
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  color: white;
-
-  overflow-x: hidden;
-
-  position: relative;
-}
+    body {
+      margin: 0;
+      font-family: Montserrat, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: white;
+      overflow-x: hidden;
+      position: relative;
+      padding: 16px 0;
+    }
 
     body::before {
-  content: "";
-
-  position: fixed;
-
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  background-image: url("images/Screencap - Abu clip/Abu Aladdin 02.jpg");
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  filter: blur(10px);
-
-  transform: scale(1);
-
-  z-index: -2;
-}
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("images/Screencap - Abu clip/Abu Aladdin 02.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(10px);
+      transform: scale(1);
+      z-index: -2;
+    }
 
     body::after {
-  content: "";
-
-  position: fixed;
-
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  background: rgba(0, 0, 0, 0.35);
-
-  z-index: -1;
-}
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: -1;
+    }
 
     .box {
-      width: 900px;
-      max-width: 94%;
-      padding: 35px;
+      width: 1100px;
+      max-width: 96%;
+      padding: 20px;
       border-radius: 25px;
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -76,40 +58,82 @@ body {
     }
 
     h1 {
-      margin-bottom: 10px;
+      margin: 0 0 6px;
+      font-size: 34px;
     }
 
     .subtitle {
-      margin-bottom: 25px;
+      margin-bottom: 15px;
       opacity: 0.9;
+      font-size: 18px;
+      font-weight: bold;
     }
 
-    textarea {
-      width: 95%;
-      height: 120px;
-      padding: 15px;
-      font-size: 22px;
+    .square-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .square-group {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      padding: 3px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .square {
+      height: 30px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .square:first-child {
+      border-radius: 7px 0 0 7px;
+    }
+
+    .square:last-child {
+      border-radius: 0 7px 7px 0;
+    }
+
+    .hidden-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .input-helper {
+      background: white;
+      color: #777;
       border-radius: 15px;
-      border: none;
-      outline: none;
-      resize: vertical;
-      margin-bottom: 25px;
-      text-align: center;
+      padding: 14px;
+      margin-bottom: 14px;
+      font-size: 22px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: text;
+      user-select: none;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
       overflow: hidden;
       border-radius: 15px;
     }
 
     th,
     td {
-      padding: 15px;
+      padding: 10px;
       border: 2px solid rgba(255, 255, 255, 0.85);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       text-align: center;
     }
@@ -123,81 +147,105 @@ body {
       background: rgba(255, 255, 255, 0.9);
       color: black;
       width: 90px;
-      font-size: 26px;
+      font-size: 24px;
     }
 
-    .red {
-      background: red;
-      color: white;
-    }
-
-    .orange {
-      background: orange;
-      color: black;
-    }
-
-    .yellow {
-      background: yellow;
-      color: black;
-    }
-
-    .green {
-      background: limegreen;
-      color: black;
-    }
-
-    .blue {
-      background: blue;
-      color: white;
-    }
-
-    .violet {
-      background: #8000ff;
-      color: white;
-    }
-
-    .pink {
-      background: pink;
-      color: black;
-    }
-
-    .brown {
-      background: brown;
-      color: white;
-    }
-
-    .tan {
-      background: tan;
-      color: black;
-    }
-
-    .cyan {
-      background: cyan;
-      color: black;
-    }
+    .red { background: red; color: white; }
+    .orange { background: orange; color: black; }
+    .yellow { background: yellow; color: black; }
+    .green { background: limegreen; color: black; }
+    .blue { background: blue; color: white; }
+    .violet { background: #8000ff; color: white; }
+    .pink { background: pink; color: black; }
+    .brown { background: brown; color: white; }
+    .tan { background: tan; color: black; }
+    .cyan { background: cyan; color: black; }
 
     .buttons {
-      margin-top: 25px;
+      margin-top: 16px;
     }
 
     button {
       font-size: 22px;
       font-weight: bold;
-      padding: 12px 28px;
+      padding: 12px 32px;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      background: #00CCFF;
-      color: black;
+      background: #ff3030;
+      color: white;
+    }
+
+    button:hover {
+      background: #cc0000;
     }
 
     a {
       display: inline-block;
-      margin-top: 25px;
+      margin-top: 16px;
       color: white;
       text-decoration: none;
       font-weight: bold;
     }
+
+    .input-helper::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 26px;
+  background: #777;
+  margin-left: 3px;
+  animation: blinkCursor 0.8s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blinkCursor {
+  0%, 50% {
+    opacity: 1;
+  }
+
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+    @media (max-width: 800px) {
+      .box {
+        padding: 14px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .square-grid {
+        gap: 4px;
+      }
+
+      .square {
+        height: 22px;
+      }
+
+      .input-helper {
+        font-size: 17px;
+      }
+
+      th,
+      td {
+        padding: 7px;
+        font-size: 13px;
+      }
+
+      .qty {
+        width: 55px;
+        font-size: 18px;
+      }
+    }
+
   </style>
 </head>
 
@@ -207,14 +255,22 @@ body {
     <h1>Music Session Counter</h1>
 
     <div class="subtitle">
-      Let's arrange everything through the journey with the music session. 
+      Let's arrange everything through the journey with the music session.
     </div>
 
-    <textarea
+    <div id="squareGrid" class="square-grid" onclick="focusInput()"></div>
+
+    <div class="input-helper" onclick="focusInput()" id="inputDisplay">
+      Example: 11111 22222 23333 33333
+    </div>
+
+    <input
       id="inputData"
-      placeholder="Example: 11111 22222 23333 33333"
+      class="hidden-input"
+      inputmode="numeric"
+      autocomplete="off"
       oninput="updateCounter()"
-    ></textarea>
+    />
 
     <table>
       <tr>
@@ -233,7 +289,7 @@ body {
       </tr>
 
       <tr>
-        <td class="orange">60sPopR&B</td>
+        <td class="orange">60sPopR&amp;B</td>
         <td class="qty" id="count2">0</td>
 
         <td class="pink">ClassicalPop</td>
@@ -266,7 +322,7 @@ body {
     </table>
 
     <div class="buttons">
-      <button onclick="resetCounter()">🗑️Clear</button>
+      <button onclick="resetCounter()">🗑️ Clear</button>
     </div>
 
     <a href="index.html">← Back to Home</a>
@@ -275,13 +331,59 @@ body {
 <script>
   let isDirty = false;
 
+  const digitColors = {
+    "1": "red",
+    "2": "orange",
+    "3": "yellow",
+    "4": "limegreen",
+    "5": "blue",
+    "6": "#8000ff",
+    "7": "pink",
+    "8": "brown",
+    "9": "tan",
+    "0": "cyan"
+  };
+
+  function focusInput() {
+    document.getElementById("inputData").focus();
+  }
+
+  function createGrid() {
+    const grid = document.getElementById("squareGrid");
+
+    grid.innerHTML = "";
+
+    for (let group = 0; group < 20; group++) {
+      const squareGroup = document.createElement("div");
+      squareGroup.className = "square-group";
+
+      for (let i = 0; i < 5; i++) {
+        const square = document.createElement("div");
+        const index = group * 5 + i;
+
+        square.className = "square";
+        square.id = "sq" + index;
+
+        squareGroup.appendChild(square);
+      }
+
+      grid.appendChild(squareGroup);
+    }
+  }
+
   function updateCounter() {
     const input = document.getElementById("inputData");
+    const inputDisplay = document.getElementById("inputDisplay");
 
     let rawText = input.value.replace(/[^0-9]/g, "");
+    rawText = rawText.substring(0, 100);
+
+    input.value = rawText;
+
     let formattedText = rawText.match(/.{1,5}/g)?.join(" ") || "";
 
-    input.value = formattedText;
+    inputDisplay.innerHTML =
+    formattedText || "Example: 11111 22222 23333 33333";
 
     const counts = {
       "0": 0, "1": 0, "2": 0, "3": 0, "4": 0,
@@ -290,6 +392,19 @@ body {
 
     for (let char of rawText) {
       counts[char]++;
+    }
+
+    for (let i = 0; i < 100; i++) {
+      const square = document.getElementById("sq" + i);
+
+      square.style.background = "rgba(255, 255, 255, 0.14)";
+    }
+
+    for (let i = 0; i < rawText.length; i++) {
+      const digit = rawText[i];
+      const square = document.getElementById("sq" + i);
+
+      square.style.background = digitColors[digit];
     }
 
     document.getElementById("count0").innerHTML = counts["0"];
@@ -316,25 +431,23 @@ body {
     }
   }
 
-window.addEventListener("beforeunload", function (event) {
+  window.addEventListener("beforeunload", function (event) {
+    const data =
+      document.getElementById("inputData")
+      .value
+      .trim();
 
-  const data =
-    document.getElementById("inputData")
-    .value
-    .trim();
+    if (data.length > 0) {
+      event.preventDefault();
 
-  if (data.length > 0) {
+      event.returnValue =
+        "Data will be lost if the tab is closed.";
 
-    event.preventDefault();
+      return event.returnValue;
+    }
+  });
 
-    event.returnValue =
-      "Data akan hilang jika tab ditutup.";
-
-    return event.returnValue;
-  }
-
-});
-
+  createGrid();
   updateCounter();
 </script>
 
