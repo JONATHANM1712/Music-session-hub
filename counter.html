@@ -7,9 +7,7 @@
   <title>Music Session Counter</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -93,13 +91,8 @@
       box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
     }
 
-    .square:first-child {
-      border-radius: 7px 0 0 7px;
-    }
-
-    .square:last-child {
-      border-radius: 0 7px 7px 0;
-    }
+    .square:first-child { border-radius: 7px 0 0 7px; }
+    .square:last-child { border-radius: 0 7px 7px 0; }
 
     .hidden-input {
       position: absolute;
@@ -120,6 +113,24 @@
       justify-content: center;
       cursor: text;
       user-select: none;
+      word-break: break-word;
+    }
+
+    .input-helper::after {
+      content: "";
+      display: inline-block;
+      width: 2px;
+      height: 26px;
+      background: #777;
+      margin-left: 3px;
+      animation: blinkCursor 0.8s infinite;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    @keyframes blinkCursor {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
     }
 
     table {
@@ -129,8 +140,7 @@
       border-radius: 15px;
     }
 
-    th,
-    td {
+    th, td {
       padding: 10px;
       border: 2px solid rgba(255, 255, 255, 0.85);
       font-size: 18px;
@@ -161,9 +171,7 @@
     .tan { background: tan; color: black; }
     .cyan { background: cyan; color: black; }
 
-    .buttons {
-      margin-top: 16px;
-    }
+    .buttons { margin-top: 16px; }
 
     button {
       font-size: 22px;
@@ -176,9 +184,7 @@
       color: white;
     }
 
-    button:hover {
-      background: #cc0000;
-    }
+    button:hover { background: #cc0000; }
 
     a {
       display: inline-block;
@@ -188,69 +194,21 @@
       font-weight: bold;
     }
 
-    .input-helper::after {
-  content: "";
-  display: inline-block;
-  width: 2px;
-  height: 26px;
-  background: #777;
-  margin-left: 3px;
-  animation: blinkCursor 0.8s infinite;
-  vertical-align: middle;
-}
-
-@keyframes blinkCursor {
-  0%, 50% {
-    opacity: 1;
-  }
-
-  51%, 100% {
-    opacity: 0;
-  }
-}
-
     @media (max-width: 800px) {
-      .box {
-        padding: 14px;
-      }
-
-      h1 {
-        font-size: 26px;
-      }
-
-      .subtitle {
-        font-size: 14px;
-      }
-
-      .square-grid {
-        gap: 4px;
-      }
-
-      .square {
-        height: 22px;
-      }
-
-      .input-helper {
-        font-size: 17px;
-      }
-
-      th,
-      td {
-        padding: 7px;
-        font-size: 13px;
-      }
-
-      .qty {
-        width: 55px;
-        font-size: 18px;
-      }
+      .box { padding: 14px; }
+      h1 { font-size: 26px; }
+      .subtitle { font-size: 14px; }
+      .square-grid { gap: 4px; }
+      .square { height: 22px; }
+      .input-helper { font-size: 17px; }
+      .input-helper::after { height: 22px; }
+      th, td { padding: 7px; font-size: 13px; }
+      .qty { width: 55px; font-size: 18px; }
     }
-
   </style>
 </head>
 
 <body>
-
   <div class="box">
     <h1>Music Session Counter</h1>
 
@@ -269,6 +227,7 @@
       class="hidden-input"
       inputmode="numeric"
       autocomplete="off"
+      autofocus
       oninput="updateCounter()"
     />
 
@@ -283,7 +242,6 @@
       <tr>
         <td class="red">BoyBandPop</td>
         <td class="qty" id="count1">0</td>
-
         <td class="violet">6-8GuitarBallad</td>
         <td class="qty" id="count6">0</td>
       </tr>
@@ -291,7 +249,6 @@
       <tr>
         <td class="orange">60sPopR&amp;B</td>
         <td class="qty" id="count2">0</td>
-
         <td class="pink">ClassicalPop</td>
         <td class="qty" id="count7">0</td>
       </tr>
@@ -299,7 +256,6 @@
       <tr>
         <td class="yellow">60sPianoPop</td>
         <td class="qty" id="count3">0</td>
-
         <td class="brown">60sClassicSoftRock</td>
         <td class="qty" id="count8">0</td>
       </tr>
@@ -307,7 +263,6 @@
       <tr>
         <td class="green">Country8Beat2</td>
         <td class="qty" id="count4">0</td>
-
         <td class="tan">IrishPopRock</td>
         <td class="qty" id="count9">0</td>
       </tr>
@@ -315,7 +270,6 @@
       <tr>
         <td class="blue">ElectroRock</td>
         <td class="qty" id="count5">0</td>
-
         <td class="cyan">90sHardRockBallad</td>
         <td class="qty" id="count0">0</td>
       </tr>
@@ -350,7 +304,6 @@
 
   function createGrid() {
     const grid = document.getElementById("squareGrid");
-
     grid.innerHTML = "";
 
     for (let group = 0; group < 20; group++) {
@@ -360,10 +313,8 @@
       for (let i = 0; i < 5; i++) {
         const square = document.createElement("div");
         const index = group * 5 + i;
-
         square.className = "square";
         square.id = "sq" + index;
-
         squareGroup.appendChild(square);
       }
 
@@ -377,13 +328,12 @@
 
     let rawText = input.value.replace(/[^0-9]/g, "");
     rawText = rawText.substring(0, 100);
-
     input.value = rawText;
 
     let formattedText = rawText.match(/.{1,5}/g)?.join(" ") || "";
 
     inputDisplay.innerHTML =
-    formattedText || "Example: 11111 22222 23333 33333";
+      formattedText || "Example: 11111 22222 23333 33333";
 
     const counts = {
       "0": 0, "1": 0, "2": 0, "3": 0, "4": 0,
@@ -396,14 +346,12 @@
 
     for (let i = 0; i < 100; i++) {
       const square = document.getElementById("sq" + i);
-
       square.style.background = "rgba(255, 255, 255, 0.14)";
     }
 
     for (let i = 0; i < rawText.length; i++) {
       const digit = rawText[i];
       const square = document.getElementById("sq" + i);
-
       square.style.background = digitColors[digit];
     }
 
@@ -421,34 +369,48 @@
     isDirty = rawText.length > 0;
   }
 
+  function clearCounterWithoutConfirm() {
+    document.getElementById("inputData").value = "";
+    isDirty = false;
+    updateCounter();
+  }
+
   function resetCounter() {
     const confirmDelete = confirm("Are you sure you want to clear the results?");
 
     if (confirmDelete) {
-      document.getElementById("inputData").value = "";
-      isDirty = false;
-      updateCounter();
+      clearCounterWithoutConfirm();
+      focusInput();
     }
   }
 
+  document.addEventListener("keydown", function (event) {
+    const isCtrlA =
+      event.ctrlKey &&
+      event.key.toLowerCase() === "a";
+
+    if (isCtrlA) {
+      event.preventDefault();
+      clearCounterWithoutConfirm();
+      focusInput();
+    }
+  });
+
   window.addEventListener("beforeunload", function (event) {
-    const data =
-      document.getElementById("inputData")
-      .value
-      .trim();
+    const data = document.getElementById("inputData").value.trim();
 
     if (data.length > 0) {
       event.preventDefault();
-
-      event.returnValue =
-        "Data will be lost if the tab is closed.";
-
+      event.returnValue = "Data will be lost if the tab is closed.";
       return event.returnValue;
     }
   });
 
-  createGrid();
-  updateCounter();
+  window.addEventListener("load", function () {
+    createGrid();
+    updateCounter();
+    focusInput();
+  });
 </script>
 
 </body>
