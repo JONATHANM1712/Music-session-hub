@@ -383,19 +383,6 @@
       focusInput();
     }
   }
-
-  document.addEventListener("keydown", function (event) {
-    const isCtrlA =
-      event.ctrlKey &&
-      event.key.toLowerCase() === "a";
-
-    if (isCtrlA) {
-      event.preventDefault();
-      clearCounterWithoutConfirm();
-      focusInput();
-    }
-  });
-
   window.addEventListener("beforeunload", function (event) {
     const data = document.getElementById("inputData").value.trim();
 
