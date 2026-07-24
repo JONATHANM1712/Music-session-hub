@@ -1,73 +1,609 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Session Navigation</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Music Session dashboard with one dynamic read-only resource preview and quick access to the preset color counter."
+  >
+
+  <title>Music Session Dashboard</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+
+<body id="top">
 
   <header class="topbar">
-    <h1>Music Session</h1>
+
+    <div class="topbar-inner">
+
+      <div class="topbar-left">
+
+        <a
+          href="#top"
+          class="brand"
+          aria-label="Music Session home"
+        >
+
+          <span
+            class="brand-icon"
+            aria-hidden="true"
+          >
+            🎵
+          </span>
+
+          <span class="brand-text">
+            <strong>Music Session</strong>
+            <small>Dashboard</small>
+          </span>
+
+        </a>
+
+        <nav
+          class="topnav"
+          aria-label="Main navigation"
+        >
+
+          <a href="#quick-access">
+            Quick Access
+          </a>
+
+          <a href="#resource-viewer">
+            Resource Viewer
+          </a>
+
+        </nav>
+
+      </div>
+
+      <a
+        href="counter.html"
+        class="counter-start-button"
+      >
+
+        <span aria-hidden="true">
+          🔢
+        </span>
+
+        <span>
+          Get Started with Counter
+        </span>
+
+      </a>
+
+    </div>
+
   </header>
 
   <main class="container">
 
-  <div class="card-grid">
+    <section
+      class="hero"
+      aria-labelledby="hero-title"
+    >
 
-    <a class="card sheet"
-       href="https://docs.google.com/spreadsheets/d/1V_SlKUXxLr7bbJw-w9-4BaVMol0aXf7e313ZcMLo2fs/edit"
-       target="_blank">
-      <span class="icon">📊</span>
-      <h3>Music Session Chart Flow</h3>
+      <div class="hero-content">
+
+        <span class="eyebrow">
+          Music Session Workspace
+        </span>
+
+        <h1 id="hero-title">
+          Everything for the Music Session in one polished dashboard.
+        </h1>
+
+        <p class="hero-description">
+          Open the session chart, live tracker, Yamaha style reference,
+          Tempcard history, guidelines, Google Meet announcements,
+          improvement records, and the preset color counter from one place.
+        </p>
+
+        <div class="hero-actions">
+
+          <a
+            href="#quick-access"
+            class="primary-button"
+          >
+            Browse Resources
+          </a>
+
+          <a
+            href="counter.html"
+            class="secondary-button"
+          >
+            Open Counter
+          </a>
+
+        </div>
+
+      </div>
+
+      <div
+        class="hero-summary"
+        aria-label="Dashboard summary"
+      >
+
+        <div class="summary-card">
+          <strong>7</strong>
+          <span>Available resources</span>
+        </div>
+
+        <div class="summary-card">
+          <strong>1</strong>
+          <span>Dynamic preview viewer</span>
+        </div>
+
+        <div class="summary-card">
+          <strong>Read Only</strong>
+          <span>Embedded document access</span>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section
+      id="quick-access"
+      class="section quick-access-section"
+      aria-labelledby="quick-access-title"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-label">
+            Navigation
+          </span>
+
+          <h2 id="quick-access-title">
+            Quick Access
+          </h2>
+
+        </div>
+
+        <p>
+          Select one resource card to display it in the viewer below.
+          Selecting another card replaces the current preview.
+        </p>
+
+      </div>
+
+      <div class="card-grid">
+
+        <button
+          type="button"
+          class="card resource-card sheet-card is-active"
+          data-resource-title="Music Session Chart Flow"
+          data-resource-type="Google Sheets"
+          data-resource-description="Main chart flow for organizing and following the Music Session."
+          data-resource-icon="📊"
+          data-resource-url="https://docs.google.com/spreadsheets/d/1V_SlKUXxLr7bbJw-w9-4BaVMol0aXf7e313ZcMLo2fs/preview"
+          data-resource-new-tab="https://docs.google.com/spreadsheets/d/1V_SlKUXxLr7bbJw-w9-4BaVMol0aXf7e313ZcMLo2fs/edit"
+          aria-pressed="true"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            📊
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Music Session Chart Flow
+            </span>
+
+            <span class="card-description">
+              Main chart flow for arranging the Music Session journey.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="card resource-card sheet-card"
+          data-resource-title="Live Tracker: Distant Insanity &amp; Main Style Name"
+          data-resource-type="Google Sheets"
+          data-resource-description="Live tracking for Distant Insanity and current main style names."
+          data-resource-icon="📈"
+          data-resource-url="https://docs.google.com/spreadsheets/d/1BAISSJs8rFXNtnEbiE-Z1cZ-nD_5yqKEy746MrkdE5M/preview"
+          data-resource-new-tab="https://docs.google.com/spreadsheets/d/1BAISSJs8rFXNtnEbiE-Z1cZ-nD_5yqKEy746MrkdE5M/edit"
+          aria-pressed="false"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            📈
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Live Tracker
+            </span>
+
+            <span class="card-description">
+              Distant Insanity tracking and current main style names.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="card resource-card sheet-card"
+          data-resource-title="Playable Yamaha Styles"
+          data-resource-type="Google Sheets"
+          data-resource-description="Reference list of Yamaha styles available for the Music Session."
+          data-resource-icon="🎹"
+          data-resource-url="https://docs.google.com/spreadsheets/d/1kqIM1kcWwIaYMFfPiZJtVMvgMdsA9o6fN5UNkoQSwIM/preview"
+          data-resource-new-tab="https://docs.google.com/spreadsheets/d/1kqIM1kcWwIaYMFfPiZJtVMvgMdsA9o6fN5UNkoQSwIM/edit"
+          aria-pressed="false"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            🎹
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Playable Yamaha Styles
+            </span>
+
+            <span class="card-description">
+              Reference list of playable Yamaha keyboard styles.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="card resource-card sheet-card"
+          data-resource-title="Tempcard"
+          data-resource-type="Google Sheets"
+          data-resource-description="Music Session result history and conqueror tracking."
+          data-resource-icon="🏆"
+          data-resource-url="https://docs.google.com/spreadsheets/d/1fgxN5ewGqs3GE6jlKywsi7XRRRi_KP_2VvP-HY1gpbs/preview"
+          data-resource-new-tab="https://docs.google.com/spreadsheets/d/1fgxN5ewGqs3GE6jlKywsi7XRRRi_KP_2VvP-HY1gpbs/edit"
+          aria-pressed="false"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            🏆
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Tempcard
+            </span>
+
+            <span class="card-description">
+              Result history for determining the Music Session conqueror.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="card resource-card doc-card"
+          data-resource-title="Music Session Guidelines"
+          data-resource-type="Google Docs"
+          data-resource-description="Rules, procedures, and guidance for running the Music Session."
+          data-resource-icon="📝"
+          data-resource-url="https://docs.google.com/document/d/1ERNbJlij9QoPLC6sWJPvThHM378qlVsbnr9JeuBmEfo/preview"
+          data-resource-new-tab="https://docs.google.com/document/d/1ERNbJlij9QoPLC6sWJPvThHM378qlVsbnr9JeuBmEfo/edit"
+          aria-pressed="false"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            📝
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Music Session Guidelines
+            </span>
+
+            <span class="card-description">
+              Rules, procedures, references, and session instructions.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="card resource-card meet-card"
+          data-resource-title="Google Meet Announcements"
+          data-resource-type="Google Docs"
+          data-resource-description="Recent Google Meet updates that may affect the Music Session."
+          data-resource-icon="📣"
+          data-resource-url="https://docs.google.com/document/d/1QfhVP-BwD-6HYWQwam2kNv_-k9z2s3FiHQLg7I-kcUc/preview"
+          data-resource-new-tab="https://docs.google.com/document/d/1QfhVP-BwD-6HYWQwam2kNv_-k9z2s3FiHQLg7I-kcUc/edit"
+          aria-pressed="false"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            📣
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Google Meet Announcements
+            </span>
+
+            <span class="card-description">
+              Recent Google Meet updates affecting the Music Session.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="card resource-card history-card"
+          data-resource-title="History of Music Session Improvements"
+          data-resource-type="Google Docs"
+          data-resource-description="Historical record of Music Session changes and improvements."
+          data-resource-icon="🕰️"
+          data-resource-url="https://docs.google.com/document/d/1QfhVP-BwD-6HYWQwam2kNv_-k9z2s3FiHQLg7I-kcUc/preview"
+          data-resource-new-tab="https://docs.google.com/document/d/1QfhVP-BwD-6HYWQwam2kNv_-k9z2s3FiHQLg7I-kcUc/edit"
+          aria-pressed="false"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            🕰️
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Improvement History
+            </span>
+
+            <span class="card-description">
+              Historical record of Music Session changes and improvements.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            ↓
+          </span>
+
+        </button>
+
+        <a
+          href="counter.html"
+          class="card counter-card"
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            🔢
+          </span>
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Counter
+            </span>
+
+            <span class="card-description">
+              Preset color quantity counter for Music Session results.
+            </span>
+
+          </span>
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+
+        </a>
+
+      </div>
+
+    </section>
+
+    <section
+      id="resource-viewer"
+      class="section viewer-section"
+      aria-labelledby="viewer-title"
+    >
+
+      <div class="viewer-card">
+
+        <div class="viewer-header">
+
+          <div class="viewer-title-group">
+
+            <span
+              id="viewer-icon"
+              class="viewer-icon sheet-icon"
+              aria-hidden="true"
+            >
+              📊
+            </span>
+
+            <div>
+
+              <span
+                id="viewer-type"
+                class="resource-type"
+              >
+                Google Sheets
+              </span>
+
+              <h2 id="viewer-title">
+                Music Session Chart Flow
+              </h2>
+
+              <p id="viewer-description">
+                Main chart flow for organizing and following the Music Session.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="viewer-actions">
+
+            <button
+              type="button"
+              id="toggle-viewer-button"
+              class="viewer-button"
+              aria-expanded="true"
+              aria-controls="resource-frame-container"
+            >
+              Hide Preview
+            </button>
+
+            <a
+              id="viewer-open-button"
+              href="https://docs.google.com/spreadsheets/d/1V_SlKUXxLr7bbJw-w9-4BaVMol0aXf7e313ZcMLo2fs/edit"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="open-button"
+            >
+              Open in New Tab ↗
+            </a>
+
+          </div>
+
+        </div>
+
+        <div
+          id="resource-frame-container"
+          class="iframe-container"
+        >
+
+          <div
+            id="viewer-loading"
+            class="viewer-loading"
+            aria-live="polite"
+          >
+            Loading preview…
+          </div>
+
+          <iframe
+            id="resource-frame"
+            src="https://docs.google.com/spreadsheets/d/1V_SlKUXxLr7bbJw-w9-4BaVMol0aXf7e313ZcMLo2fs/preview"
+            title="Music Session Chart Flow read-only preview"
+            loading="lazy"
+            allowfullscreen
+          ></iframe>
+
+        </div>
+
+      </div>
+
+    </section>
+      
+  </main>
+
+  <footer class="footer">
+
+    <p>
+      Music Session Dashboard
+    </p>
+
+    <a href="#top">
+      Back to Top ↑
     </a>
 
-    <a class="card sheet"
-       href="https://docs.google.com/spreadsheets/d/1BAISSJs8rFXNtnEbiE-Z1cZ-nD_5yqKEy746MrkdE5M/edit"
-       target="_blank">
-      <span class="icon">📊</span>
-      <h3>Live tracker Distant Insanity & Main Style name</h3>
-    </a>
+  </footer>
 
-    <a class="card sheet"
-       href="https://docs.google.com/spreadsheets/d/1kqIM1kcWwIaYMFfPiZJtVMvgMdsA9o6fN5UNkoQSwIM/edit"
-       target="_blank">
-      <span class="icon">📊</span>
-      <h3>Playable Yamaha styles</h3>
-    </a>
+  <script src="script.js"></script>
 
-    <a class="card sheet"
-       href="https://docs.google.com/spreadsheets/d/1fgxN5ewGqs3GE6jlKywsi7XRRRi_KP_2VvP-HY1gpbs/edit"
-       target="_blank">
-      <span class="icon">📊</span>
-      <h3>Tempcard</h3>
-      <p>Result history for music session, determining who's the conqueror are.</p>
-    </a>
-
-    <a class="card doc"
-       href="https://docs.google.com/document/d/1ERNbJlij9QoPLC6sWJPvThHM378qlVsbnr9JeuBmEfo/edit"
-       target="_blank">
-      <span class="icon">📝</span>
-      <h3>Guidelines</h3>
-    </a>
-
-    <a class="card doc"
-       href="https://docs.google.com/document/d/1QfhVP-BwD-6HYWQwam2kNv_-k9z2s3FiHQLg7I-kcUc/edit"
-       target="_blank">
-      <span class="icon">📝</span>
-      <h3>Latest improvements</h3>
-      <p>Check the latest improvements, based on the Google Meet updates, that changed the environments and the ways we play!</p>
-    </a>
-
-<a href="counter.html" class="card">
-  <div class="icon">🔢</div>
-  <h2>Counter</h2>
-  <p>Preset color quantity counter.</p>
-</a>
-
-  </div>
-
-</main>
-
-  <!-- Rebuild 2026 -->
+</body>
+</html>
