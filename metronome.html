@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Metronome (BETA)</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Rubik, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: white;
+      overflow-x: hidden;
+      position: relative;
+      padding: 16px 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      background-image:
+        url("images/Screencap%20-%20Main%20clip/Aladdin%2045.jpg");
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      filter: blur(10px);
+      transform: scale(1.03);
+
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      background: rgba(0, 0, 0, 0.35);
+
+      z-index: -1;
+    }
+
+    .box {
+      width: 900px;
+      max-width: 96%;
+
+      padding: 20px;
+
+      border-radius: 25px;
+
+      background: rgba(255, 255, 255, 0.12);
+
+      border:
+        1px solid rgba(255, 255, 255, 0.25);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      text-align: center;
+
+      box-shadow:
+        0 0 30px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 34px;
+    }
+
+    .subtitle {
+      margin-bottom: 18px;
+
+      opacity: 0.9;
+
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* ============================= */
+    /* TEMPO DISPLAY                 */
+    /* ============================= */
+
+    .tempo-display {
+      background: rgba(255, 255, 255, 0.92);
+
+      color: #444;
+
+      padding: 18px;
+
+      border-radius: 15px;
+
+      margin-bottom: 14px;
+    }
+
+    .bpm-number {
+      font-size: 54px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .bpm-label {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    /* ============================= */
+    /* BEAT LIGHTS                   */
+    /* ============================= */
+
+    .beat-lights {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+
+      gap: 12px;
+
+      margin: 20px 0;
+    }
+
+    .beat-light {
+      width: 42px;
+      height: 42px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 50%;
+
+      background: rgba(255, 255, 255, 0.20);
+
+      border:
+        2px solid rgba(255, 255, 255, 0.6);
+
+      font-size: 16px;
+      font-weight: bold;
+
+      transition:
+        background 0.08s,
+        transform 0.08s;
+    }
+
+    .beat-light.active {
+      background: limegreen;
+      color: black;
+
+      transform: scale(1.15);
+    }
+
+    .beat-light.accent-active {
+      background: red;
+      color: white;
+
+      transform: scale(1.18);
+    }
+
+    /* ============================= */
+    /* TEMPO CONTROLS                */
+    /* ============================= */
+
+    .tempo-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 12px;
+
+      margin-bottom: 14px;
+    }
+
+    .tempo-button {
+      width: 52px;
+      height: 52px;
+
+      padding: 0;
+
+      border-radius: 50%;
+
+      background: white;
+
+      color: #555;
+
+      border:
+        1px solid rgba(255, 255, 255, 0.7);
+
+      font-size: 25px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .tempo-button:hover {
+      background: #eeeeee;
+    }
+
+    input[type="range"] {
+      width: min(500px, 70%);
+      cursor: pointer;
+    }
+
+    .bpm-input-row {
+      margin-bottom: 15px;
+    }
+
+    .bpm-input-row label {
+      font-weight: bold;
+      font-size: 17px;
+
+      margin-right: 8px;
+    }
+
+    .bpm-input {
+      width: 110px;
+
+      padding: 9px;
+
+      border: none;
+      border-radius: 8px;
+
+      text-align: center;
+
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    /* ============================= */
+    /* VOLUME CONTROL                */
+    /* ============================= */
+
+    .volume-control {
+      margin: 15px 0;
+
+      padding: 12px 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 12px;
+
+      border-radius: 12px;
+
+      background: rgba(255, 255, 255, 0.18);
+
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .volume-control label {
+      white-space: nowrap;
+    }
+
+    .volume-control input[type="range"] {
+      width: min(350px, 50%);
+    }
+
+    .volume-display {
+      min-width: 58px;
+
+      padding: 6px 8px;
+
+      border-radius: 7px;
+
+      background: white;
+
+      color: #444;
+
+      font-weight: bold;
+    }
+
+    /* ============================= */
+    /* BUTTONS                       */
+    /* ============================= */
+
+    .main-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      gap: 10px;
+
+      margin: 15px 0;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .main-button {
+      min-width: 180px;
+
+      font-size: 20px;
+      font-weight: bold;
+
+      padding: 12px 25px;
+
+      border: none;
+      border-radius: 12px;
+
+      cursor: pointer;
+
+      color: white;
+    }
+
+    .start-button {
+      background: #28a745;
+    }
+
+    .start-button:hover {
+      background: #1f7f35;
+    }
+
+    .stop-button {
+      background: #ff3030;
+    }
+
+    .stop-button:hover {
+      background: #cc0000;
+    }
+
+    .tap-button {
+      background: white;
+      color: #555;
+    }
+
+    .tap-button:hover {
+      background: #dddddd;
+    }
+
+    /* ============================= */
+    /* TABLE                         */
+    /* ============================= */
+
+    table {
+      width: 100%;
+
+      border-collapse: collapse;
+
+      margin-top: 15px;
+
+      overflow: hidden;
+
+      border-radius: 15px;
+    }
+
+    th,
+    td {
+      padding: 11px;
+
+      border:
+        2px solid rgba(255, 255, 255, 0.85);
+
+      font-size: 17px;
+      font-weight: bold;
+
+      text-align: center;
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.78);
+      color: white;
+    }
+
+    td {
+      background: rgba(255, 255, 255, 0.90);
+      color: black;
+    }
+
+    .counter-value {
+      font-size: 26px;
+
+      background: white;
+      color: black;
+    }
+
+    .bar-heading {
+      background: lightgray;
+      color: black;
+    }
+
+    .beat-heading {
+      background: lightgray;
+      color: black;
+    }
+
+    .current-heading {
+      background: lightblue;
+      color: black;
+    }
+
+    /* ============================= */
+    /* SETTINGS                      */
+    /* ============================= */
+
+    .settings-title {
+      margin-top: 22px;
+      margin-bottom: 8px;
+
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .settings-table select {
+      font-family: inherit;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      padding: 7px;
+
+      border-radius: 7px;
+
+      border: 1px solid #aaa;
+
+      width: 100%;
+      max-width: 220px;
+    }
+
+    /* ============================= */
+    /* RESET                         */
+    /* ============================= */
+
+
+    a {
+      display: inline-block;
+
+      margin-top: 16px;
+
+      color: white;
+
+      text-decoration: none;
+
+      font-weight: bold;
+    }
+
+    /* ============================= */
+    /* MOBILE                        */
+    /* ============================= */
+
+    @media (max-width: 700px) {
+      .box {
+        padding: 14px;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+
+      .subtitle {
+        font-size: 15px;
+      }
+
+      .bpm-number {
+        font-size: 45px;
+      }
+
+      .tempo-controls {
+        gap: 7px;
+      }
+
+      input[type="range"] {
+        width: 65%;
+      }
+
+      .volume-control {
+        flex-wrap: wrap;
+      }
+
+      .volume-control input[type="range"] {
+        width: 60%;
+      }
+
+      .beat-light {
+        width: 35px;
+        height: 35px;
+
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 7px;
+
+        font-size: 13px;
+      }
+
+      .counter-value {
+        font-size: 20px;
+      }
+
+      .main-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>Metronome (BETA)</h1>
+
+    <div class="subtitle">
+      Keep every beat, bar, and tempo synchronized throughout the Music Session.
+    </div>
+
+    <!-- BPM DISPLAY -->
+
+    <div class="tempo-display">
+
+      <div
+        id="bpmNumber"
+        class="bpm-number"
+      >
+        100
+      </div>
+
+      <div class="bpm-label">
+        BPM
+      </div>
+
+    </div>
+
+    <!-- BEAT LIGHTS -->
+
+    <div
+      id="beatLights"
+      class="beat-lights"
+    ></div>
+
+    <!-- TEMPO CONTROL -->
+
+    <div class="tempo-controls">
+
+      <button
+        class="tempo-button"
+        onclick="changeBPM(-1)"
+      >
+        −
+      </button>
+
+      <input
+        type="range"
+        id="bpmSlider"
+        min="5"
+        max="500"
+        value="100"
+        step="1"
+        oninput="setBPM(this.value)"
+      >
+
+      <button
+        class="tempo-button"
+        onclick="changeBPM(1)"
+      >
+        +
+      </button>
+
+    </div>
+
+    <div class="bpm-input-row">
+
+      <label for="bpmInput">
+        Tempo:
+      </label>
+
+      <input
+        id="bpmInput"
+        class="bpm-input"
+        type="number"
+        min="5"
+        max="500"
+        value="100"
+        onchange="setBPM(this.value)"
+      >
+
+      <strong>BPM</strong>
+
+    </div>
+
+    <!-- METRONOME VOLUME -->
+
+    <div class="volume-control">
+
+      <label for="volumeSlider">
+        🔊 Metronome Volume:
+      </label>
+
+      <input
+        type="range"
+        id="volumeSlider"
+        min="0"
+        max="100"
+        value="70"
+        step="1"
+        oninput="updateVolume(this.value)"
+      >
+
+      <span
+        id="volumeDisplay"
+        class="volume-display"
+      >
+        70%
+      </span>
+
+    </div>
+
+    <!-- START / TAP -->
+
+    <div class="main-buttons">
+
+      <button
+        id="startButton"
+        class="main-button start-button"
+        onclick="toggleMetronome()"
+      >
+        ▶ START
+      </button>
+
+      <button
+        class="main-button tap-button"
+        onclick="tapTempo()"
+      >
+        TAP TEMPO
+      </button>
+
+    </div>
+
+    <!-- COUNTERS -->
+
+    <table>
+
+      <tr>
+
+        <th class="bar-heading">
+          Total Bars
+        </th>
+
+        <th class="beat-heading">
+          Total Beats
+        </th>
+
+        <th class="current-heading">
+          Current Beat
+        </th>
+
+      </tr>
+
+      <tr>
+
+        <td
+          id="barCounter"
+          class="counter-value"
+        >
+          0
+        </td>
+
+        <td
+          id="beatCounter"
+          class="counter-value"
+        >
+          0
+        </td>
+
+        <td
+          id="currentBeatDisplay"
+          class="counter-value"
+        >
+          0 / 4
+        </td>
+
+      </tr>
+
+    </table>
+
+    <!-- SETTINGS -->
+
+    <div class="settings-title">
+      Metronome Settings
+    </div>
+
+    <table class="settings-table">
+
+      <tr>
+
+        <th>
+          Setting
+        </th>
+
+        <th>
+          Value
+        </th>
+
+      </tr>
+
+      <tr>
+
+        <td>
+          Beats Per Bar
+        </td>
+
+        <td>
+
+          <select
+            id="beatsPerBar"
+            onchange="changeBeatsPerBar()"
+          >
+
+            <option value="1">
+              1 Beat
+            </option>
+
+            <option value="2">
+              2 Beats
+            </option>
+
+            <option value="3">
+              3 Beats
+            </option>
+
+            <option
+              value="4"
+              selected
+            >
+              4 Beats
+            </option>
+
+            <option value="5">
+              5 Beats
+            </option>
+
+            <option value="6">
+              6 Beats
+            </option>
+
+            <option value="7">
+              7 Beats
+            </option>
+
+            <option value="8">
+              8 Beats
+            </option>
+
+          </select>
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>
+          First Beat Accent
+        </td>
+
+        <td>
+
+          <select id="accentEnabled">
+
+            <option
+              value="yes"
+              selected
+            >
+              Enabled
+            </option>
+
+            <option value="no">
+              Disabled
+            </option>
+
+          </select>
+
+        </td>
+
+      </tr>
+
+    </table>
+
+
+    <a href="index.html">
+      ← Back to Home
+    </a>
+
+  </div>
+
+<script>
+
+  let bpm = 100;
+
+  let isRunning = false;
+
+  let timer = null;
+
+  let currentBeat = 0;
+
+  let totalBeats = 0;
+
+  let totalBars = 0;
+
+  let audioContext = null;
+
+  let tapTimes = [];
+
+  /*
+    Metronome volume uses a value
+    between 0.00 and 1.00.
+
+    Default: 70%
+  */
+
+  let metronomeVolume = 0.70;
+
+
+  /* ============================= */
+  /* AUDIO                          */
+  /* ============================= */
+
+  function getAudioContext() {
+
+    if (!audioContext) {
+
+      audioContext =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+    if (
+      audioContext.state ===
+      "suspended"
+    ) {
+
+      audioContext.resume();
+    }
+
+    return audioContext;
+  }
+
+
+  /* ============================= */
+  /* METRONOME VOLUME              */
+  /* ============================= */
+
+  function updateVolume(value) {
+
+    let volume =
+      Number(value);
+
+    if (
+      Number.isNaN(volume)
+    ) {
+
+      volume = 70;
+    }
+
+    if (
+      volume < 0
+    ) {
+
+      volume = 0;
+    }
+
+    if (
+      volume > 100
+    ) {
+
+      volume = 100;
+    }
+
+    metronomeVolume =
+      volume / 100;
+
+    document.getElementById(
+      "volumeSlider"
+    ).value =
+      volume;
+
+    document.getElementById(
+      "volumeDisplay"
+    ).textContent =
+      Math.round(volume) + "%";
+  }
+
+
+  /* ============================= */
+  /* FIXED METRONOME SOUND         */
+  /* ============================= */
+
+  function playClick(accent = false) {
+
+    const context =
+      getAudioContext();
+
+    const oscillator =
+      context.createOscillator();
+
+    const gain =
+      context.createGain();
+
+    /*
+      One fixed click sound.
+
+      Regular beat = 500 Hz
+      First beat accent = 1000 Hz
+    */
+
+    oscillator.type =
+      "square";
+
+    oscillator.frequency.setValueAtTime(
+      accent ? 1000 : 500,
+      context.currentTime
+    );
+
+    /*
+      Apply the volume slider.
+
+      The first beat remains
+      slightly stronger than a
+      regular beat.
+
+      At 0%, both sounds are silent.
+    */
+
+    let clickVolume =
+      accent
+        ? metronomeVolume * 0.9
+        : metronomeVolume * 0.65;
+
+    /*
+      Never allow gain above 1.
+    */
+
+    clickVolume =
+      Math.min(
+        clickVolume,
+        1
+      );
+
+    if (
+      clickVolume <= 0
+    ) {
+
+      gain.gain.setValueAtTime(
+        0,
+        context.currentTime
+      );
+
+    } else {
+
+      gain.gain.setValueAtTime(
+        clickVolume,
+        context.currentTime
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        context.currentTime + 0.055
+      );
+    }
+
+    oscillator.connect(
+      gain
+    );
+
+    gain.connect(
+      context.destination
+    );
+
+    oscillator.start();
+
+    oscillator.stop(
+      context.currentTime + 0.06
+    );
+  }
+
+
+  /* ============================= */
+  /* BEAT LIGHTS                   */
+  /* ============================= */
+
+  function createBeatLights() {
+
+    const container =
+      document.getElementById(
+        "beatLights"
+      );
+
+    const beats =
+      Number(
+        document.getElementById(
+          "beatsPerBar"
+        ).value
+      );
+
+    container.innerHTML = "";
+
+    for (
+      let i = 1;
+      i <= beats;
+      i++
+    ) {
+
+      const light =
+        document.createElement(
+          "div"
+        );
+
+      light.className =
+        "beat-light";
+
+      light.id =
+        "beatLight" + i;
+
+      light.textContent =
+        i;
+
+      container.appendChild(
+        light
+      );
+    }
+
+    updateDisplays();
+  }
+
+
+  function flashBeat(beat) {
+
+    document
+      .querySelectorAll(
+        ".beat-light"
+      )
+      .forEach((light) => {
+
+        light.classList.remove(
+          "active",
+          "accent-active"
+        );
+
+      });
+
+    const light =
+      document.getElementById(
+        "beatLight" + beat
+      );
+
+    if (!light) {
+      return;
+    }
+
+    if (
+      beat === 1
+    ) {
+
+      light.classList.add(
+        "accent-active"
+      );
+
+    } else {
+
+      light.classList.add(
+        "active"
+      );
+    }
+  }
+
+
+  /* ============================= */
+  /* METRONOME TICK                */
+  /* ============================= */
+
+  function tick() {
+
+    const beatsPerBar =
+      Number(
+        document.getElementById(
+          "beatsPerBar"
+        ).value
+      );
+
+    currentBeat++;
+
+    if (
+      currentBeat >
+      beatsPerBar
+    ) {
+
+      currentBeat = 1;
+    }
+
+    totalBeats++;
+
+    /*
+      One complete bar has elapsed
+      when its final beat is played.
+    */
+
+    if (
+      currentBeat ===
+      beatsPerBar
+    ) {
+
+      totalBars++;
+    }
+
+    const accentEnabled =
+      document.getElementById(
+        "accentEnabled"
+      ).value === "yes";
+
+    const useAccent =
+      currentBeat === 1 &&
+      accentEnabled;
+
+    playClick(
+      useAccent
+    );
+
+    flashBeat(
+      currentBeat
+    );
+
+    updateDisplays();
+  }
+
+
+  /* ============================= */
+  /* START / STOP                  */
+  /* ============================= */
+
+  function toggleMetronome() {
+
+    getAudioContext();
+
+    if (
+      isRunning
+    ) {
+
+      stopMetronome();
+
+    } else {
+
+      startMetronome();
+    }
+  }
+
+
+  function startMetronome() {
+
+    if (
+      isRunning
+    ) {
+
+      return;
+    }
+
+    isRunning =
+      true;
+
+    const startButton =
+      document.getElementById(
+        "startButton"
+      );
+
+    startButton.textContent =
+      "■ STOP";
+
+    startButton.classList.remove(
+      "start-button"
+    );
+
+    startButton.classList.add(
+      "stop-button"
+    );
+
+    tick();
+
+    scheduleTimer();
+  }
+
+
+ function stopMetronome() {
+
+  isRunning = false;
+
+  clearInterval(timer);
+
+  timer = null;
+
+  const startButton =
+    document.getElementById(
+      "startButton"
+    );
+
+  startButton.textContent =
+    "▶ START";
+
+  startButton.classList.remove(
+    "stop-button"
+  );
+
+  startButton.classList.add(
+    "start-button"
+  );
+
+  /*
+    Reset all counters immediately
+    when the metronome stops.
+  */
+
+  totalBeats = 0;
+  totalBars = 0;
+  currentBeat = 0;
+
+  document
+    .querySelectorAll(
+      ".beat-light"
+    )
+    .forEach((light) => {
+
+      light.classList.remove(
+        "active",
+        "accent-active"
+      );
+
+    });
+
+  updateDisplays();
+}
+
+  function scheduleTimer() {
+
+    clearInterval(
+      timer
+    );
+
+    const interval =
+      60000 / bpm;
+
+    timer =
+      setInterval(
+        tick,
+        interval
+      );
+  }
+
+
+  /* ============================= */
+  /* BPM                           */
+  /* ============================= */
+
+  function setBPM(value) {
+
+    let newBPM =
+      Number(value);
+
+    if (
+      Number.isNaN(newBPM)
+    ) {
+
+      newBPM = 100;
+    }
+
+    if (
+      newBPM < 5
+    ) {
+
+      newBPM = 5;
+    }
+
+    if (
+      newBPM > 500
+    ) {
+
+      newBPM = 500;
+    }
+
+    bpm =
+      Math.round(
+        newBPM
+      );
+
+    document.getElementById(
+      "bpmNumber"
+    ).textContent =
+      bpm;
+
+    document.getElementById(
+      "bpmSlider"
+    ).value =
+      bpm;
+
+    document.getElementById(
+      "bpmInput"
+    ).value =
+      bpm;
+
+    if (
+      isRunning
+    ) {
+
+      scheduleTimer();
+    }
+  }
+
+
+  function changeBPM(amount) {
+
+    setBPM(
+      bpm + amount
+    );
+  }
+
+
+  /* ============================= */
+  /* TAP TEMPO                     */
+  /* ============================= */
+
+  function tapTempo() {
+
+    const now =
+      performance.now();
+
+    if (
+      tapTimes.length > 0 &&
+      now -
+      tapTimes[
+        tapTimes.length - 1
+      ] > 2000
+    ) {
+
+      tapTimes = [];
+    }
+
+    tapTimes.push(
+      now
+    );
+
+    if (
+      tapTimes.length > 8
+    ) {
+
+      tapTimes.shift();
+    }
+
+    if (
+      tapTimes.length < 2
+    ) {
+
+      return;
+    }
+
+    let totalInterval =
+      0;
+
+    for (
+      let i = 1;
+      i < tapTimes.length;
+      i++
+    ) {
+
+      totalInterval +=
+        tapTimes[i] -
+        tapTimes[i - 1];
+    }
+
+    const averageInterval =
+      totalInterval /
+      (
+        tapTimes.length - 1
+      );
+
+    const tappedBPM =
+      Math.round(
+        60000 /
+        averageInterval
+      );
+
+    setBPM(
+      tappedBPM
+    );
+  }
+
+
+  /* ============================= */
+  /* BEATS PER BAR                 */
+  /* ============================= */
+
+  function changeBeatsPerBar() {
+
+    currentBeat =
+      0;
+
+    createBeatLights();
+
+    updateDisplays();
+  }
+
+
+  /* ============================= */
+  /* DISPLAY                       */
+  /* ============================= */
+
+  function updateDisplays() {
+
+    const beatsPerBar =
+      Number(
+        document.getElementById(
+          "beatsPerBar"
+        ).value
+      );
+
+    document.getElementById(
+      "barCounter"
+    ).textContent =
+      totalBars;
+
+    document.getElementById(
+      "beatCounter"
+    ).textContent =
+      totalBeats;
+
+    document.getElementById(
+      "currentBeatDisplay"
+    ).textContent =
+      currentBeat +
+      " / " +
+      beatsPerBar;
+  }
+
+
+
+  /* ============================= */
+  /* KEYBOARD SHORTCUTS            */
+  /* ============================= */
+
+  document.addEventListener(
+    "keydown",
+    function(event) {
+
+      const tag =
+        event.target.tagName;
+
+      if (
+        tag === "INPUT" ||
+        tag === "SELECT"
+      ) {
+
+        return;
+      }
+
+      /*
+        SPACE = Start / Stop
+      */
+
+      if (
+        event.code ===
+        "Space"
+      ) {
+
+        event.preventDefault();
+
+        toggleMetronome();
+      }
+
+      /*
+        T = Tap Tempo
+      */
+
+      if (
+        event.key.toLowerCase()
+        === "t"
+      ) {
+
+        tapTempo();
+      }
+
+      /*
+        Up / Down = BPM
+      */
+
+      if (
+        event.key ===
+        "ArrowUp"
+      ) {
+
+        changeBPM(1);
+      }
+
+      if (
+        event.key ===
+        "ArrowDown"
+      ) {
+
+        changeBPM(-1);
+      }
+    }
+  );
+
+
+  /* ============================= */
+  /* LOAD                          */
+  /* ============================= */
+
+  window.addEventListener(
+    "load",
+    function() {
+
+      setBPM(100);
+
+      updateVolume(70);
+
+      createBeatLights();
+
+      updateDisplays();
+    }
+  );
+
+</script>
+
+</body>
+</html>
