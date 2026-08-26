@@ -37,7 +37,7 @@
       background-repeat: no-repeat;
 
       filter: blur(10px);
-      transform: scale(1);
+      transform: scale(1.03);
 
       z-index: -2;
     }
@@ -388,18 +388,18 @@
     }
 
     .bar-heading {
-      background: lightgray;
-      color: black;
+      background: red;
+      color: white;
     }
 
     .beat-heading {
-      background: lightgray;
-      color: black;
+      background: blue;
+      color: white;
     }
 
     .current-heading {
-      background: lightblue;
-      color: black;
+      background: green;
+      color: white;
     }
 
     /* ============================= */
@@ -431,9 +431,8 @@
     }
 
     /* ============================= */
-    /* RESET                         */
+    /* BACK HOME                     */
     /* ============================= */
-
 
     a {
       display: inline-block;
@@ -452,6 +451,7 @@
     /* ============================= */
 
     @media (max-width: 700px) {
+
       .box {
         padding: 14px;
       }
@@ -519,7 +519,10 @@
       Keep every beat, bar, and tempo synchronized throughout the Music Session.
     </div>
 
-    <!-- BPM DISPLAY -->
+
+    <!-- ============================= -->
+    <!-- BPM DISPLAY                   -->
+    <!-- ============================= -->
 
     <div class="tempo-display">
 
@@ -536,14 +539,20 @@
 
     </div>
 
-    <!-- BEAT LIGHTS -->
+
+    <!-- ============================= -->
+    <!-- BEAT LIGHTS                   -->
+    <!-- ============================= -->
 
     <div
       id="beatLights"
       class="beat-lights"
     ></div>
 
-    <!-- TEMPO CONTROL -->
+
+    <!-- ============================= -->
+    <!-- TEMPO CONTROL                 -->
+    <!-- ============================= -->
 
     <div class="tempo-controls">
 
@@ -573,6 +582,7 @@
 
     </div>
 
+
     <div class="bpm-input-row">
 
       <label for="bpmInput">
@@ -593,7 +603,10 @@
 
     </div>
 
-    <!-- METRONOME VOLUME -->
+
+    <!-- ============================= -->
+    <!-- METRONOME VOLUME              -->
+    <!-- ============================= -->
 
     <div class="volume-control">
 
@@ -620,7 +633,10 @@
 
     </div>
 
-    <!-- START / TAP -->
+
+    <!-- ============================= -->
+    <!-- START / TAP                   -->
+    <!-- ============================= -->
 
     <div class="main-buttons">
 
@@ -641,9 +657,12 @@
 
     </div>
 
-    <!-- COUNTERS -->
 
-    <table>
+    <!-- ============================= -->
+    <!-- COUNTERS                      -->
+    <!-- ============================= -->
+
+    <table id="counterTable">
 
       <tr>
 
@@ -651,12 +670,12 @@
           Total Bars
         </th>
 
-        <th class="beat-heading">
-          Total Beats
-        </th>
-
         <th class="current-heading">
           Current Beat
+        </th>
+
+        <th class="beat-heading">
+          Total Beats
         </th>
 
       </tr>
@@ -671,24 +690,27 @@
         </td>
 
         <td
-          id="beatCounter"
-          class="counter-value"
-        >
-          0
-        </td>
-
-        <td
           id="currentBeatDisplay"
           class="counter-value"
         >
           0 / 4
         </td>
 
+        <td
+          id="beatCounter"
+          class="counter-value"
+        >
+          0
+        </td>
+
       </tr>
 
     </table>
 
-    <!-- SETTINGS -->
+
+    <!-- ============================= -->
+    <!-- SETTINGS                      -->
+    <!-- ============================= -->
 
     <div class="settings-title">
       Metronome Settings
@@ -792,13 +814,22 @@
     </table>
 
 
+    <!-- ============================= -->
+    <!-- BACK HOME                     -->
+    <!-- ============================= -->
+
     <a href="index.html">
       ← Back to Home
     </a>
 
   </div>
 
+
 <script>
+
+  /* ============================= */
+  /* BASIC SETTINGS                */
+  /* ============================= */
 
   let bpm = 100;
 
@@ -816,18 +847,50 @@
 
   let tapTimes = [];
 
-  /*
-    Metronome volume uses a value
-    between 0.00 and 1.00.
-
-    Default: 70%
-  */
-
   let metronomeVolume = 0.70;
 
 
+  /*
+    ==================================================
+    TOTAL BAR COUNTER SWITCH
+    ==================================================
+
+    true [for: Spotify Premium all]
+      Total Bars operates normally.
+      [Spotify Premium all]
+
+    false [for: Spotify Free]
+      Total Bars remains 0.
+
+    Change directly in code.
+  */
+
+  const TOTAL_BAR_COUNTER_ENABLED = true;
+
+
+  /*
+    ==================================================
+    COUNTER TABLE VISIBILITY
+    ==================================================
+
+    true [for: Spotify Premium all]
+      Show:
+      - Total Bars
+      - Current Beat
+      - Total Beats
+    [Spotify Premium all]
+
+    false [for: Spotify Free]
+      Hide the entire counter table.
+
+    Change directly in code.
+  */
+
+  const COUNTERS_VISIBLE = true;
+
+
   /* ============================= */
-  /* AUDIO                          */
+  /* AUDIO                         */
   /* ============================= */
 
   function getAudioContext() {
@@ -863,12 +926,14 @@
     let volume =
       Number(value);
 
+
     if (
       Number.isNaN(volume)
     ) {
 
       volume = 70;
     }
+
 
     if (
       volume < 0
@@ -877,6 +942,7 @@
       volume = 0;
     }
 
+
     if (
       volume > 100
     ) {
@@ -884,13 +950,16 @@
       volume = 100;
     }
 
+
     metronomeVolume =
       volume / 100;
+
 
     document.getElementById(
       "volumeSlider"
     ).value =
       volume;
+
 
     document.getElementById(
       "volumeDisplay"
@@ -908,51 +977,47 @@
     const context =
       getAudioContext();
 
+
     const oscillator =
       context.createOscillator();
+
 
     const gain =
       context.createGain();
 
-    /*
-      One fixed click sound.
-
-      Regular beat = 500 Hz
-      First beat accent = 1000 Hz
-    */
 
     oscillator.type =
       "square";
 
+
+    /*
+      Regular beat:
+      500 Hz
+
+      Accent beat:
+      1000 Hz
+    */
+
     oscillator.frequency.setValueAtTime(
-      accent ? 1000 : 500,
+      accent
+        ? 1000
+        : 500,
       context.currentTime
     );
 
-    /*
-      Apply the volume slider.
-
-      The first beat remains
-      slightly stronger than a
-      regular beat.
-
-      At 0%, both sounds are silent.
-    */
 
     let clickVolume =
       accent
         ? metronomeVolume * 0.9
         : metronomeVolume * 0.65;
 
-    /*
-      Never allow gain above 1.
-    */
 
     clickVolume =
       Math.min(
         clickVolume,
         1
       );
+
 
     if (
       clickVolume <= 0
@@ -970,21 +1035,26 @@
         context.currentTime
       );
 
+
       gain.gain.exponentialRampToValueAtTime(
         0.001,
         context.currentTime + 0.055
       );
     }
 
+
     oscillator.connect(
       gain
     );
+
 
     gain.connect(
       context.destination
     );
 
+
     oscillator.start();
+
 
     oscillator.stop(
       context.currentTime + 0.06
@@ -1003,6 +1073,7 @@
         "beatLights"
       );
 
+
     const beats =
       Number(
         document.getElementById(
@@ -1010,7 +1081,9 @@
         ).value
       );
 
+
     container.innerHTML = "";
+
 
     for (
       let i = 1;
@@ -1023,23 +1096,32 @@
           "div"
         );
 
+
       light.className =
         "beat-light";
+
 
       light.id =
         "beatLight" + i;
 
+
       light.textContent =
         i;
+
 
       container.appendChild(
         light
       );
     }
 
+
     updateDisplays();
   }
 
+
+  /* ============================= */
+  /* FLASH BEAT                    */
+  /* ============================= */
 
   function flashBeat(beat) {
 
@@ -1056,14 +1138,17 @@
 
       });
 
+
     const light =
       document.getElementById(
         "beatLight" + beat
       );
 
+
     if (!light) {
       return;
     }
+
 
     if (
       beat === 1
@@ -1095,47 +1180,114 @@
         ).value
       );
 
-    currentBeat++;
-
-    if (
-      currentBeat >
-      beatsPerBar
-    ) {
-
-      currentBeat = 1;
-    }
-
-    totalBeats++;
 
     /*
-      One complete bar has elapsed
-      when its final beat is played.
+      FIRST BEAT
+
+      Before start:
+
+      Bar = 0
+      Beat = 0
+
+      First click:
+
+      Bar = 1
+      Beat = 1
     */
 
     if (
-      currentBeat ===
-      beatsPerBar
+      currentBeat === 0
     ) {
 
-      totalBars++;
+      currentBeat =
+        1;
+
+
+      if (
+        TOTAL_BAR_COUNTER_ENABLED
+      ) {
+
+        if (
+          totalBars === 0
+        ) {
+
+          totalBars =
+            1;
+        }
+      }
+
+    } else {
+
+      currentBeat++;
+
+
+      /*
+        Example with 4 beats:
+
+        Bar 1:
+        1 / 4
+        2 / 4
+        3 / 4
+        4 / 4
+
+        NEXT click:
+
+        Bar 2:
+        1 / 4
+      */
+
+      if (
+        currentBeat >
+        beatsPerBar
+      ) {
+
+        currentBeat =
+          1;
+
+
+        if (
+          TOTAL_BAR_COUNTER_ENABLED
+        ) {
+
+          totalBars++;
+        }
+      }
     }
+
+
+    /*
+      Every click adds one
+      to Total Beats.
+    */
+
+    totalBeats++;
+
+
+    /* ============================= */
+    /* FIRST-BEAT ACCENT             */
+    /* ============================= */
 
     const accentEnabled =
       document.getElementById(
         "accentEnabled"
-      ).value === "yes";
+      ).value ===
+      "yes";
+
 
     const useAccent =
       currentBeat === 1 &&
       accentEnabled;
 
+
     playClick(
       useAccent
     );
 
+
     flashBeat(
       currentBeat
     );
+
 
     updateDisplays();
   }
@@ -1148,6 +1300,7 @@
   function toggleMetronome() {
 
     getAudioContext();
+
 
     if (
       isRunning
@@ -1171,79 +1324,115 @@
       return;
     }
 
+
     isRunning =
       true;
+
 
     const startButton =
       document.getElementById(
         "startButton"
       );
 
+
     startButton.textContent =
       "■ STOP";
+
 
     startButton.classList.remove(
       "start-button"
     );
 
+
     startButton.classList.add(
       "stop-button"
     );
 
+
+    /*
+      First beat happens immediately.
+    */
+
     tick();
+
 
     scheduleTimer();
   }
 
 
- function stopMetronome() {
+  function stopMetronome() {
 
-  isRunning = false;
+    isRunning =
+      false;
 
-  clearInterval(timer);
 
-  timer = null;
-
-  const startButton =
-    document.getElementById(
-      "startButton"
+    clearInterval(
+      timer
     );
 
-  startButton.textContent =
-    "▶ START";
 
-  startButton.classList.remove(
-    "stop-button"
-  );
+    timer =
+      null;
 
-  startButton.classList.add(
-    "start-button"
-  );
 
-  /*
-    Reset all counters immediately
-    when the metronome stops.
-  */
-
-  totalBeats = 0;
-  totalBars = 0;
-  currentBeat = 0;
-
-  document
-    .querySelectorAll(
-      ".beat-light"
-    )
-    .forEach((light) => {
-
-      light.classList.remove(
-        "active",
-        "accent-active"
+    const startButton =
+      document.getElementById(
+        "startButton"
       );
 
-    });
 
-  updateDisplays();
-}
+    startButton.textContent =
+      "▶ START";
+
+
+    startButton.classList.remove(
+      "stop-button"
+    );
+
+
+    startButton.classList.add(
+      "start-button"
+    );
+
+
+    /*
+      Reset counters immediately
+      when STOP is pressed.
+    */
+
+    totalBars =
+      0;
+
+
+    totalBeats =
+      0;
+
+
+    currentBeat =
+      0;
+
+
+    document
+      .querySelectorAll(
+        ".beat-light"
+      )
+      .forEach((light) => {
+
+        light.classList.remove(
+          "active",
+          "accent-active"
+        );
+
+      });
+
+
+    updateDisplays();
+  }
+
+
+  /* ============================= */
+  /* TIMER                         */
+  /* ============================= */
 
   function scheduleTimer() {
 
@@ -1251,8 +1440,10 @@
       timer
     );
 
+
     const interval =
       60000 / bpm;
+
 
     timer =
       setInterval(
@@ -1271,46 +1462,57 @@
     let newBPM =
       Number(value);
 
+
     if (
       Number.isNaN(newBPM)
     ) {
 
-      newBPM = 100;
+      newBPM =
+        100;
     }
+
 
     if (
       newBPM < 5
     ) {
 
-      newBPM = 5;
+      newBPM =
+        5;
     }
+
 
     if (
       newBPM > 500
     ) {
 
-      newBPM = 500;
+      newBPM =
+        500;
     }
+
 
     bpm =
       Math.round(
         newBPM
       );
 
+
     document.getElementById(
       "bpmNumber"
     ).textContent =
       bpm;
+
 
     document.getElementById(
       "bpmSlider"
     ).value =
       bpm;
 
+
     document.getElementById(
       "bpmInput"
     ).value =
       bpm;
+
 
     if (
       isRunning
@@ -1338,6 +1540,13 @@
     const now =
       performance.now();
 
+
+    /*
+      Start over when more
+      than 2 seconds pass
+      between taps.
+    */
+
     if (
       tapTimes.length > 0 &&
       now -
@@ -1346,12 +1555,19 @@
       ] > 2000
     ) {
 
-      tapTimes = [];
+      tapTimes =
+        [];
     }
+
 
     tapTimes.push(
       now
     );
+
+
+    /*
+      Keep maximum 8 taps.
+    */
 
     if (
       tapTimes.length > 8
@@ -1360,6 +1576,7 @@
       tapTimes.shift();
     }
 
+
     if (
       tapTimes.length < 2
     ) {
@@ -1367,8 +1584,10 @@
       return;
     }
 
+
     let totalInterval =
       0;
+
 
     for (
       let i = 1;
@@ -1381,17 +1600,20 @@
         tapTimes[i - 1];
     }
 
+
     const averageInterval =
       totalInterval /
       (
         tapTimes.length - 1
       );
 
+
     const tappedBPM =
       Math.round(
         60000 /
         averageInterval
       );
+
 
     setBPM(
       tappedBPM
@@ -1405,10 +1627,35 @@
 
   function changeBeatsPerBar() {
 
+    /*
+      Restart current beat position
+      when beat structure changes.
+    */
+
     currentBeat =
       0;
 
+
+    /*
+      If stopped, also restore
+      bar and beat counters to zero.
+    */
+
+    if (
+      !isRunning
+    ) {
+
+      totalBars =
+        0;
+
+
+      totalBeats =
+        0;
+    }
+
+
     createBeatLights();
+
 
     updateDisplays();
   }
@@ -1427,15 +1674,22 @@
         ).value
       );
 
+
+    /*
+      TOTAL BARS
+    */
+
     document.getElementById(
       "barCounter"
     ).textContent =
-      totalBars;
+      TOTAL_BAR_COUNTER_ENABLED
+        ? totalBars
+        : 0;
 
-    document.getElementById(
-      "beatCounter"
-    ).textContent =
-      totalBeats;
+
+    /*
+      CURRENT BEAT
+    */
 
     document.getElementById(
       "currentBeatDisplay"
@@ -1443,8 +1697,49 @@
       currentBeat +
       " / " +
       beatsPerBar;
+
+
+    /*
+      TOTAL BEATS
+    */
+
+    document.getElementById(
+      "beatCounter"
+    ).textContent =
+      totalBeats;
   }
 
+
+  /* ============================= */
+  /* COUNTER TABLE VISIBILITY      */
+  /* ============================= */
+
+  function updateCounterVisibility() {
+
+    const counterTable =
+      document.getElementById(
+        "counterTable"
+      );
+
+
+    if (!counterTable) {
+      return;
+    }
+
+
+    if (
+      COUNTERS_VISIBLE
+    ) {
+
+      counterTable.style.display =
+        "table";
+
+    } else {
+
+      counterTable.style.display =
+        "none";
+    }
+  }
 
 
   /* ============================= */
@@ -1458,6 +1753,7 @@
       const tag =
         event.target.tagName;
 
+
       if (
         tag === "INPUT" ||
         tag === "SELECT"
@@ -1466,8 +1762,10 @@
         return;
       }
 
+
       /*
-        SPACE = Start / Stop
+        SPACE
+        Start / Stop
       */
 
       if (
@@ -1477,11 +1775,14 @@
 
         event.preventDefault();
 
+
         toggleMetronome();
       }
 
+
       /*
-        T = Tap Tempo
+        T
+        Tap Tempo
       */
 
       if (
@@ -1492,8 +1793,10 @@
         tapTempo();
       }
 
+
       /*
-        Up / Down = BPM
+        Arrow Up
+        +1 BPM
       */
 
       if (
@@ -1501,35 +1804,60 @@
         "ArrowUp"
       ) {
 
-        changeBPM(1);
+        changeBPM(
+          1
+        );
       }
+
+
+      /*
+        Arrow Down
+        -1 BPM
+      */
 
       if (
         event.key ===
         "ArrowDown"
       ) {
 
-        changeBPM(-1);
+        changeBPM(
+          -1
+        );
       }
     }
   );
 
 
   /* ============================= */
-  /* LOAD                          */
+  /* PAGE LOAD                     */
   /* ============================= */
 
   window.addEventListener(
     "load",
     function() {
 
-      setBPM(100);
+      setBPM(
+        100
+      );
 
-      updateVolume(70);
+
+      updateVolume(
+        70
+      );
+
 
       createBeatLights();
 
+
       updateDisplays();
+
+
+      /*
+        THIS is what actually
+        applies COUNTERS_VISIBLE.
+      */
+
+      updateCounterVisibility();
     }
   );
 
