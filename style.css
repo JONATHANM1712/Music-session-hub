@@ -30,19 +30,20 @@
   /* ==================================================
      COUNTER + METRONOME BACKGROUND
 
-     CHANGE THIS WHEN MAIN STYLE CHANGES
+     CHANGE THIS EVERY MAIN STYLE LIST REFRESH
      ================================================== */
 
   --music-session-background:
     url(
-      "images/Screencap%20-%20Main%20clip/Aladdin%2039.jpg"
+      "images/Screencap - Main clip/Aladdin 06.jpg"
     );
 
 
   /* ==================================================
-     DASHBOARD BACKGROUND ONLY
-
+     DASHBOARD BACKGROUND ONLY 
      index.html permanently uses this image
+
+  CHANGE THIS EVERY 3 MAIN STYLE LIST REFRESHES
      ================================================== */
 
   --dashboard-background:
