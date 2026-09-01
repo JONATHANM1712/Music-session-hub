@@ -73,6 +73,33 @@
       0,
       0.40
     );
+
+
+  /* ==================================================
+     CENTRAL MUSIC SESSION BACKGROUND
+
+     Regurarly CHANGE ONLY THIS LINE whenever every Main Style list refresh.
+
+     CURRENT:
+
+     ================================================== */
+
+  --music-session-background:
+    url(
+      "images/Screencap%20-%20Main%20clip/Aladdin%2039.jpg"
+    );
+
+
+  /* ==================================================
+     SHARED BACKGROUND SETTINGS
+     ================================================== */
+
+  --music-session-background-blur:
+    10px;
+
+  --music-session-background-darkness:
+    0.35;
+
 }
 
 
@@ -120,7 +147,15 @@ body {
 
 
 /* ==================================================
-   BACKGROUND - Change this per 3 Main Style list refreshes, and can be seen on Homepage.
+   CENTRAL SHARED BACKGROUND
+
+   Used by:
+   - index.html
+   - counter.html
+   - metronome.html
+
+   Current Main Style:
+   ALADDIN 39
    ================================================== */
 
 body::before {
@@ -137,25 +172,49 @@ body::before {
   z-index:
     -2;
 
-  background:
 
-    url(
-      "images/Main%20background/ALD-1000029.jpg"
-    )
+  background-image:
+    var(
+      --music-session-background
+    );
 
-    center /
-    cover
+  background-size:
+    cover;
+
+  background-position:
+    center;
+
+  background-repeat:
     no-repeat;
 
+
   filter:
-    blur(10px)
-    brightness(0.9)
-    saturate(1.08);
+    blur(
+      var(
+        --music-session-background-blur
+      )
+    );
+
+
+  /*
+  Counter / Metronome style uses an enlarged
+  background to hide blurred viewport edges.
+  */
 
   transform:
     scale(1.03);
+
+  pointer-events:
+    none;
 }
 
+
+/* ==================================================
+   CENTRAL SHARED DARK OVERLAY
+
+   Same basic treatment used by
+   Counter and Metronome.
+   ================================================== */
 
 body::after {
 
@@ -171,62 +230,35 @@ body::after {
   z-index:
     -1;
 
+
   background:
-
-    radial-gradient(
-      circle at 12% 8%,
-      rgba(
-        63,
-        188,
-        133,
-        0.22
-      ),
-      transparent 35%
-    ),
-
-    radial-gradient(
-      circle at 92% 15%,
-      rgba(
-        93,
-        129,
-        255,
-        0.20
-      ),
-      transparent 34%
-    ),
-
-    linear-gradient(
-      180deg,
-      rgba(
-        5,
-        8,
-        12,
-        0.42
-      ),
-      rgba(
-        7,
-        11,
-        16,
-        0.75
-      )
-      52%,
-      rgba(
-        5,
-        8,
-        12,
-        0.92
+    rgba(
+      0,
+      0,
+      0,
+      var(
+        --music-session-background-darkness
       )
     );
+
+  pointer-events:
+    none;
 }
 
 
+/* ==================================================
+   GENERAL
+   ================================================== */
+
 a {
+
   color:
     inherit;
 }
 
 
 button {
+
   font:
     inherit;
 }
@@ -870,9 +902,49 @@ button {
 
 /* ==================================================
    WEATHER CARD
+
+   IMPORTANT:
+   This is the small dashboard weather card.
+
+   Its own weather photograph stays separate
+   from the central Aladdin 39 page background.
    ================================================== */
 
 .dashboard-weather-card {
+
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  background:
+    rgba(
+      17,
+      24,
+      31,
+      0.76
+    );
+}
+
+
+/* ==================================================
+   WEATHER CARD BACKGROUND IMAGE
+   ================================================== */
+
+.dashboard-weather-card::before {
+
+  content:
+    "";
+
+  position:
+    absolute;
+
+  inset:
+    -4px;
+
+  z-index:
+    0;
 
   background:
 
@@ -899,8 +971,18 @@ button {
     center /
     cover
     no-repeat;
+
+  filter:
+    blur(2px);
+
+  pointer-events:
+    none;
 }
 
+
+/* ==================================================
+   WEATHER CONTENT
+   ================================================== */
 
 .dashboard-weather-content {
 
@@ -1962,6 +2044,7 @@ button.card {
   background:
     #57cc84;
 }
+
 
 /* ==================================================
    VIEWER
