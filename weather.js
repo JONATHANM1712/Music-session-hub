@@ -1,20 +1,6 @@
 /* ==================================================
    MUSIC SESSION WEATHER
    weather.js
-
-   FEATURES:
-   - Live Weather
-   - Browser Geolocation
-   - City Search
-   - 7-Day Forecast
-   - 24-Hour Forecast
-   - 24 / 48 / 72-Hour History
-   - Precipitation Charts
-   - Wind Charts
-   - RainViewer Radar
-   - 24-Hour Clock
-   - Full Date Format
-   - Dynamic Greeting + Emoji
    ================================================== */
 
 
@@ -24,15 +10,18 @@
 
 const state = {
 
-  latitude: null,
+  latitude:
+    null,
 
-  longitude: null,
+  longitude:
+    null,
 
   locationName:
     "Current Location",
 
   timezone:
-    Intl.DateTimeFormat()
+    Intl
+      .DateTimeFormat()
       .resolvedOptions()
       .timeZone,
 
@@ -69,20 +58,16 @@ const state = {
 
 
 /* ==================================================
-   API ENDPOINTS
-
-   These work directly from GitHub Pages.
-
-   No Spring Boot.
-   No Controller.
-   No API key.
+   API
    ================================================== */
 
 const WEATHER_API =
   "https://api.open-meteo.com/v1/forecast";
 
+
 const GEOCODING_API =
   "https://geocoding-api.open-meteo.com/v1/search";
+
 
 const RAINVIEWER_API =
   "https://api.rainviewer.com/public/weather-maps.json";
@@ -92,7 +77,9 @@ const RAINVIEWER_API =
    HELPERS
    ================================================== */
 
-function byId(id) {
+function byId(
+  id
+) {
 
   return document.getElementById(
     id
@@ -100,7 +87,9 @@ function byId(id) {
 }
 
 
-function setStatus(message) {
+function setStatus(
+  message
+) {
 
   const element =
     byId(
@@ -120,6 +109,12 @@ function setStatus(message) {
 
 /* ==================================================
    LIVE CLOCK
+
+   24-HOUR:
+   18:30:25
+
+   DATE:
+   1 September 2026
    ================================================== */
 
 function updateClock() {
@@ -130,20 +125,10 @@ function updateClock() {
 
   let hour24;
 
-  let formattedTime;
-
-  let formattedDate;
-
 
   try {
 
-    /*
-    ================================================
-    DETERMINE HOUR USING WEATHER LOCATION TIMEZONE
-    ================================================
-    */
-
-    const timeParts =
+    const parts =
       new Intl.DateTimeFormat(
         "en-GB",
         {
@@ -152,12 +137,6 @@ function updateClock() {
             state.timezone,
 
           hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          second:
             "2-digit",
 
           hourCycle:
@@ -170,7 +149,7 @@ function updateClock() {
 
 
     const hourPart =
-      timeParts.find(
+      parts.find(
         part =>
           part.type ===
           "hour"
@@ -179,152 +158,25 @@ function updateClock() {
 
     hour24 =
       Number(
-        hourPart?.value ?? 0
-      );
-
-
-    /*
-    ================================================
-    24-HOUR CLOCK
-
-    Example:
-    16:51:48
-    ================================================
-    */
-
-    formattedTime =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          timeZone:
-            state.timezone,
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          second:
-            "2-digit",
-
-          hourCycle:
-            "h23"
-
-        }
-      ).format(
-        now
-      );
-
-
-    /*
-    ================================================
-    FULL DATE
-
-    Example:
-    1 September 2026
-    ================================================
-    */
-
-    formattedDate =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          timeZone:
-            state.timezone,
-
-          day:
-            "numeric",
-
-          month:
-            "long",
-
-          year:
-            "numeric"
-
-        }
-      ).format(
-        now
+        hourPart?.value ??
+        0
       );
 
   } catch (
     error
   ) {
 
-    /*
-    ================================================
-    FALLBACK TO BROWSER TIMEZONE
-    ================================================
-    */
-
     state.timezone =
-      Intl.DateTimeFormat()
+      Intl
+        .DateTimeFormat()
         .resolvedOptions()
         .timeZone;
 
 
     hour24 =
       now.getHours();
-
-
-    formattedTime =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          second:
-            "2-digit",
-
-          hourCycle:
-            "h23"
-
-        }
-      ).format(
-        now
-      );
-
-
-    formattedDate =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          day:
-            "numeric",
-
-          month:
-            "long",
-
-          year:
-            "numeric"
-
-        }
-      ).format(
-        now
-      );
   }
 
-
-  /* ==================================================
-     DYNAMIC GREETING + EMOJI
-
-     05:00 - 11:59
-     🌅 Good Morning!
-
-     12:00 - 17:59
-     ☀️ Good Afternoon!
-
-     18:00 - 04:59
-     🌙 Good Evening!
-     ================================================== */
 
   let greeting =
     "🌙 Good Evening!";
@@ -374,7 +226,29 @@ function updateClock() {
   ) {
 
     timeElement.textContent =
-      formattedTime;
+      new Intl.DateTimeFormat(
+        "en-GB",
+        {
+
+          timeZone:
+            state.timezone,
+
+          hour:
+            "2-digit",
+
+          minute:
+            "2-digit",
+
+          second:
+            "2-digit",
+
+          hourCycle:
+            "h23"
+
+        }
+      ).format(
+        now
+      );
   }
 
 
@@ -389,7 +263,26 @@ function updateClock() {
   ) {
 
     dateElement.textContent =
-      formattedDate;
+      new Intl.DateTimeFormat(
+        "en-GB",
+        {
+
+          timeZone:
+            state.timezone,
+
+          day:
+            "numeric",
+
+          month:
+            "long",
+
+          year:
+            "numeric"
+
+        }
+      ).format(
+        now
+      );
   }
 
 
@@ -404,14 +297,13 @@ function updateClock() {
   ) {
 
     timezoneElement.textContent =
-      state.timezone ||
-      "Local time";
+      state.timezone;
   }
 }
 
 
 /* ==================================================
-   WEATHER CODE TRANSLATOR
+   WEATHER CODE
    ================================================== */
 
 function weatherInfo(
@@ -422,7 +314,8 @@ function weatherInfo(
   const night =
     Number(
       isDay
-    ) === 0;
+    ) ===
+    0;
 
 
   const map = {
@@ -437,176 +330,143 @@ function weatherInfo(
         : "☀️"
     ],
 
-
     1: [
-      night
-        ? "Mainly clear night"
-        : "Mainly clear",
+      "Mainly clear",
 
       night
         ? "🌙"
         : "🌤️"
     ],
 
-
     2: [
       "Partly cloudy",
-
-      night
-        ? "☁️"
-        : "⛅"
+      "⛅"
     ],
-
 
     3: [
       "Overcast",
       "☁️"
     ],
 
-
     45: [
       "Fog",
       "🌫️"
     ],
 
-
     48: [
-      "Depositing rime fog",
+      "Rime fog",
       "🌫️"
     ],
-
 
     51: [
       "Light drizzle",
       "🌦️"
     ],
 
-
     53: [
       "Moderate drizzle",
       "🌦️"
     ],
-
 
     55: [
       "Dense drizzle",
       "🌧️"
     ],
 
-
     56: [
-      "Light freezing drizzle",
+      "Freezing drizzle",
       "🌧️"
     ],
-
 
     57: [
-      "Dense freezing drizzle",
+      "Heavy freezing drizzle",
       "🌧️"
     ],
-
 
     61: [
       "Slight rain",
       "🌦️"
     ],
 
-
     63: [
       "Moderate rain",
       "🌧️"
     ],
-
 
     65: [
       "Heavy rain",
       "🌧️"
     ],
 
-
     66: [
-      "Light freezing rain",
+      "Freezing rain",
       "🌧️"
     ],
-
 
     67: [
       "Heavy freezing rain",
       "🌧️"
     ],
 
-
     71: [
-      "Slight snowfall",
+      "Light snow",
       "🌨️"
     ],
-
 
     73: [
-      "Moderate snowfall",
+      "Snow",
       "🌨️"
     ],
 
-
     75: [
-      "Heavy snowfall",
+      "Heavy snow",
       "❄️"
     ],
-
 
     77: [
       "Snow grains",
       "❄️"
     ],
 
-
     80: [
-      "Slight rain showers",
+      "Light rain showers",
       "🌦️"
     ],
 
-
     81: [
-      "Moderate rain showers",
+      "Rain showers",
       "🌧️"
     ],
 
-
     82: [
-      "Violent rain showers",
+      "Heavy rain showers",
       "⛈️"
     ],
 
-
     85: [
-      "Slight snow showers",
+      "Snow showers",
       "🌨️"
     ],
-
 
     86: [
       "Heavy snow showers",
       "❄️"
     ],
 
-
     95: [
       "Thunderstorm",
       "⛈️"
     ],
 
-
     96: [
-      "Thunderstorm with slight hail",
+      "Thunderstorm with hail",
       "⛈️"
     ],
 
-
     99: [
-      "Thunderstorm with heavy hail",
+      "Severe thunderstorm",
       "⛈️"
     ]
-
   };
 
 
@@ -617,7 +477,7 @@ function weatherInfo(
       )
     ] ||
     [
-      "Weather unavailable",
+      "Weather",
       "🌡️"
     ];
 
@@ -629,7 +489,6 @@ function weatherInfo(
 
     icon:
       result[1]
-
   };
 }
 
@@ -642,11 +501,15 @@ function compassDirection(
   degrees
 ) {
 
+  const value =
+    Number(
+      degrees
+    );
+
+
   if (
     !Number.isFinite(
-      Number(
-        degrees
-      )
+      value
     )
   ) {
 
@@ -654,7 +517,7 @@ function compassDirection(
   }
 
 
-  const labels = [
+  const directions = [
     "N",
     "NE",
     "E",
@@ -669,9 +532,7 @@ function compassDirection(
   const index =
     Math.round(
       (
-        Number(
-          degrees
-        ) %
+        value %
         360
       ) /
       45
@@ -680,12 +541,14 @@ function compassDirection(
 
 
   return (
-    `${labels[index]} ` +
-    `${Math.round(
-      Number(
-        degrees
-      )
-    )}°`
+    directions[
+      index
+    ] +
+    " " +
+    Math.round(
+      value
+    ) +
+    "°"
   );
 }
 
@@ -715,22 +578,22 @@ function formatVisibility(
 
 
   return (
-    `${(
+    (
       value /
       1000
     ).toFixed(
-      value < 10000
+      value <
+      10000
         ? 1
         : 0
-    )} km`
+    ) +
+    " km"
   );
 }
 
 
 /* ==================================================
-   LOCAL DATE / TIME FORMATTER
-
-   Uses 24-hour formatting.
+   DATE / TIME FORMATTER
    ================================================== */
 
 function formatLocalDateTime(
@@ -746,12 +609,6 @@ function formatLocalDateTime(
   }
 
 
-  const date =
-    new Date(
-      value
-    );
-
-
   return new Intl.DateTimeFormat(
     "en-GB",
     {
@@ -763,32 +620,34 @@ function formatLocalDateTime(
 
     }
   ).format(
-    date
+    new Date(
+      value
+    )
   );
 }
 
 
 /* ==================================================
-   FIND NEAREST HOURLY DATA
+   NEAREST HOURLY INDEX
    ================================================== */
 
 function nearestHourlyIndex(
-  hourlyTimes
+  times
 ) {
 
   const now =
     Date.now();
 
 
-  let bestIndex =
+  let best =
     0;
 
 
-  let bestDifference =
+  let smallestDifference =
     Infinity;
 
 
-  hourlyTimes.forEach(
+  times.forEach(
     (
       time,
       index
@@ -805,14 +664,13 @@ function nearestHourlyIndex(
 
       if (
         difference <
-        bestDifference
+        smallestDifference
       ) {
 
-        bestDifference =
+        smallestDifference =
           difference;
 
-
-        bestIndex =
+        best =
           index;
       }
 
@@ -820,7 +678,69 @@ function nearestHourlyIndex(
   );
 
 
-  return bestIndex;
+  return best;
+}
+
+
+/* ==================================================
+   FUTURE INDEXES
+   ================================================== */
+
+function futureHourlyIndexes(
+  data,
+  count = 24
+) {
+
+  const times =
+    data.hourly?.time ||
+    [];
+
+
+  const now =
+    Date.now();
+
+
+  let start =
+    times.findIndex(
+      time =>
+        new Date(
+          time
+        ).getTime() >=
+        now -
+        30 *
+        60 *
+        1000
+    );
+
+
+  if (
+    start <
+    0
+  ) {
+
+    start =
+      0;
+  }
+
+
+  return Array.from(
+
+    {
+      length:
+        Math.min(
+          count,
+          times.length -
+          start
+        )
+    },
+
+    (
+      _,
+      offset
+    ) =>
+      start +
+      offset
+  );
 }
 
 
@@ -851,39 +771,21 @@ async function loadWeather(
     locationName;
 
 
-  const locationElement =
-    byId(
-      "locationText"
-    );
+  byId(
+    "locationText"
+  ).textContent =
+    locationName;
 
 
-  if (
-    locationElement
-  ) {
-
-    locationElement.textContent =
-      locationName;
-  }
-
-
-  const coordinateElement =
-    byId(
-      "coordinateText"
-    );
-
-
-  if (
-    coordinateElement
-  ) {
-
-    coordinateElement.textContent =
-      `${state.latitude.toFixed(4)}, ` +
-      `${state.longitude.toFixed(4)}`;
-  }
+  byId(
+    "coordinateText"
+  ).textContent =
+    `${state.latitude.toFixed(4)}, ` +
+    `${state.longitude.toFixed(4)}`;
 
 
   setStatus(
-    "Loading current weather, forecasts, and recent history…"
+    "Loading detailed weather..."
   );
 
 
@@ -907,17 +809,11 @@ async function loadWeather(
 
         "precipitation",
 
-        "rain",
-
-        "showers",
-
         "weather_code",
 
         "cloud_cover",
 
         "pressure_msl",
-
-        "surface_pressure",
 
         "wind_speed_10m",
 
@@ -936,15 +832,9 @@ async function loadWeather(
 
         "relative_humidity_2m",
 
-        "dew_point_2m",
-
         "precipitation_probability",
 
         "precipitation",
-
-        "rain",
-
-        "showers",
 
         "weather_code",
 
@@ -953,8 +843,6 @@ async function loadWeather(
         "visibility",
 
         "pressure_msl",
-
-        "surface_pressure",
 
         "wind_speed_10m",
 
@@ -974,10 +862,6 @@ async function loadWeather(
         "temperature_2m_max",
 
         "temperature_2m_min",
-
-        "apparent_temperature_max",
-
-        "apparent_temperature_min",
 
         "precipitation_sum",
 
@@ -1010,7 +894,6 @@ async function loadWeather(
 
       forecast_days:
         "7"
-
     });
 
 
@@ -1018,7 +901,7 @@ async function loadWeather(
 
     const response =
       await fetch(
-        `${WEATHER_API}?${params.toString()}`
+        `${WEATHER_API}?${params}`
       );
 
 
@@ -1027,7 +910,7 @@ async function loadWeather(
     ) {
 
       throw new Error(
-        `Weather request failed (${response.status})`
+        `Weather API returned ${response.status}`
       );
     }
 
@@ -1045,65 +928,42 @@ async function loadWeather(
       state.timezone;
 
 
+    updateClock();
+
     renderCurrent(
       data
     );
-
 
     renderDaily(
       data
     );
 
-
     renderHourly(
       data
     );
 
-
-    const historySelector =
-      byId(
-        "historyHoursSelect"
-      );
-
-
-    const selectedHistory =
-      historySelector
-        ? Number(
-            historySelector.value
-          )
-        : 24;
-
-
     renderHistory(
-      selectedHistory
+      Number(
+        byId(
+          "historyHoursSelect"
+        ).value
+      )
     );
-
 
     renderPrecipitation(
       data
     );
-
 
     renderWind(
       data
     );
 
 
-    await initializeOrMoveRadar();
-
-
-    /*
-    ================================================
-    UPDATE CLOCK AGAIN AFTER OPEN-METEO PROVIDES
-    THE LOCATION TIMEZONE
-    ================================================
-    */
-
-    updateClock();
+    await initializeRadar();
 
 
     setStatus(
-      `Updated for ${locationName}.`
+      "Weather updated successfully."
     );
 
   } catch (
@@ -1117,14 +977,14 @@ async function loadWeather(
 
 
     setStatus(
-      "Unable to load weather data. Please try again."
+      "Unable to load weather. Check your internet connection."
     );
   }
 }
 
 
 /* ==================================================
-   CURRENT CONDITIONS
+   CURRENT WEATHER
    ================================================== */
 
 function renderCurrent(
@@ -1141,7 +1001,7 @@ function renderCurrent(
     {};
 
 
-  const hourlyIndex =
+  const index =
     nearestHourlyIndex(
       hourly.time ||
       []
@@ -1155,132 +1015,78 @@ function renderCurrent(
     );
 
 
-  const conditionElement =
-    byId(
-      "currentCondition"
-    );
+  byId(
+    "currentCondition"
+  ).textContent =
+    info.label;
 
 
-  if (
-    conditionElement
-  ) {
-
-    conditionElement.textContent =
-      info.label;
-  }
+  byId(
+    "currentWeatherIcon"
+  ).textContent =
+    info.icon;
 
 
-  const iconElement =
-    byId(
-      "currentWeatherIcon"
-    );
+  byId(
+    "currentTemperature"
+  ).textContent =
+    Number.isFinite(
+      Number(
+        current.temperature_2m
+      )
+    )
 
-
-  if (
-    iconElement
-  ) {
-
-    iconElement.textContent =
-      info.icon;
-  }
-
-
-  const temperatureElement =
-    byId(
-      "currentTemperature"
-    );
-
-
-  if (
-    temperatureElement
-  ) {
-
-    temperatureElement.textContent =
-      Number.isFinite(
-        Number(
+      ? `${Math.round(
           current.temperature_2m
-        )
+        )}°C`
+
+      : "--°";
+
+
+  byId(
+    "feelsLike"
+  ).textContent =
+    Number.isFinite(
+      Number(
+        current.apparent_temperature
       )
+    )
 
-        ? `${Math.round(
-            current.temperature_2m
-          )}°`
-
-        : "--°";
-  }
-
-
-  const feelsLikeElement =
-    byId(
-      "feelsLike"
-    );
-
-
-  if (
-    feelsLikeElement
-  ) {
-
-    feelsLikeElement.textContent =
-      Number.isFinite(
-        Number(
+      ? `Feels like ${Math.round(
           current.apparent_temperature
-        )
-      )
+        )}°C`
 
-        ? `Feels like ${Math.round(
-            current.apparent_temperature
-          )}°`
-
-        : "Feels like --°";
-  }
+      : "Feels like --°";
 
 
-  const observationElement =
-    byId(
-      "observationTime"
-    );
+  byId(
+    "observationTime"
+  ).textContent =
+    current.time
 
+      ? `Weather time: ${formatLocalDateTime(
+          current.time,
+          {
 
-  if (
-    observationElement
-  ) {
+            hour:
+              "2-digit",
 
-    observationElement.textContent =
-      current.time
+            minute:
+              "2-digit",
 
-        ? `Weather time: ${formatLocalDateTime(
-            current.time,
-            {
+            hourCycle:
+              "h23"
+          }
+        )}`
 
-              hour:
-                "2-digit",
-
-              minute:
-                "2-digit",
-
-              hourCycle:
-                "h23"
-
-            }
-          )}`
-
-        : "Updated recently";
-  }
+      : "Updated recently";
 
 
   const humidity =
     Math.round(
       hourly
         .relative_humidity_2m
-        ?.[hourlyIndex] ??
-      0
-    );
-
-
-  const windSpeed =
-    Math.round(
-      current
-        .wind_speed_10m ??
+        ?.[index] ??
       0
     );
 
@@ -1293,177 +1099,87 @@ function renderCurrent(
     );
 
 
-  const summaryElement =
-    byId(
-      "weatherSummary"
+  const wind =
+    Math.round(
+      current
+        .wind_speed_10m ??
+      0
     );
 
 
-  if (
-    summaryElement
-  ) {
-
-    summaryElement.textContent =
-
-      `${info.label}. ` +
-
-      `Humidity ${humidity}%, ` +
-
-      `wind ${windSpeed} km/h ` +
-
-      `${compassDirection(
-        current.wind_direction_10m
-      )}, ` +
-
-      `with ${precipitation.toFixed(1)} mm ` +
-
-      `precipitation at the current weather timestep.`;
-  }
+  byId(
+    "weatherSummary"
+  ).textContent =
+    `${info.label}. ` +
+    `Humidity ${humidity}%, ` +
+    `wind ${wind} km/h ` +
+    `${compassDirection(
+      current.wind_direction_10m
+    )}, ` +
+    `precipitation ${precipitation.toFixed(1)} mm.`;
 
 
-  const humidityElement =
-    byId(
-      "humidityValue"
+  byId(
+    "humidityValue"
+  ).textContent =
+    `${humidity}%`;
+
+
+  byId(
+    "visibilityValue"
+  ).textContent =
+    formatVisibility(
+      hourly
+        .visibility
+        ?.[index]
     );
 
 
-  if (
-    humidityElement
-  ) {
+  byId(
+    "cloudValue"
+  ).textContent =
+    `${Math.round(
+      current.cloud_cover ??
+      0
+    )}%`;
 
-    humidityElement.textContent =
-      `${humidity}%`;
-  }
+
+  byId(
+    "pressureValue"
+  ).textContent =
+    `${Math.round(
+      current.pressure_msl ??
+      0
+    )} hPa`;
 
 
-  const visibilityElement =
-    byId(
-      "visibilityValue"
+  byId(
+    "currentPrecipValue"
+  ).textContent =
+    `${precipitation.toFixed(1)} mm`;
+
+
+  byId(
+    "currentWindValue"
+  ).textContent =
+    `${wind} km/h`;
+
+
+  byId(
+    "currentGustValue"
+  ).textContent =
+    `${Math.round(
+      current.wind_gusts_10m ??
+      0
+    )} km/h`;
+
+
+  byId(
+    "windDirectionValue"
+  ).textContent =
+    compassDirection(
+      current.wind_direction_10m
     );
-
-
-  if (
-    visibilityElement
-  ) {
-
-    visibilityElement.textContent =
-      formatVisibility(
-        hourly
-          .visibility
-          ?.[hourlyIndex]
-      );
-  }
-
-
-  const cloudElement =
-    byId(
-      "cloudValue"
-    );
-
-
-  if (
-    cloudElement
-  ) {
-
-    cloudElement.textContent =
-      `${Math.round(
-        current.cloud_cover ??
-        hourly
-          .cloud_cover
-          ?.[hourlyIndex] ??
-        0
-      )}%`;
-  }
-
-
-  const pressureElement =
-    byId(
-      "pressureValue"
-    );
-
-
-  if (
-    pressureElement
-  ) {
-
-    pressureElement.textContent =
-      `${Math.round(
-        current.pressure_msl ??
-        hourly
-          .pressure_msl
-          ?.[hourlyIndex] ??
-        0
-      )} hPa`;
-  }
-
-
-  const precipElement =
-    byId(
-      "currentPrecipValue"
-    );
-
-
-  if (
-    precipElement
-  ) {
-
-    precipElement.textContent =
-      `${precipitation.toFixed(
-        1
-      )} mm`;
-  }
-
-
-  const windElement =
-    byId(
-      "currentWindValue"
-    );
-
-
-  if (
-    windElement
-  ) {
-
-    windElement.textContent =
-      `${windSpeed} km/h`;
-  }
-
-
-  const gustElement =
-    byId(
-      "currentGustValue"
-    );
-
-
-  if (
-    gustElement
-  ) {
-
-    gustElement.textContent =
-      `${Math.round(
-        current
-          .wind_gusts_10m ??
-        0
-      )} km/h`;
-  }
-
-
-  const directionElement =
-    byId(
-      "windDirectionValue"
-    );
-
-
-  if (
-    directionElement
-  ) {
-
-    directionElement.textContent =
-      compassDirection(
-        current
-          .wind_direction_10m
-      );
-  }
 }
 
 
@@ -1476,8 +1192,7 @@ function renderDaily(
 ) {
 
   const daily =
-    data.daily ||
-    {};
+    data.daily;
 
 
   const container =
@@ -1486,22 +1201,11 @@ function renderDaily(
     );
 
 
-  if (
-    !container
-  ) {
-
-    return;
-  }
-
-
   container.innerHTML =
     "";
 
 
-  (
-    daily.time ||
-    []
-  ).forEach(
+  daily.time.forEach(
     (
       time,
       index
@@ -1510,9 +1214,9 @@ function renderDaily(
       const info =
         weatherInfo(
           daily
-            .weather_code
-            ?.[index],
-          1
+            .weather_code[
+              index
+            ]
         );
 
 
@@ -1544,51 +1248,54 @@ function renderDaily(
               {
                 day:
                   "numeric",
+
                 month:
                   "short"
               }
             )}
           </div>
 
-          <div
-            class="day-icon"
-            aria-hidden="true"
-          >
+          <div class="day-icon">
             ${info.icon}
           </div>
 
           <div class="day-temp">
             ${Math.round(
               daily
-                .temperature_2m_max
-                ?.[index]
+                .temperature_2m_max[
+                  index
+                ]
             )}°
             /
             ${Math.round(
               daily
-                .temperature_2m_min
-                ?.[index]
+                .temperature_2m_min[
+                  index
+                ]
             )}°
           </div>
 
           <div class="day-details">
-
             ${info.label}
+
             <br>
 
             Rain:
             ${Math.round(
               daily
-                .precipitation_probability_max
-                ?.[index] ??
+                .precipitation_probability_max[
+                  index
+                ] ??
               0
             )}%
 
-            •
+            <br>
+
             ${Number(
               daily
-                .precipitation_sum
-                ?.[index] ??
+                .precipitation_sum[
+                  index
+                ] ??
               0
             ).toFixed(1)}
             mm
@@ -1598,8 +1305,9 @@ function renderDaily(
             Wind:
             ${Math.round(
               daily
-                .wind_speed_10m_max
-                ?.[index] ??
+                .wind_speed_10m_max[
+                  index
+                ] ??
               0
             )}
             km/h
@@ -1609,29 +1317,32 @@ function renderDaily(
             Gust:
             ${Math.round(
               daily
-                .wind_gusts_10m_max
-                ?.[index] ??
+                .wind_gusts_10m_max[
+                  index
+                ] ??
               0
             )}
             km/h
 
             <br>
 
-            UV max:
+            UV:
             ${Number(
               daily
-                .uv_index_max
-                ?.[index] ??
+                .uv_index_max[
+                  index
+                ] ??
               0
             ).toFixed(1)}
 
             <br>
 
-            ↑
+            🌅
             ${formatLocalDateTime(
               daily
-                .sunrise
-                ?.[index],
+                .sunrise[
+                  index
+                ],
               {
                 hour:
                   "2-digit",
@@ -1646,11 +1357,12 @@ function renderDaily(
 
             <br>
 
-            ↓
+            🌇
             ${formatLocalDateTime(
               daily
-                .sunset
-                ?.[index],
+                .sunset[
+                  index
+                ],
               {
                 hour:
                   "2-digit",
@@ -1662,7 +1374,6 @@ function renderDaily(
                   "h23"
               }
             )}
-
           </div>
         `;
 
@@ -1676,71 +1387,6 @@ function renderDaily(
 
 
 /* ==================================================
-   FUTURE HOURLY INDEXES
-   ================================================== */
-
-function futureHourlyIndexes(
-  data,
-  count = 24
-) {
-
-  const times =
-    data.hourly?.time ||
-    [];
-
-
-  const now =
-    Date.now();
-
-
-  const start =
-    times.findIndex(
-      time =>
-        new Date(
-          time
-        ).getTime() >=
-        now -
-        30 *
-        60 *
-        1000
-    );
-
-
-  const actualStart =
-    start >= 0
-
-      ? start
-
-      : Math.max(
-          0,
-          times.length -
-          count
-        );
-
-
-  return Array.from(
-
-    {
-      length:
-        Math.min(
-          count,
-          times.length -
-          actualStart
-        )
-    },
-
-    (
-      _,
-      offset
-    ) =>
-      actualStart +
-      offset
-
-  );
-}
-
-
-/* ==================================================
    HOURLY FORECAST
    ================================================== */
 
@@ -1749,8 +1395,7 @@ function renderHourly(
 ) {
 
   const hourly =
-    data.hourly ||
-    {};
+    data.hourly;
 
 
   const indexes =
@@ -1766,14 +1411,6 @@ function renderHourly(
     );
 
 
-  if (
-    !container
-  ) {
-
-    return;
-  }
-
-
   container.innerHTML =
     "";
 
@@ -1785,13 +1422,14 @@ function renderHourly(
         weatherInfo(
 
           hourly
-            .weather_code
-            ?.[index],
+            .weather_code[
+              index
+            ],
 
           hourly
-            .is_day
-            ?.[index]
-
+            .is_day[
+              index
+            ]
         );
 
 
@@ -1811,8 +1449,9 @@ function renderHourly(
 
             ${formatLocalDateTime(
               hourly
-                .time
-                ?.[index],
+                .time[
+                  index
+                ],
               {
 
                 hour:
@@ -1820,16 +1459,12 @@ function renderHourly(
 
                 hourCycle:
                   "h23"
-
               }
             )}
 
           </div>
 
-          <div
-            class="hour-icon"
-            aria-hidden="true"
-          >
+          <div class="hour-icon">
             ${info.icon}
           </div>
 
@@ -1837,9 +1472,10 @@ function renderHourly(
 
             ${Math.round(
               hourly
-                .temperature_2m
-                ?.[index]
-            )}°
+                .temperature_2m[
+                  index
+                ]
+            )}°C
 
           </div>
 
@@ -1852,8 +1488,9 @@ function renderHourly(
             Rain
             ${Math.round(
               hourly
-                .precipitation_probability
-                ?.[index] ??
+                .precipitation_probability[
+                  index
+                ] ??
               0
             )}%
 
@@ -1861,8 +1498,9 @@ function renderHourly(
 
             ${Number(
               hourly
-                .precipitation
-                ?.[index] ??
+                .precipitation[
+                  index
+                ] ??
               0
             ).toFixed(1)}
             mm
@@ -1872,8 +1510,9 @@ function renderHourly(
             Wind
             ${Math.round(
               hourly
-                .wind_speed_10m
-                ?.[index] ??
+                .wind_speed_10m[
+                  index
+                ] ??
               0
             )}
             km/h
@@ -1891,37 +1530,8 @@ function renderHourly(
 
 
 /* ==================================================
-   CHART HELPERS
+   CHART OPTIONS
    ================================================== */
-
-function destroyChart(
-  chart
-) {
-
-  if (
-    chart
-  ) {
-
-    chart.destroy();
-  }
-}
-
-
-function chartTextColor() {
-
-  return (
-    "rgba(255,255,255,0.78)"
-  );
-}
-
-
-function chartGridColor() {
-
-  return (
-    "rgba(255,255,255,0.10)"
-  );
-}
-
 
 function commonChartOptions() {
 
@@ -1933,7 +1543,6 @@ function commonChartOptions() {
     maintainAspectRatio:
       false,
 
-
     interaction: {
 
       mode:
@@ -1943,7 +1552,6 @@ function commonChartOptions() {
         false
     },
 
-
     plugins: {
 
       legend: {
@@ -1951,20 +1559,10 @@ function commonChartOptions() {
         labels: {
 
           color:
-            chartTextColor(),
-
-          font: {
-
-            family:
-              "Rubik, Arial, sans-serif",
-
-            weight:
-              "700"
-          }
+            "white"
         }
       }
     },
-
 
     scales: {
 
@@ -1973,40 +1571,31 @@ function commonChartOptions() {
         ticks: {
 
           color:
-            chartTextColor(),
-
-          maxRotation:
-            0,
-
-          autoSkip:
-            true,
+            "rgba(255,255,255,.75)",
 
           maxTicksLimit:
             12
         },
 
-
         grid: {
 
           color:
-            chartGridColor()
+            "rgba(255,255,255,.10)"
         }
       },
-
 
       y: {
 
         ticks: {
 
           color:
-            chartTextColor()
+            "rgba(255,255,255,.75)"
         },
-
 
         grid: {
 
           color:
-            chartGridColor()
+            "rgba(255,255,255,.10)"
         }
       }
     }
@@ -2015,7 +1604,7 @@ function commonChartOptions() {
 
 
 /* ==================================================
-   WEATHER HISTORY
+   HISTORY
    ================================================== */
 
 function renderHistory(
@@ -2027,7 +1616,7 @@ function renderHistory(
 
 
   if (
-    !data?.hourly
+    !data
   ) {
 
     return;
@@ -2043,10 +1632,7 @@ function renderHistory(
 
 
   const indexes =
-    (
-      hourly.time ||
-      []
-    )
+    hourly.time
 
       .map(
         (
@@ -2054,22 +1640,21 @@ function renderHistory(
           index
         ) => ({
 
-          time:
+          index:
+            index,
+
+          timestamp:
             new Date(
               time
-            ).getTime(),
-
-          index:
-            index
-
+            ).getTime()
         })
       )
 
       .filter(
         item =>
-          item.time <=
+          item.timestamp <=
             now &&
-          item.time >=
+          item.timestamp >=
             now -
             hours *
             60 *
@@ -2083,54 +1668,50 @@ function renderHistory(
       );
 
 
-  const labels =
-    indexes.map(
-      index =>
-        formatLocalDateTime(
-          hourly
-            .time[index],
-          {
-
-            month:
-              "short",
-
-            day:
-              "numeric",
-
-            hour:
-              "2-digit",
-
-            hourCycle:
-              "h23"
-
-          }
-        )
-    );
-
-
-  destroyChart(
+  if (
     state.historyChart
-  );
+  ) {
+
+    state.historyChart.destroy();
+  }
 
 
   state.historyChart =
     new Chart(
-
       byId(
         "historyTemperatureChart"
       ),
-
       {
 
         type:
           "line",
 
-
         data: {
 
           labels:
-            labels,
+            indexes.map(
+              index =>
+                formatLocalDateTime(
+                  hourly
+                    .time[
+                      index
+                    ],
+                  {
 
+                    month:
+                      "short",
+
+                    day:
+                      "numeric",
+
+                    hour:
+                      "2-digit",
+
+                    hourCycle:
+                      "h23"
+                  }
+                )
+            ),
 
           datasets: [
 
@@ -2143,11 +1724,11 @@ function renderHistory(
                 indexes.map(
                   index =>
                     hourly
-                      .temperature_2m
-                      ?.[index]
+                      .temperature_2m[
+                        index
+                      ]
                 )
             },
-
 
             {
 
@@ -2158,37 +1739,27 @@ function renderHistory(
                 indexes.map(
                   index =>
                     hourly
-                      .apparent_temperature
-                      ?.[index]
+                      .apparent_temperature[
+                        index
+                      ]
                 )
             }
-
           ]
         },
 
-
         options:
           commonChartOptions()
-
       }
     );
 
 
-  const tbody =
+  const table =
     byId(
       "historyTableBody"
     );
 
 
-  if (
-    !tbody
-  ) {
-
-    return;
-  }
-
-
-  tbody.innerHTML =
+  table.innerHTML =
     "";
 
 
@@ -2203,13 +1774,14 @@ function renderHistory(
           weatherInfo(
 
             hourly
-              .weather_code
-              ?.[index],
+              .weather_code[
+                index
+              ],
 
             hourly
-              .is_day
-              ?.[index]
-
+              .is_day[
+                index
+              ]
           );
 
 
@@ -2225,8 +1797,9 @@ function renderHistory(
 
               ${formatLocalDateTime(
                 hourly
-                  .time
-                  ?.[index],
+                  .time[
+                    index
+                  ],
                 {
 
                   day:
@@ -2243,102 +1816,86 @@ function renderHistory(
 
                   hourCycle:
                     "h23"
-
                 }
               )}
 
             </td>
 
-
             <td>
-
               ${info.icon}
               ${info.label}
-
             </td>
 
-
             <td>
-
               ${Math.round(
                 hourly
-                  .temperature_2m
-                  ?.[index]
+                  .temperature_2m[
+                    index
+                  ]
               )}°C
-
             </td>
 
-
             <td>
-
               ${Math.round(
                 hourly
-                  .apparent_temperature
-                  ?.[index]
+                  .apparent_temperature[
+                    index
+                  ]
               )}°C
-
             </td>
 
-
             <td>
-
               ${Math.round(
                 hourly
-                  .relative_humidity_2m
-                  ?.[index] ??
+                  .relative_humidity_2m[
+                    index
+                  ] ??
                 0
               )}%
-
             </td>
 
-
             <td>
-
               ${Number(
                 hourly
-                  .precipitation
-                  ?.[index] ??
+                  .precipitation[
+                    index
+                  ] ??
                 0
               ).toFixed(1)}
               mm
-
             </td>
 
-
             <td>
-
               ${Math.round(
                 hourly
-                  .wind_speed_10m
-                  ?.[index] ??
+                  .wind_speed_10m[
+                    index
+                  ] ??
                 0
               )}
               km/h
-
               ${compassDirection(
                 hourly
-                  .wind_direction_10m
-                  ?.[index]
+                  .wind_direction_10m[
+                    index
+                  ]
               )}
-
             </td>
 
-
             <td>
-
               ${Math.round(
                 hourly
-                  .wind_gusts_10m
-                  ?.[index] ??
+                  .wind_gusts_10m[
+                    index
+                  ] ??
                 0
               )}
               km/h
-
             </td>
           `;
 
 
-        tbody.appendChild(
+        table.appendChild(
           row
         );
       }
@@ -2355,8 +1912,7 @@ function renderPrecipitation(
 ) {
 
   const hourly =
-    data.hourly ||
-    {};
+    data.hourly;
 
 
   const indexes =
@@ -2366,94 +1922,71 @@ function renderPrecipitation(
     );
 
 
-  const probabilities =
+  const amount =
     indexes.map(
       index =>
         Number(
           hourly
-            .precipitation_probability
-            ?.[index] ??
+            .precipitation[
+              index
+            ] ??
           0
         )
     );
 
 
-  const precipitation =
+  const probability =
     indexes.map(
       index =>
         Number(
           hourly
-            .precipitation
-            ?.[index] ??
+            .precipitation_probability[
+              index
+            ] ??
           0
         )
     );
 
 
-  const maxRainChance =
-    byId(
-      "maxRainChance"
-    );
+  byId(
+    "maxRainChance"
+  ).textContent =
+    `${Math.round(
+      Math.max(
+        0,
+        ...probability
+      )
+    )}%`;
+
+
+  byId(
+    "next24Precip"
+  ).textContent =
+    `${amount.reduce(
+      (
+        total,
+        value
+      ) =>
+        total +
+        value,
+      0
+    ).toFixed(1)} mm`;
 
 
   if (
-    maxRainChance
-  ) {
-
-    maxRainChance.textContent =
-      `${Math.round(
-        Math.max(
-          0,
-          ...probabilities
-        )
-      )}%`;
-  }
-
-
-  const next24Precip =
-    byId(
-      "next24Precip"
-    );
-
-
-  if (
-    next24Precip
-  ) {
-
-    next24Precip.textContent =
-      `${precipitation
-        .reduce(
-          (
-            sum,
-            value
-          ) =>
-            sum +
-            value,
-          0
-        )
-        .toFixed(
-          1
-        )} mm`;
-  }
-
-
-  destroyChart(
     state.precipitationChart
-  );
+  ) {
+
+    state.precipitationChart.destroy();
+  }
 
 
   state.precipitationChart =
     new Chart(
-
       byId(
         "precipitationChart"
       ),
-
       {
-
-        type:
-          "bar",
-
 
         data: {
 
@@ -2462,8 +1995,9 @@ function renderPrecipitation(
               index =>
                 formatLocalDateTime(
                   hourly
-                    .time
-                    ?.[index],
+                    .time[
+                      index
+                    ],
                   {
 
                     hour:
@@ -2471,27 +2005,26 @@ function renderPrecipitation(
 
                     hourCycle:
                       "h23"
-
                   }
                 )
             ),
-
 
           datasets: [
 
             {
 
+              type:
+                "bar",
+
               label:
                 "Precipitation mm",
 
               data:
-                precipitation,
+                amount,
 
               yAxisID:
                 "y"
-
             },
-
 
             {
 
@@ -2502,21 +2035,33 @@ function renderPrecipitation(
                 "Probability %",
 
               data:
-                probabilities,
+                probability,
 
               yAxisID:
                 "y1"
-
             }
-
           ]
         },
 
-
         options: {
 
-          ...commonChartOptions(),
+          responsive:
+            true,
 
+          maintainAspectRatio:
+            false,
+
+          plugins: {
+
+            legend: {
+
+              labels: {
+
+                color:
+                  "white"
+              }
+            }
+          },
 
           scales: {
 
@@ -2525,59 +2070,33 @@ function renderPrecipitation(
               ticks: {
 
                 color:
-                  chartTextColor(),
-
-                autoSkip:
-                  true,
-
-                maxTicksLimit:
-                  12
+                  "rgba(255,255,255,.75)"
               },
-
 
               grid: {
 
                 color:
-                  chartGridColor()
+                  "rgba(255,255,255,.10)"
               }
             },
-
 
             y: {
 
               beginAtZero:
                 true,
 
-              position:
-                "left",
-
               ticks: {
 
                 color:
-                  chartTextColor()
+                  "rgba(255,255,255,.75)"
               },
-
 
               grid: {
 
                 color:
-                  chartGridColor()
-              },
-
-
-              title: {
-
-                display:
-                  true,
-
-                text:
-                  "mm",
-
-                color:
-                  chartTextColor()
+                  "rgba(255,255,255,.10)"
               }
             },
-
 
             y1: {
 
@@ -2590,17 +2109,15 @@ function renderPrecipitation(
               position:
                 "right",
 
-
               ticks: {
 
                 color:
-                  chartTextColor(),
+                  "rgba(255,255,255,.75)",
 
                 callback:
                   value =>
                     `${value}%`
               },
-
 
               grid: {
 
@@ -2624,8 +2141,7 @@ function renderWind(
 ) {
 
   const hourly =
-    data.hourly ||
-    {};
+    data.hourly;
 
 
   const indexes =
@@ -2640,82 +2156,66 @@ function renderWind(
       index =>
         Number(
           hourly
-            .wind_speed_10m
-            ?.[index] ??
+            .wind_speed_10m[
+              index
+            ] ??
           0
         )
     );
 
 
-  const gusts =
+  const gust =
     indexes.map(
       index =>
         Number(
           hourly
-            .wind_gusts_10m
-            ?.[index] ??
+            .wind_gusts_10m[
+              index
+            ] ??
           0
         )
     );
 
 
-  const peakWind =
-    byId(
-      "peakWind"
-    );
+  byId(
+    "peakWind"
+  ).textContent =
+    `${Math.round(
+      Math.max(
+        0,
+        ...wind
+      )
+    )} km/h`;
+
+
+  byId(
+    "peakGust"
+  ).textContent =
+    `${Math.round(
+      Math.max(
+        0,
+        ...gust
+      )
+    )} km/h`;
 
 
   if (
-    peakWind
-  ) {
-
-    peakWind.textContent =
-      `${Math.round(
-        Math.max(
-          0,
-          ...wind
-        )
-      )} km/h`;
-  }
-
-
-  const peakGust =
-    byId(
-      "peakGust"
-    );
-
-
-  if (
-    peakGust
-  ) {
-
-    peakGust.textContent =
-      `${Math.round(
-        Math.max(
-          0,
-          ...gusts
-        )
-      )} km/h`;
-  }
-
-
-  destroyChart(
     state.windChart
-  );
+  ) {
+
+    state.windChart.destroy();
+  }
 
 
   state.windChart =
     new Chart(
-
       byId(
         "windChart"
       ),
-
       {
 
         type:
           "line",
-
 
         data: {
 
@@ -2724,8 +2224,9 @@ function renderWind(
               index =>
                 formatLocalDateTime(
                   hourly
-                    .time
-                    ?.[index],
+                    .time[
+                      index
+                    ],
                   {
 
                     hour:
@@ -2733,11 +2234,9 @@ function renderWind(
 
                     hourCycle:
                       "h23"
-
                   }
                 )
             ),
-
 
           datasets: [
 
@@ -2748,9 +2247,7 @@ function renderWind(
 
               data:
                 wind
-
             },
-
 
             {
 
@@ -2758,13 +2255,10 @@ function renderWind(
                 "Gust km/h",
 
               data:
-                gusts
-
+                gust
             }
-
           ]
         },
-
 
         options:
           commonChartOptions()
@@ -2774,13 +2268,15 @@ function renderWind(
 
 
 /* ==================================================
-   RADAR MAP
+   RADAR
    ================================================== */
 
 function initializeMap() {
 
   if (
-    state.radarMap
+    state.radarMap ||
+    typeof L ===
+      "undefined"
   ) {
 
     return;
@@ -2788,56 +2284,48 @@ function initializeMap() {
 
 
   state.radarMap =
-    L.map(
-      "radarMap",
+    L
+      .map(
+        "radarMap"
+      )
+      .setView(
+        [
+          -6.2,
+          106.8
+        ],
+        6
+      );
+
+
+  L
+    .tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
 
-        zoomControl:
-          true,
-
-        minZoom:
-          2,
-
         maxZoom:
-          12
+          19,
 
+        attribution:
+          "&copy; OpenStreetMap contributors"
       }
-    ).setView(
-      [
-        0,
-        0
-      ],
-      3
+    )
+    .addTo(
+      state.radarMap
     );
-
-
-  L.tileLayer(
-
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-    {
-
-      maxZoom:
-        19,
-
-      attribution:
-        "&copy; OpenStreetMap contributors"
-
-    }
-
-  ).addTo(
-    state.radarMap
-  );
 }
 
 
-/* ==================================================
-   LOAD / MOVE RADAR
-   ================================================== */
-
-async function initializeOrMoveRadar() {
+async function initializeRadar() {
 
   initializeMap();
+
+
+  if (
+    !state.radarMap
+  ) {
+
+    return;
+  }
 
 
   if (
@@ -2850,12 +2338,10 @@ async function initializeOrMoveRadar() {
   ) {
 
     state.radarMap.setView(
-
       [
         state.latitude,
         state.longitude
       ],
-
       7
     );
 
@@ -2865,31 +2351,24 @@ async function initializeOrMoveRadar() {
     ) {
 
       state.radarMarker.setLatLng(
-
         [
           state.latitude,
           state.longitude
         ]
-
       );
 
     } else {
 
       state.radarMarker =
         L.marker(
-
           [
             state.latitude,
             state.longitude
           ]
-
         )
-          .addTo(
-            state.radarMap
-          )
-          .bindPopup(
-            "Selected weather location"
-          );
+        .addTo(
+          state.radarMap
+        );
     }
   }
 
@@ -2907,41 +2386,22 @@ async function initializeOrMoveRadar() {
     ) {
 
       throw new Error(
-        "Radar feed unavailable"
+        "Radar unavailable"
       );
     }
 
 
-    const metadata =
+    const data =
       await response.json();
 
 
+    state.radarHost =
+      data.host;
+
+
     state.radarFrames =
-      metadata.radar?.past ||
+      data.radar?.past ||
       [];
-
-
-    if (
-      !state.radarFrames.length
-    ) {
-
-      const timestamp =
-        byId(
-          "radarTimestamp"
-        );
-
-
-      if (
-        timestamp
-      ) {
-
-        timestamp.textContent =
-          "No radar frames available";
-      }
-
-
-      return;
-    }
 
 
     const slider =
@@ -2950,42 +2410,28 @@ async function initializeOrMoveRadar() {
       );
 
 
-    if (
-      slider
-    ) {
-
-      slider.min =
-        "0";
+    slider.min =
+      "0";
 
 
-      slider.max =
-        String(
+    slider.max =
+      String(
+        Math.max(
+          0,
           state.radarFrames.length -
           1
-        );
+        )
+      );
 
 
-      slider.value =
-        String(
-          state.radarFrames.length -
-          1
-        );
-    }
-
-
-    state.radarHost =
-      metadata.host;
+    slider.value =
+      slider.max;
 
 
     renderRadarFrame(
-
       Number(
-        slider?.value ??
-        0
-      ),
-
-      metadata.host
-
+        slider.value
+      )
     );
 
   } catch (
@@ -2998,31 +2444,16 @@ async function initializeOrMoveRadar() {
     );
 
 
-    const timestamp =
-      byId(
-        "radarTimestamp"
-      );
-
-
-    if (
-      timestamp
-    ) {
-
-      timestamp.textContent =
-        "Radar temporarily unavailable";
-    }
+    byId(
+      "radarTimestamp"
+    ).textContent =
+      "Radar unavailable";
   }
 }
 
 
-/* ==================================================
-   RENDER RADAR FRAME
-   ================================================== */
-
 function renderRadarFrame(
-  index,
-  host =
-    state.radarHost
+  index
 ) {
 
   const frame =
@@ -3033,7 +2464,7 @@ function renderRadarFrame(
 
   if (
     !frame ||
-    !host ||
+    !state.radarHost ||
     !state.radarMap
   ) {
 
@@ -3053,16 +2484,11 @@ function renderRadarFrame(
 
   state.radarLayer =
     L.tileLayer(
-
-      `${host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,
-
+      `${state.radarHost}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,
       {
 
         opacity:
           0.72,
-
-        zIndex:
-          10,
 
         maxNativeZoom:
           7,
@@ -3071,64 +2497,50 @@ function renderRadarFrame(
           12,
 
         attribution:
-          "Radar &copy; RainViewer"
-
+          "Radar © RainViewer"
       }
-
-    ).addTo(
+    )
+    .addTo(
       state.radarMap
     );
 
 
-  const timestamp =
-    byId(
-      "radarTimestamp"
+  byId(
+    "radarTimestamp"
+  ).textContent =
+    new Intl.DateTimeFormat(
+      "en-GB",
+      {
+
+        timeZone:
+          state.timezone,
+
+        day:
+          "numeric",
+
+        month:
+          "short",
+
+        hour:
+          "2-digit",
+
+        minute:
+          "2-digit",
+
+        hourCycle:
+          "h23"
+      }
+    ).format(
+      new Date(
+        frame.time *
+        1000
+      )
     );
-
-
-  if (
-    timestamp
-  ) {
-
-    timestamp.textContent =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          timeZone:
-            state.timezone,
-
-          weekday:
-            "short",
-
-          day:
-            "numeric",
-
-          month:
-            "short",
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          hourCycle:
-            "h23"
-
-        }
-      ).format(
-        new Date(
-          frame.time *
-          1000
-        )
-      );
-  }
 }
 
 
 /* ==================================================
-   RADAR PLAYBACK
+   RADAR PLAY
    ================================================== */
 
 function toggleRadarPlayback() {
@@ -3143,15 +2555,6 @@ function toggleRadarPlayback() {
     byId(
       "radarFrameSlider"
     );
-
-
-  if (
-    !button ||
-    !slider
-  ) {
-
-    return;
-  }
 
 
   if (
@@ -3221,7 +2624,6 @@ function toggleRadarPlayback() {
         );
 
       },
-
       650
     );
 }
@@ -3235,25 +2637,17 @@ async function searchCity(
   query
 ) {
 
-  const searchResults =
+  const container =
     byId(
       "searchResults"
     );
 
 
   if (
-    !searchResults
-  ) {
-
-    return;
-  }
-
-
-  if (
     !query.trim()
   ) {
 
-    searchResults.hidden =
+    container.hidden =
       true;
 
 
@@ -3262,7 +2656,7 @@ async function searchCity(
 
 
   setStatus(
-    `Searching for “${query}”…`
+    `Searching for ${query}...`
   );
 
 
@@ -3282,15 +2676,12 @@ async function searchCity(
 
         format:
           "json"
-
       });
 
 
     const response =
       await fetch(
-
-        `${GEOCODING_API}?${params.toString()}`
-
+        `${GEOCODING_API}?${params}`
       );
 
 
@@ -3313,7 +2704,7 @@ async function searchCity(
       [];
 
 
-    searchResults.innerHTML =
+    container.innerHTML =
       "";
 
 
@@ -3321,21 +2712,16 @@ async function searchCity(
       !results.length
     ) {
 
-      searchResults.hidden =
+      container.hidden =
         false;
 
 
-      searchResults.innerHTML =
+      container.innerHTML =
         `
-          <div class="search-result-button">
-            No matching places found.
+          <div class="search-result">
+            No matching location.
           </div>
         `;
-
-
-      setStatus(
-        "No matching places found."
-      );
 
 
       return;
@@ -3364,12 +2750,12 @@ async function searchCity(
             result.admin1,
             result.country
           ]
-            .filter(
-              Boolean
-            )
-            .join(
-              ", "
-            );
+          .filter(
+            Boolean
+          )
+          .join(
+            ", "
+          );
 
 
         button.innerHTML =
@@ -3389,10 +2775,12 @@ async function searchCity(
             </span>
 
             <small>
-
-              ${result.latitude.toFixed(2)},
-              ${result.longitude.toFixed(2)}
-
+              ${Number(
+                result.latitude
+              ).toFixed(2)},
+              ${Number(
+                result.longitude
+              ).toFixed(2)}
             </small>
           `;
 
@@ -3401,31 +2789,14 @@ async function searchCity(
           "click",
           () => {
 
-            searchResults.hidden =
+            container.hidden =
               true;
 
 
-            const searchInput =
-              byId(
-                "citySearchInput"
-              );
-
-
-            if (
-              searchInput
-            ) {
-
-              searchInput.value =
-                result.name;
-            }
-
-
-            const label =
-              details
-
-                ? `${result.name}, ${details}`
-
-                : result.name;
+            byId(
+              "citySearchInput"
+            ).value =
+              result.name;
 
 
             loadWeather(
@@ -3434,27 +2805,28 @@ async function searchCity(
 
               result.longitude,
 
-              label
+              details
+                ? `${result.name}, ${details}`
+                : result.name
 
             );
           }
         );
 
 
-        searchResults.appendChild(
+        container.appendChild(
           button
         );
-
       }
     );
 
 
-    searchResults.hidden =
+    container.hidden =
       false;
 
 
     setStatus(
-      "Choose a place from the search results."
+      "Select a location."
     );
 
   } catch (
@@ -3462,20 +2834,20 @@ async function searchCity(
   ) {
 
     console.error(
-      "City search error:",
+      "Search error:",
       error
     );
 
 
     setStatus(
-      "City search is temporarily unavailable."
+      "Unable to search locations."
     );
   }
 }
 
 
 /* ==================================================
-   BROWSER LOCATION
+   GEOLOCATION
    ================================================== */
 
 function useBrowserLocation() {
@@ -3485,7 +2857,7 @@ function useBrowserLocation() {
   ) {
 
     setStatus(
-      "This browser does not support geolocation. Search for a city instead."
+      "Geolocation is not supported. Search for a city instead."
     );
 
 
@@ -3494,7 +2866,7 @@ function useBrowserLocation() {
 
 
   setStatus(
-    "Requesting your device location…"
+    "Requesting your location..."
   );
 
 
@@ -3509,24 +2881,21 @@ function useBrowserLocation() {
         position.coords.longitude,
 
         "My Current Location"
-
       );
-
     },
 
 
     error => {
 
       console.warn(
-        "Geolocation error:",
+        "Geolocation:",
         error
       );
 
 
       setStatus(
-        "Location permission was not granted. Search for a city instead."
+        "Location permission unavailable. Search for a city instead."
       );
-
     },
 
 
@@ -3539,164 +2908,90 @@ function useBrowserLocation() {
         12000,
 
       maximumAge:
-        5 *
-        60 *
-        1000
-
+        300000
     }
-
   );
 }
 
 
 /* ==================================================
-   INITIALIZE EVENTS
+   EVENTS
    ================================================== */
 
 function initializeEvents() {
 
-  const useLocationButton =
-    byId(
-      "useLocationButton"
-    );
+  byId(
+    "useLocationButton"
+  ).addEventListener(
+    "click",
+    useBrowserLocation
+  );
 
 
-  if (
-    useLocationButton
-  ) {
+  byId(
+    "citySearchForm"
+  ).addEventListener(
+    "submit",
+    event => {
 
-    useLocationButton.addEventListener(
-
-      "click",
-
-      useBrowserLocation
-
-    );
-  }
+      event.preventDefault();
 
 
-  const citySearchForm =
-    byId(
-      "citySearchForm"
-    );
+      searchCity(
+        byId(
+          "citySearchInput"
+        ).value
+      );
+    }
+  );
 
 
-  if (
-    citySearchForm
-  ) {
+  byId(
+    "historyHoursSelect"
+  ).addEventListener(
+    "change",
+    event => {
 
-    citySearchForm.addEventListener(
-      "submit",
-      event => {
-
-        event.preventDefault();
-
-
-        const input =
-          byId(
-            "citySearchInput"
-          );
+      renderHistory(
+        Number(
+          event.target.value
+        )
+      );
+    }
+  );
 
 
-        searchCity(
-          input?.value ||
-          ""
-        );
-
-      }
-    );
-  }
+  byId(
+    "radarPlayButton"
+  ).addEventListener(
+    "click",
+    toggleRadarPlayback
+  );
 
 
-  const historyHoursSelect =
-    byId(
-      "historyHoursSelect"
-    );
+  byId(
+    "radarFrameSlider"
+  ).addEventListener(
+    "input",
+    event => {
 
-
-  if (
-    historyHoursSelect
-  ) {
-
-    historyHoursSelect.addEventListener(
-      "change",
-      event => {
-
-        renderHistory(
-          Number(
-            event.target.value
-          )
-        );
-
-      }
-    );
-  }
-
-
-  const radarFrameSlider =
-    byId(
-      "radarFrameSlider"
-    );
-
-
-  if (
-    radarFrameSlider
-  ) {
-
-    radarFrameSlider.addEventListener(
-      "input",
-      event => {
-
-        renderRadarFrame(
-          Number(
-            event.target.value
-          )
-        );
-
-      }
-    );
-  }
-
-
-  const radarPlayButton =
-    byId(
-      "radarPlayButton"
-    );
-
-
-  if (
-    radarPlayButton
-  ) {
-
-    radarPlayButton.addEventListener(
-
-      "click",
-
-      toggleRadarPlayback
-
-    );
-  }
+      renderRadarFrame(
+        Number(
+          event.target.value
+        )
+      );
+    }
+  );
 }
 
 
 /* ==================================================
-   PAGE INITIALIZATION
+   START
    ================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-
-
-    /* ==================================================
-       START CLOCK IMMEDIATELY
-
-       Example:
-
-       ☀️ Good Afternoon!
-       16:51:48
-       1 September 2026
-       ================================================== */
 
     updateClock();
 
@@ -3707,31 +3002,12 @@ document.addEventListener(
     );
 
 
-    /* ==================================================
-       EVENTS
-       ================================================== */
-
     initializeEvents();
 
-
-    /* ==================================================
-       RADAR MAP
-       ================================================== */
 
     initializeMap();
 
 
-    /* ==================================================
-       REQUEST CURRENT LOCATION
-
-       GitHub Pages uses HTTPS, so browser
-       geolocation can work after permission.
-
-       If permission is denied, city search
-       remains available.
-       ================================================== */
-
     useBrowserLocation();
-
   }
 );
