@@ -1,204 +1,609 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Music Session Counter</title>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Music Session Counter
+  </title>
+
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 
   <style>
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
 
     body {
       margin: 0;
-      font-family: Rubik, sans-serif;
+
       min-height: 100vh;
+
       display: flex;
+
       justify-content: center;
+
       align-items: flex-start;
+
+      padding:
+        16px 0;
+
       color: white;
-      overflow-x: hidden;
-      position: relative;
-      padding: 16px 0;
     }
+
+
     .box {
-      width: 1100px;
-      max-width: 96%;
-      padding: 20px;
-      border-radius: 25px;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(18px);
-      text-align: center;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+      width:
+        1100px;
+
+      max-width:
+        96%;
+
+      padding:
+        20px;
+
+      border-radius:
+        25px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.25
+        );
+
+      backdrop-filter:
+        blur(18px);
+
+      -webkit-backdrop-filter:
+        blur(18px);
+
+      text-align:
+        center;
+
+      box-shadow:
+        0 0 30px
+        rgba(
+          0,
+          0,
+          0,
+          0.4
+        );
     }
 
     h1 {
-      margin: 0 0 6px;
-      font-size: 34px;
+      margin:
+        0 0 6px;
+
+      font-size:
+        34px;
     }
 
     .subtitle {
-      margin-bottom: 15px;
-      opacity: 0.9;
-      font-size: 18px;
-      font-weight: bold;
+      margin-bottom:
+        15px;
+
+      opacity:
+        0.9;
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
     }
 
     .square-grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          10,
+          1fr
+        );
+
+      gap:
+        8px;
+
+      margin-bottom:
+        14px;
     }
 
     .square-group {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0;
-      padding: 3px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          5,
+          1fr
+        );
+
+      gap:
+        0;
+
+      padding:
+        3px;
+
+      border-radius:
+        10px;
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.3
+        );
     }
 
     .square {
-      height: 30px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+      height:
+        30px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.14
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.35
+        );
+
+      box-shadow:
+        inset
+        0 0 8px
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
     }
 
-    .square:first-child { border-radius: 7px 0 0 7px; }
-    .square:last-child { border-radius: 0 7px 7px 0; }
+    .square:first-child {
+      border-radius:
+        7px 0 0 7px;
+    }
+
+    .square:last-child {
+      border-radius:
+        0 7px 7px 0;
+    }
 
     .hidden-input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
+      position:
+        absolute;
+
+      opacity:
+        0;
+
+      pointer-events:
+        none;
     }
 
     .input-helper {
-      background: white;
-      color: #777;
-      border-radius: 15px;
-      padding: 14px;
-      margin-bottom: 14px;
-      font-size: 22px;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: text;
-      user-select: none;
-      word-break: break-word;
+      min-height:
+        60px;
+
+      margin-bottom:
+        14px;
+
+      padding:
+        14px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      border-radius:
+        15px;
+
+      background:
+        white;
+
+      color:
+        #777;
+
+      font-size:
+        22px;
+
+      cursor:
+        text;
+
+      user-select:
+        none;
+
+      word-break:
+        break-word;
     }
 
     .input-helper::after {
-      content: "";
-      display: inline-block;
-      width: 2px;
-      height: 26px;
-      background: #777;
-      margin-left: 3px;
-      animation: blinkCursor 0.8s infinite;
-      vertical-align: middle;
-      flex-shrink: 0;
+      content:
+        "";
+
+      width:
+        2px;
+
+      height:
+        26px;
+
+      margin-left:
+        3px;
+
+      display:
+        inline-block;
+
+      flex-shrink:
+        0;
+
+      background:
+        #777;
+
+      animation:
+        blinkCursor
+        0.8s
+        infinite;
     }
 
     @keyframes blinkCursor {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
+
+      0%,
+      50% {
+        opacity:
+          1;
+      }
+
+      51%,
+      100% {
+        opacity:
+          0;
+      }
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      overflow: hidden;
-      border-radius: 15px;
+      width:
+        100%;
+
+      border-collapse:
+        collapse;
+
+      overflow:
+        hidden;
+
+      border-radius:
+        15px;
     }
 
-    th, td {
-      padding: 10px;
-      border: 2px solid rgba(255, 255, 255, 0.85);
-      font-size: 18px;
-      font-weight: bold;
-      text-align: center;
+    th,
+    td {
+      padding:
+        10px;
+
+      border:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
+
+      text-align:
+        center;
     }
 
     th {
-      background: rgba(0, 0, 0, 0.78);
-      color: white;
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.78
+        );
+
+      color:
+        white;
     }
 
     .qty {
-      background: rgba(255, 255, 255, 0.9);
-      color: black;
-      width: 90px;
-      font-size: 24px;
+      width:
+        90px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+
+      color:
+        black;
+
+      font-size:
+        24px;
     }
 
-    .red { background: red; color: white; }
-    .orange { background: orange; color: black; }
-    .yellow { background: yellow; color: black; }
-    .green { background: limegreen; color: black; }
-    .blue { background: blue; color: white; }
-    .violet { background: #8000ff; color: white; }
-    .pink { background: pink; color: black; }
-    .brown { background: brown; color: white; }
-    .tan { background: tan; color: black; }
-    .cyan { background: cyan; color: black; }
+    .red {
+      background:
+        red;
 
-    .buttons { margin-top: 16px; }
-
-    button {
-      font-size: 22px;
-      font-weight: bold;
-      padding: 12px 32px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #ff3030;
-      color: white;
+      color:
+        white;
     }
 
-    button:hover { background: #cc0000; }
+    .orange {
+      background:
+        orange;
 
-    a {
-      display: inline-block;
-      margin-top: 16px;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
+      color:
+        black;
     }
 
-    @media (max-width: 800px) {
-      .box { padding: 14px; }
-      h1 { font-size: 26px; }
-      .subtitle { font-size: 14px; }
-      .square-grid { gap: 4px; }
-      .square { height: 22px; }
-      .input-helper { font-size: 17px; }
-      .input-helper::after { height: 22px; }
-      th, td { padding: 7px; font-size: 13px; }
-      .qty { width: 55px; font-size: 18px; }
+    .yellow {
+      background:
+        yellow;
+
+      color:
+        black;
     }
+
+    .green {
+      background:
+        limegreen;
+
+      color:
+        black;
+    }
+
+    .blue {
+      background:
+        blue;
+
+      color:
+        white;
+    }
+
+    .violet {
+      background:
+        #8000ff;
+
+      color:
+        white;
+    }
+
+    .pink {
+      background:
+        pink;
+
+      color:
+        black;
+    }
+
+    .brown {
+      background:
+        brown;
+
+      color:
+        white;
+    }
+
+    .tan {
+      background:
+        tan;
+
+      color:
+        black;
+    }
+
+    .cyan {
+      background:
+        cyan;
+
+      color:
+        black;
+    }
+
+    .buttons {
+      margin-top:
+        16px;
+    }
+
+    .buttons button {
+      padding:
+        12px 32px;
+
+      border:
+        none;
+
+      border-radius:
+        12px;
+
+      background:
+        #ff3030;
+
+      color:
+        white;
+
+      font-size:
+        22px;
+
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+    }
+
+    .buttons button:hover {
+      background:
+        #cc0000;
+    }
+
+    .back-home {
+      display:
+        inline-block;
+
+      margin-top:
+        16px;
+
+      color:
+        white;
+
+      text-decoration:
+        none;
+
+      font-weight:
+        bold;
+    }
+
+    @media (
+      max-width:
+      800px
+    ) {
+
+      .box {
+        padding:
+          14px;
+      }
+
+      h1 {
+        font-size:
+          26px;
+      }
+
+      .subtitle {
+        font-size:
+          14px;
+      }
+
+      .square-grid {
+        gap:
+          4px;
+      }
+
+      .square {
+        height:
+          22px;
+      }
+
+      .input-helper {
+        font-size:
+          17px;
+      }
+
+      .input-helper::after {
+        height:
+          22px;
+      }
+
+      th,
+      td {
+        padding:
+          7px;
+
+        font-size:
+          13px;
+      }
+
+      .qty {
+        width:
+          55px;
+
+        font-size:
+          18px;
+      }
+    }
+
   </style>
+
 </head>
 
+
 <body>
+
   <div class="box">
-    <h1>Music Session Counter</h1>
+
+    <h1>
+      Music Session Counter
+    </h1>
+
 
     <div class="subtitle">
       Let's arrange everything through the journey with the music session.
     </div>
 
-    <div id="squareGrid" class="square-grid" onclick="focusInput()"></div>
 
-    <div class="input-helper" onclick="focusInput()" id="inputDisplay">
+    <div
+      id="squareGrid"
+      class="square-grid"
+      onclick="focusInput()"
+    ></div>
+
+
+    <div
+      id="inputDisplay"
+      class="input-helper"
+      onclick="focusInput()"
+    >
       Example: 11111 22222 23333 33333
     </div>
+
 
     <input
       id="inputData"
@@ -207,9 +612,11 @@
       autocomplete="off"
       autofocus
       oninput="updateCounter()"
-    />
+    >
+
 
     <table>
+
       <tr>
         <th></th>
         <th>Qty</th>
@@ -217,166 +624,488 @@
         <th>Qty</th>
       </tr>
 
-      <tr>
-        <td class="red">VocalPopBallad</td>
-        <td class="qty" id="count1">0</td>
-        <td class="violet">CanadianTeenPop</td>
-        <td class="qty" id="count6">0</td>
-      </tr>
 
       <tr>
-        <td class="orange">PowerPopBallad</td>
-        <td class="qty" id="count2">0</td>
-        <td class="pink">IrishPopRock</td>
-        <td class="qty" id="count7">0</td>
+        <td class="red">
+          VocalPopBallad
+        </td>
+
+        <td
+          class="qty"
+          id="count1"
+        >
+          0
+        </td>
+
+        <td class="violet">
+          CanadianTeenPop
+        </td>
+
+        <td
+          class="qty"
+          id="count6"
+        >
+          0
+        </td>
       </tr>
 
-      <tr>
-        <td class="yellow">60sVintageRumba</td>
-        <td class="qty" id="count3">0</td>
-        <td class="brown">Country8Beat2</td>
-        <td class="qty" id="count8">0</td>
-      </tr>
 
       <tr>
-        <td class="green">70s8BeatBallad</td>
-        <td class="qty" id="count4">0</td>
-        <td class="tan">ElectroRock</td>
-        <td class="qty" id="count9">0</td>
+        <td class="orange">
+          PowerPopBallad
+        </td>
+
+        <td
+          class="qty"
+          id="count2"
+        >
+          0
+        </td>
+
+        <td class="pink">
+          IrishPopRock
+        </td>
+
+        <td
+          class="qty"
+          id="count7"
+        >
+          0
+        </td>
       </tr>
 
+
       <tr>
-        <td class="blue">NashvillePop</td>
-        <td class="qty" id="count5">0</td>
-        <td class="cyan">JustR&B</td>
-        <td class="qty" id="count0">0</td>
+        <td class="yellow">
+          60sVintageRumba
+        </td>
+
+        <td
+          class="qty"
+          id="count3"
+        >
+          0
+        </td>
+
+        <td class="brown">
+          Country8Beat2
+        </td>
+
+        <td
+          class="qty"
+          id="count8"
+        >
+          0
+        </td>
       </tr>
+
+
+      <tr>
+        <td class="green">
+          70s8BeatBallad
+        </td>
+
+        <td
+          class="qty"
+          id="count4"
+        >
+          0
+        </td>
+
+        <td class="tan">
+          ElectroRock
+        </td>
+
+        <td
+          class="qty"
+          id="count9"
+        >
+          0
+        </td>
+      </tr>
+
+
+      <tr>
+        <td class="blue">
+          NashvillePop
+        </td>
+
+        <td
+          class="qty"
+          id="count5"
+        >
+          0
+        </td>
+
+        <td class="cyan">
+          JustR&B
+        </td>
+
+        <td
+          class="qty"
+          id="count0"
+        >
+          0
+        </td>
+      </tr>
+
     </table>
 
+
     <div class="buttons">
-      <button onclick="resetCounter()">🗑️ Clear</button>
+
+      <button
+        type="button"
+        onclick="resetCounter()"
+      >
+        🗑️ Clear
+      </button>
+
     </div>
 
-    <a href="index.html">← Back to Home</a>
+
+    <a
+      href="index.html"
+      class="back-home"
+    >
+      ← Back to Home
+    </a>
+
   </div>
 
-<script>
-  let isDirty = false;
 
-  const digitColors = {
-    "1": "red",
-    "2": "orange",
-    "3": "yellow",
-    "4": "limegreen",
-    "5": "blue",
-    "6": "#8000ff",
-    "7": "pink",
-    "8": "brown",
-    "9": "tan",
-    "0": "cyan"
-  };
+  <script>
 
-  function focusInput() {
-    document.getElementById("inputData").focus();
-  }
+    let isDirty =
+      false;
 
-  function createGrid() {
-    const grid = document.getElementById("squareGrid");
-    grid.innerHTML = "";
 
-    for (let group = 0; group < 20; group++) {
-      const squareGroup = document.createElement("div");
-      squareGroup.className = "square-group";
+    const digitColors = {
 
-      for (let i = 0; i < 5; i++) {
-        const square = document.createElement("div");
-        const index = group * 5 + i;
-        square.className = "square";
-        square.id = "sq" + index;
-        squareGroup.appendChild(square);
-      }
+      "1":
+        "red",
 
-      grid.appendChild(squareGroup);
-    }
-  }
+      "2":
+        "orange",
 
-  function updateCounter() {
-    const input = document.getElementById("inputData");
-    const inputDisplay = document.getElementById("inputDisplay");
+      "3":
+        "yellow",
 
-    let rawText = input.value.replace(/[^0-9]/g, "");
-    rawText = rawText.substring(0, 100);
-    input.value = rawText;
+      "4":
+        "limegreen",
 
-    let formattedText = rawText.match(/.{1,5}/g)?.join(" ") || "";
+      "5":
+        "blue",
 
-    inputDisplay.innerHTML =
-      formattedText || "Example: 11111 22222 23333 33333";
+      "6":
+        "#8000ff",
 
-    const counts = {
-      "0": 0, "1": 0, "2": 0, "3": 0, "4": 0,
-      "5": 0, "6": 0, "7": 0, "8": 0, "9": 0
+      "7":
+        "pink",
+
+      "8":
+        "brown",
+
+      "9":
+        "tan",
+
+      "0":
+        "cyan"
     };
 
-    for (let char of rawText) {
-      counts[char]++;
+
+    function focusInput() {
+
+      document
+        .getElementById(
+          "inputData"
+        )
+        .focus();
     }
 
-    for (let i = 0; i < 100; i++) {
-      const square = document.getElementById("sq" + i);
-      square.style.background = "rgba(255, 255, 255, 0.14)";
+
+    function createGrid() {
+
+      const grid =
+        document.getElementById(
+          "squareGrid"
+        );
+
+
+      grid.innerHTML =
+        "";
+
+
+      for (
+        let group = 0;
+        group < 20;
+        group++
+      ) {
+
+        const squareGroup =
+          document.createElement(
+            "div"
+          );
+
+
+        squareGroup.className =
+          "square-group";
+
+
+        for (
+          let i = 0;
+          i < 5;
+          i++
+        ) {
+
+          const square =
+            document.createElement(
+              "div"
+            );
+
+
+          const index =
+            group *
+            5 +
+            i;
+
+
+          square.className =
+            "square";
+
+
+          square.id =
+            "sq" +
+            index;
+
+
+          squareGroup.appendChild(
+            square
+          );
+        }
+
+
+        grid.appendChild(
+          squareGroup
+        );
+      }
     }
 
-    for (let i = 0; i < rawText.length; i++) {
-      const digit = rawText[i];
-      const square = document.getElementById("sq" + i);
-      square.style.background = digitColors[digit];
+
+    function updateCounter() {
+
+      const input =
+        document.getElementById(
+          "inputData"
+        );
+
+
+      const inputDisplay =
+        document.getElementById(
+          "inputDisplay"
+        );
+
+
+      let rawText =
+        input.value.replace(
+          /[^0-9]/g,
+          ""
+        );
+
+
+      rawText =
+        rawText.substring(
+          0,
+          100
+        );
+
+
+      input.value =
+        rawText;
+
+
+      const formattedText =
+        rawText.match(
+          /.{1,5}/g
+        )?.join(
+          " "
+        ) ||
+        "";
+
+
+      inputDisplay.textContent =
+        formattedText ||
+        "Example: 11111 22222 23333 33333";
+
+
+      const counts = {
+
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      };
+
+
+      for (
+        const char of rawText
+      ) {
+
+        counts[char]++;
+      }
+
+
+      for (
+        let i = 0;
+        i < 100;
+        i++
+      ) {
+
+        const square =
+          document.getElementById(
+            "sq" +
+            i
+          );
+
+
+        if (
+          square
+        ) {
+
+          square.style.background =
+            "rgba(255,255,255,0.14)";
+        }
+      }
+
+
+      for (
+        let i = 0;
+        i < rawText.length;
+        i++
+      ) {
+
+        const digit =
+          rawText[i];
+
+
+        const square =
+          document.getElementById(
+            "sq" +
+            i
+          );
+
+
+        if (
+          square
+        ) {
+
+          square.style.background =
+            digitColors[
+              digit
+            ];
+        }
+      }
+
+
+      Object
+        .keys(
+          counts
+        )
+        .forEach(
+          digit => {
+
+            document
+              .getElementById(
+                "count" +
+                digit
+              )
+              .textContent =
+                counts[
+                  digit
+                ];
+
+          }
+        );
+
+
+      isDirty =
+        rawText.length >
+        0;
     }
 
-    document.getElementById("count0").innerHTML = counts["0"];
-    document.getElementById("count1").innerHTML = counts["1"];
-    document.getElementById("count2").innerHTML = counts["2"];
-    document.getElementById("count3").innerHTML = counts["3"];
-    document.getElementById("count4").innerHTML = counts["4"];
-    document.getElementById("count5").innerHTML = counts["5"];
-    document.getElementById("count6").innerHTML = counts["6"];
-    document.getElementById("count7").innerHTML = counts["7"];
-    document.getElementById("count8").innerHTML = counts["8"];
-    document.getElementById("count9").innerHTML = counts["9"];
 
-    isDirty = rawText.length > 0;
-  }
+    function clearCounterWithoutConfirm() {
 
-  function clearCounterWithoutConfirm() {
-    document.getElementById("inputData").value = "";
-    isDirty = false;
-    updateCounter();
-  }
+      document.getElementById(
+        "inputData"
+      ).value =
+        "";
 
-  function resetCounter() {
-    const confirmDelete = confirm("Are you sure you want to clear the results?");
 
-    if (confirmDelete) {
-      clearCounterWithoutConfirm();
-      focusInput();
+      isDirty =
+        false;
+
+
+      updateCounter();
     }
-  }
-  window.addEventListener("beforeunload", function (event) {
-    const data = document.getElementById("inputData").value.trim();
 
-    if (data.length > 0) {
-      event.preventDefault();
-      event.returnValue = "Data will be lost if the tab is closed.";
-      return event.returnValue;
+
+    function resetCounter() {
+
+      const confirmDelete =
+        confirm(
+          "Are you sure you want to clear the results?"
+        );
+
+
+      if (
+        confirmDelete
+      ) {
+
+        clearCounterWithoutConfirm();
+
+        focusInput();
+      }
     }
-  });
 
-  window.addEventListener("load", function () {
-    createGrid();
-    updateCounter();
-    focusInput();
-  });
-</script>
+
+    window.addEventListener(
+      "beforeunload",
+      event => {
+
+        if (
+          isDirty
+        ) {
+
+          event.preventDefault();
+
+          event.returnValue =
+            "";
+        }
+      }
+    );
+
+
+    window.addEventListener(
+      "load",
+      () => {
+
+        createGrid();
+
+        updateCounter();
+
+        focusInput();
+      }
+    );
+
+  </script>
 
 </body>
+
 </html>
