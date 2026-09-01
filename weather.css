@@ -1,985 +1,368 @@
 /* ==================================================
    MUSIC SESSION WEATHER
-   weather.js
+   weather.css
    ================================================== */
 
-
-/* ==================================================
-   STATE
-   ================================================== */
-
-const state = {
-
-  latitude:
-    null,
-
-  longitude:
-    null,
-
-  locationName:
-    "Current Location",
-
-  timezone:
-    Intl
-      .DateTimeFormat()
-      .resolvedOptions()
-      .timeZone,
-
-  weatherData:
-    null,
-
-  radarFrames:
-    [],
-
-  radarLayer:
-    null,
-
-  radarMap:
-    null,
-
-  radarMarker:
-    null,
-
-  radarPlayTimer:
-    null,
-
-  radarHost:
-    null,
-
-  historyChart:
-    null,
-
-  precipitationChart:
-    null,
-
-  windChart:
-    null
-};
-
-
-/* ==================================================
-   API
-   ================================================== */
-
-const WEATHER_API =
-  "https://api.open-meteo.com/v1/forecast";
-
-
-const GEOCODING_API =
-  "https://geocoding-api.open-meteo.com/v1/search";
-
-
-const RAINVIEWER_API =
-  "https://api.rainviewer.com/public/weather-maps.json";
-
-
-/* ==================================================
-   HELPERS
-   ================================================== */
-
-function byId(
-  id
-) {
-
-  return document.getElementById(
-    id
-  );
+* {
+  box-sizing: border-box;
 }
 
+:root {
+  --weather-width: 1500px;
 
-function setStatus(
-  message
-) {
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.80);
+  --text-muted: rgba(255, 255, 255, 0.62);
 
-  const element =
-    byId(
-      "statusMessage"
-    );
+  --panel:
+    rgba(14, 22, 30, 0.76);
 
+  --panel-light:
+    rgba(255, 255, 255, 0.08);
 
-  if (
-    element
-  ) {
+  --border:
+    rgba(255, 255, 255, 0.18);
 
-    element.textContent =
-      message;
-  }
+  --border-strong:
+    rgba(255, 255, 255, 0.28);
+
+  --accent:
+    #9ee8ca;
+
+  --shadow:
+    0 20px 60px rgba(0, 0, 0, 0.38);
 }
 
 
 /* ==================================================
-   LIVE CLOCK
-
-   24-HOUR:
-   18:30:25
-
-   DATE:
-   1 September 2026
+   PAGE
    ================================================== */
 
-function updateClock() {
+html,
+body {
+  margin: 0;
+  padding: 0;
 
-  const now =
-    new Date();
+  width: 100%;
+  min-height: 100%;
+}
 
+html {
+  scroll-behavior: smooth;
+}
 
-  let hour24;
+body {
+  min-height: 100vh;
 
+  position: relative;
 
-  try {
+  overflow-x: hidden;
 
-    const parts =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
+  padding:
+    24px 0 60px;
 
-          timeZone:
-            state.timezone,
+  font-family:
+    Rubik,
+    Arial,
+    sans-serif;
 
-          hour:
-            "2-digit",
+  color:
+    var(--text-primary);
 
-          hourCycle:
-            "h23"
-
-        }
-      ).formatToParts(
-        now
-      );
-
-
-    const hourPart =
-      parts.find(
-        part =>
-          part.type ===
-          "hour"
-      );
-
-
-    hour24 =
-      Number(
-        hourPart?.value ??
-        0
-      );
-
-  } catch (
-    error
-  ) {
-
-    state.timezone =
-      Intl
-        .DateTimeFormat()
-        .resolvedOptions()
-        .timeZone;
-
-
-    hour24 =
-      now.getHours();
-  }
-
-
-  let greeting =
-    "🌙 Good Evening!";
-
-
-  if (
-    hour24 >= 5 &&
-    hour24 < 12
-  ) {
-
-    greeting =
-      "🌅 Good Morning!";
-
-  } else if (
-    hour24 >= 12 &&
-    hour24 < 18
-  ) {
-
-    greeting =
-      "☀️ Good Afternoon!";
-  }
-
-
-  const greetingElement =
-    byId(
-      "greetingText"
-    );
-
-
-  if (
-    greetingElement
-  ) {
-
-    greetingElement.textContent =
-      greeting;
-  }
-
-
-  const timeElement =
-    byId(
-      "timeText"
-    );
-
-
-  if (
-    timeElement
-  ) {
-
-    timeElement.textContent =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          timeZone:
-            state.timezone,
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          second:
-            "2-digit",
-
-          hourCycle:
-            "h23"
-
-        }
-      ).format(
-        now
-      );
-  }
-
-
-  const dateElement =
-    byId(
-      "dateText"
-    );
-
-
-  if (
-    dateElement
-  ) {
-
-    dateElement.textContent =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-
-          timeZone:
-            state.timezone,
-
-          day:
-            "numeric",
-
-          month:
-            "long",
-
-          year:
-            "numeric"
-
-        }
-      ).format(
-        now
-      );
-  }
-
-
-  const timezoneElement =
-    byId(
-      "timezoneText"
-    );
-
-
-  if (
-    timezoneElement
-  ) {
-
-    timezoneElement.textContent =
-      state.timezone;
-  }
+  background:
+    #101820;
 }
 
 
 /* ==================================================
-   WEATHER CODE
+   BACKGROUND
    ================================================== */
 
-function weatherInfo(
-  code,
-  isDay = 1
-) {
+.weather-background {
+  position: fixed;
 
-  const night =
-    Number(
-      isDay
-    ) ===
+  inset: -15px;
+
+  z-index: -3;
+
+  background:
+    url("images/weather-background.jpg")
+    center center /
+    cover
+    no-repeat;
+
+  filter:
+    blur(7px);
+
+  transform:
+    scale(1.02);
+
+  pointer-events:
+    none;
+}
+
+.weather-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: -2;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 12, 18, 0.55),
+      rgba(4, 12, 18, 0.72)
+    );
+
+  pointer-events:
+    none;
+}
+
+
+/* ==================================================
+   MAIN BOX
+   ================================================== */
+
+.box {
+  width:
+    min(
+      var(--weather-width),
+      calc(100% - 34px)
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    30px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    30px;
+
+  background:
+    rgba(8, 15, 22, 0.64);
+
+  box-shadow:
+    var(--shadow);
+
+  backdrop-filter:
+    blur(24px);
+
+  -webkit-backdrop-filter:
+    blur(24px);
+}
+
+
+/* ==================================================
+   HEADER
+   ================================================== */
+
+.weather-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    24px;
+
+  margin-bottom:
+    28px;
+}
+
+.weather-header-title h1 {
+  margin:
     0;
 
+  font-size:
+    clamp(
+      30px,
+      4vw,
+      46px
+    );
 
-  const map = {
+  letter-spacing:
+    -0.03em;
+}
 
-    0: [
-      night
-        ? "Clear night"
-        : "Clear sky",
+.weather-header-title p {
+  margin:
+    10px 0 0;
 
-      night
-        ? "🌙"
-        : "☀️"
-    ],
+  color:
+    var(--text-secondary);
 
-    1: [
-      "Mainly clear",
+  font-size:
+    17px;
 
-      night
-        ? "🌙"
-        : "🌤️"
-    ],
+  line-height:
+    1.6;
+}
 
-    2: [
-      "Partly cloudy",
-      "⛅"
-    ],
+.home-button,
+.back-home {
+  display:
+    inline-flex;
 
-    3: [
-      "Overcast",
-      "☁️"
-    ],
+  align-items:
+    center;
 
-    45: [
-      "Fog",
-      "🌫️"
-    ],
+  justify-content:
+    center;
 
-    48: [
-      "Rime fog",
-      "🌫️"
-    ],
+  min-height:
+    46px;
 
-    51: [
-      "Light drizzle",
-      "🌦️"
-    ],
+  padding:
+    0 18px;
 
-    53: [
-      "Moderate drizzle",
-      "🌦️"
-    ],
+  border:
+    1px solid var(--border);
 
-    55: [
-      "Dense drizzle",
-      "🌧️"
-    ],
+  border-radius:
+    14px;
 
-    56: [
-      "Freezing drizzle",
-      "🌧️"
-    ],
+  color:
+    white;
 
-    57: [
-      "Heavy freezing drizzle",
-      "🌧️"
-    ],
+  background:
+    rgba(255, 255, 255, 0.08);
 
-    61: [
-      "Slight rain",
-      "🌦️"
-    ],
+  text-decoration:
+    none;
 
-    63: [
-      "Moderate rain",
-      "🌧️"
-    ],
+  font-weight:
+    800;
 
-    65: [
-      "Heavy rain",
-      "🌧️"
-    ],
+  transition:
+    0.2s ease;
+}
 
-    66: [
-      "Freezing rain",
-      "🌧️"
-    ],
+.home-button:hover,
+.back-home:hover {
+  transform:
+    translateY(-2px);
 
-    67: [
-      "Heavy freezing rain",
-      "🌧️"
-    ],
-
-    71: [
-      "Light snow",
-      "🌨️"
-    ],
-
-    73: [
-      "Snow",
-      "🌨️"
-    ],
-
-    75: [
-      "Heavy snow",
-      "❄️"
-    ],
-
-    77: [
-      "Snow grains",
-      "❄️"
-    ],
-
-    80: [
-      "Light rain showers",
-      "🌦️"
-    ],
-
-    81: [
-      "Rain showers",
-      "🌧️"
-    ],
-
-    82: [
-      "Heavy rain showers",
-      "⛈️"
-    ],
-
-    85: [
-      "Snow showers",
-      "🌨️"
-    ],
-
-    86: [
-      "Heavy snow showers",
-      "❄️"
-    ],
-
-    95: [
-      "Thunderstorm",
-      "⛈️"
-    ],
-
-    96: [
-      "Thunderstorm with hail",
-      "⛈️"
-    ],
-
-    99: [
-      "Severe thunderstorm",
-      "⛈️"
-    ]
-  };
-
-
-  const result =
-    map[
-      Number(
-        code
-      )
-    ] ||
-    [
-      "Weather",
-      "🌡️"
-    ];
-
-
-  return {
-
-    label:
-      result[0],
-
-    icon:
-      result[1]
-  };
+  background:
+    rgba(255, 255, 255, 0.15);
 }
 
 
 /* ==================================================
-   WIND DIRECTION
+   AT A GLANCE
    ================================================== */
 
-function compassDirection(
-  degrees
-) {
+.at-a-glance {
+  display:
+    grid;
 
-  const value =
-    Number(
-      degrees
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
     );
 
+  gap:
+    16px;
 
-  if (
-    !Number.isFinite(
-      value
-    )
-  ) {
-
-    return "--";
-  }
-
-
-  const directions = [
-    "N",
-    "NE",
-    "E",
-    "SE",
-    "S",
-    "SW",
-    "W",
-    "NW"
-  ];
-
-
-  const index =
-    Math.round(
-      (
-        value %
-        360
-      ) /
-      45
-    ) %
-    8;
-
-
-  return (
-    directions[
-      index
-    ] +
-    " " +
-    Math.round(
-      value
-    ) +
-    "°"
-  );
+  margin-bottom:
+    24px;
 }
 
+.glance-card {
+  min-height:
+    145px;
 
-/* ==================================================
-   VISIBILITY
-   ================================================== */
+  padding:
+    22px;
 
-function formatVisibility(
-  meters
-) {
+  display:
+    flex;
 
-  const value =
-    Number(
-      meters
-    );
+  flex-direction:
+    column;
 
+  justify-content:
+    center;
 
-  if (
-    !Number.isFinite(
-      value
-    )
-  ) {
+  border:
+    1px solid var(--border);
 
-    return "-- km";
-  }
+  border-radius:
+    22px;
 
+  background:
+    var(--panel);
 
-  return (
-    (
-      value /
-      1000
-    ).toFixed(
-      value <
-      10000
-        ? 1
-        : 0
-    ) +
-    " km"
-  );
+  box-shadow:
+    0 12px 32px
+    rgba(0, 0, 0, 0.20);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
 }
 
+.glance-label,
+.current-heading-label,
+.section-label {
+  color:
+    var(--accent);
 
-/* ==================================================
-   DATE / TIME FORMATTER
-   ================================================== */
+  font-size:
+    11px;
 
-function formatLocalDateTime(
-  value,
-  options = {}
-) {
+  font-weight:
+    800;
 
-  if (
-    !value
-  ) {
+  text-transform:
+    uppercase;
 
-    return "--";
-  }
-
-
-  return new Intl.DateTimeFormat(
-    "en-GB",
-    {
-
-      timeZone:
-        state.timezone,
-
-      ...options
-
-    }
-  ).format(
-    new Date(
-      value
-    )
-  );
+  letter-spacing:
+    0.12em;
 }
 
+.glance-value {
+  display:
+    block;
 
-/* ==================================================
-   NEAREST HOURLY INDEX
-   ================================================== */
+  margin-top:
+    10px;
 
-function nearestHourlyIndex(
-  times
-) {
+  font-size:
+    clamp(
+      22px,
+      3vw,
+      34px
+    );
 
-  const now =
-    Date.now();
-
-
-  let best =
-    0;
-
-
-  let smallestDifference =
-    Infinity;
-
-
-  times.forEach(
-    (
-      time,
-      index
-    ) => {
-
-      const difference =
-        Math.abs(
-          new Date(
-            time
-          ).getTime() -
-          now
-        );
-
-
-      if (
-        difference <
-        smallestDifference
-      ) {
-
-        smallestDifference =
-          difference;
-
-        best =
-          index;
-      }
-
-    }
-  );
-
-
-  return best;
+  line-height:
+    1.15;
 }
 
+.glance-sub {
+  display:
+    block;
 
-/* ==================================================
-   FUTURE INDEXES
-   ================================================== */
+  margin-top:
+    8px;
 
-function futureHourlyIndexes(
-  data,
-  count = 24
-) {
+  color:
+    var(--text-secondary);
 
-  const times =
-    data.hourly?.time ||
-    [];
+  font-size:
+    14px;
 
-
-  const now =
-    Date.now();
-
-
-  let start =
-    times.findIndex(
-      time =>
-        new Date(
-          time
-        ).getTime() >=
-        now -
-        30 *
-        60 *
-        1000
-    );
-
-
-  if (
-    start <
-    0
-  ) {
-
-    start =
-      0;
-  }
-
-
-  return Array.from(
-
-    {
-      length:
-        Math.min(
-          count,
-          times.length -
-          start
-        )
-    },
-
-    (
-      _,
-      offset
-    ) =>
-      start +
-      offset
-  );
-}
-
-
-/* ==================================================
-   LOAD WEATHER
-   ================================================== */
-
-async function loadWeather(
-  latitude,
-  longitude,
-  locationName =
-    "Current Location"
-) {
-
-  state.latitude =
-    Number(
-      latitude
-    );
-
-
-  state.longitude =
-    Number(
-      longitude
-    );
-
-
-  state.locationName =
-    locationName;
-
-
-  byId(
-    "locationText"
-  ).textContent =
-    locationName;
-
-
-  byId(
-    "coordinateText"
-  ).textContent =
-    `${state.latitude.toFixed(4)}, ` +
-    `${state.longitude.toFixed(4)}`;
-
-
-  setStatus(
-    "Loading detailed weather..."
-  );
-
-
-  const params =
-    new URLSearchParams({
-
-      latitude:
-        state.latitude,
-
-      longitude:
-        state.longitude,
-
-
-      current: [
-
-        "temperature_2m",
-
-        "apparent_temperature",
-
-        "is_day",
-
-        "precipitation",
-
-        "weather_code",
-
-        "cloud_cover",
-
-        "pressure_msl",
-
-        "wind_speed_10m",
-
-        "wind_direction_10m",
-
-        "wind_gusts_10m"
-
-      ].join(","),
-
-
-      hourly: [
-
-        "temperature_2m",
-
-        "apparent_temperature",
-
-        "relative_humidity_2m",
-
-        "precipitation_probability",
-
-        "precipitation",
-
-        "weather_code",
-
-        "cloud_cover",
-
-        "visibility",
-
-        "pressure_msl",
-
-        "wind_speed_10m",
-
-        "wind_direction_10m",
-
-        "wind_gusts_10m",
-
-        "is_day"
-
-      ].join(","),
-
-
-      daily: [
-
-        "weather_code",
-
-        "temperature_2m_max",
-
-        "temperature_2m_min",
-
-        "precipitation_sum",
-
-        "precipitation_probability_max",
-
-        "wind_speed_10m_max",
-
-        "wind_gusts_10m_max",
-
-        "sunrise",
-
-        "sunset",
-
-        "uv_index_max"
-
-      ].join(","),
-
-
-      timezone:
-        "auto",
-
-
-      past_hours:
-        "72",
-
-
-      forecast_hours:
-        "168",
-
-
-      forecast_days:
-        "7"
-    });
-
-
-  try {
-
-    const response =
-      await fetch(
-        `${WEATHER_API}?${params}`
-      );
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        `Weather API returned ${response.status}`
-      );
-    }
-
-
-    const data =
-      await response.json();
-
-
-    state.weatherData =
-      data;
-
-
-    state.timezone =
-      data.timezone ||
-      state.timezone;
-
-
-    updateClock();
-
-    renderCurrent(
-      data
-    );
-
-    renderDaily(
-      data
-    );
-
-    renderHourly(
-      data
-    );
-
-    renderHistory(
-      Number(
-        byId(
-          "historyHoursSelect"
-        ).value
-      )
-    );
-
-    renderPrecipitation(
-      data
-    );
-
-    renderWind(
-      data
-    );
-
-
-    await initializeRadar();
-
-
-    setStatus(
-      "Weather updated successfully."
-    );
-
-  } catch (
-    error
-  ) {
-
-    console.error(
-      "Weather error:",
-      error
-    );
-
-
-    setStatus(
-      "Unable to load weather. Check your internet connection."
-    );
-  }
+  font-weight:
+    600;
 }
 
 
@@ -987,199 +370,476 @@ async function loadWeather(
    CURRENT WEATHER
    ================================================== */
 
-function renderCurrent(
-  data
-) {
+.current-weather {
+  display:
+    grid;
 
-  const current =
-    data.current ||
-    {};
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(320px, 0.65fr);
 
+  gap:
+    20px;
 
-  const hourly =
-    data.hourly ||
-    {};
+  margin-bottom:
+    28px;
+}
 
+.current-main,
+.metric-panel,
+.section-panel {
+  border:
+    1px solid var(--border);
 
-  const index =
-    nearestHourlyIndex(
-      hourly.time ||
-      []
+  border-radius:
+    26px;
+
+  background:
+    var(--panel);
+
+  box-shadow:
+    0 15px 40px
+    rgba(0, 0, 0, 0.25);
+
+  backdrop-filter:
+    blur(20px);
+
+  -webkit-backdrop-filter:
+    blur(20px);
+}
+
+.current-main {
+  padding:
+    28px;
+}
+
+.current-heading {
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    space-between;
+
+  gap:
+    20px;
+}
+
+.current-heading h2 {
+  margin:
+    7px 0 0;
+
+  font-size:
+    clamp(
+      30px,
+      4vw,
+      46px
+    );
+}
+
+.weather-icon {
+  font-size:
+    clamp(
+      58px,
+      7vw,
+      82px
     );
 
+  line-height:
+    1;
+}
 
-  const info =
-    weatherInfo(
-      current.weather_code,
-      current.is_day
+
+/* ==================================================
+   TEMPERATURE
+   ================================================== */
+
+.temperature-area {
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    20px;
+
+  margin-top:
+    24px;
+}
+
+#currentTemperature {
+  font-size:
+    clamp(
+      60px,
+      8vw,
+      96px
     );
 
+  line-height:
+    0.95;
 
-  byId(
-    "currentCondition"
-  ).textContent =
-    info.label;
+  letter-spacing:
+    -0.05em;
+}
 
+.temperature-detail {
+  padding-bottom:
+    8px;
 
-  byId(
-    "currentWeatherIcon"
-  ).textContent =
-    info.icon;
+  display:
+    flex;
 
+  flex-direction:
+    column;
 
-  byId(
-    "currentTemperature"
-  ).textContent =
-    Number.isFinite(
-      Number(
-        current.temperature_2m
-      )
-    )
+  gap:
+    6px;
+}
 
-      ? `${Math.round(
-          current.temperature_2m
-        )}°C`
+.temperature-detail strong {
+  font-size:
+    20px;
+}
 
-      : "--°";
+.temperature-detail span {
+  color:
+    var(--text-muted);
+}
 
+.weather-description {
+  margin:
+    24px 0 0;
 
-  byId(
-    "feelsLike"
-  ).textContent =
-    Number.isFinite(
-      Number(
-        current.apparent_temperature
-      )
-    )
+  color:
+    var(--text-secondary);
 
-      ? `Feels like ${Math.round(
-          current.apparent_temperature
-        )}°C`
+  font-size:
+    17px;
 
-      : "Feels like --°";
-
-
-  byId(
-    "observationTime"
-  ).textContent =
-    current.time
-
-      ? `Weather time: ${formatLocalDateTime(
-          current.time,
-          {
-
-            hour:
-              "2-digit",
-
-            minute:
-              "2-digit",
-
-            hourCycle:
-              "h23"
-          }
-        )}`
-
-      : "Updated recently";
+  line-height:
+    1.7;
+}
 
 
-  const humidity =
-    Math.round(
-      hourly
-        .relative_humidity_2m
-        ?.[index] ??
-      0
+/* ==================================================
+   LOCATION CONTROLS
+   ================================================== */
+
+.location-row {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  margin-top:
+    24px;
+}
+
+.location-button,
+.search-button,
+.radar-button {
+  min-height:
+    44px;
+
+  padding:
+    0 17px;
+
+  border:
+    1px solid var(--border-strong);
+
+  border-radius:
+    12px;
+
+  color:
+    white;
+
+  background:
+    rgba(255, 255, 255, 0.10);
+
+  font:
+    inherit;
+
+  font-weight:
+    800;
+
+  cursor:
+    pointer;
+}
+
+.location-button:hover,
+.search-button:hover,
+.radar-button:hover {
+  background:
+    rgba(255, 255, 255, 0.17);
+}
+
+.city-search {
+  flex:
+    1;
+
+  min-width:
+    260px;
+
+  display:
+    flex;
+
+  gap:
+    8px;
+}
+
+.city-search input {
+  flex:
+    1;
+
+  min-width:
+    0;
+
+  min-height:
+    44px;
+
+  padding:
+    0 15px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    12px;
+
+  outline:
+    none;
+
+  background:
+    rgba(255, 255, 255, 0.94);
+
+  color:
+    #1b252d;
+
+  font:
+    inherit;
+}
+
+.status-message {
+  margin-top:
+    14px;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    14px;
+
+  font-weight:
+    700;
+}
+
+
+/* ==================================================
+   SEARCH RESULTS
+   ================================================== */
+
+.search-results {
+  margin-top:
+    12px;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    14px;
+
+  background:
+    rgba(9, 17, 24, 0.96);
+}
+
+.search-result,
+.search-result-button {
+  width:
+    100%;
+
+  padding:
+    13px 15px;
+
+  border:
+    0;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+
+  color:
+    white;
+
+  background:
+    transparent;
+
+  text-align:
+    left;
+
+  font:
+    inherit;
+}
+
+.search-result-button {
+  display:
+    flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    center;
+
+  gap:
+    16px;
+
+  cursor:
+    pointer;
+}
+
+.search-result-button:hover {
+  background:
+    rgba(255, 255, 255, 0.08);
+}
+
+
+/* ==================================================
+   METRICS
+   ================================================== */
+
+.metric-panel {
+  padding:
+    18px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
     );
 
+  gap:
+    12px;
+}
 
-  const precipitation =
-    Number(
-      current
-        .precipitation ??
-      0
+.metric {
+  min-height:
+    105px;
+
+  padding:
+    16px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+
+  border-radius:
+    17px;
+
+  background:
+    var(--panel-light);
+}
+
+.metric span {
+  color:
+    var(--text-muted);
+
+  font-size:
+    13px;
+
+  font-weight:
+    700;
+}
+
+.metric strong {
+  margin-top:
+    8px;
+
+  font-size:
+    21px;
+}
+
+
+/* ==================================================
+   SECTION PANELS
+   ================================================== */
+
+.section-panel {
+  margin-top:
+    24px;
+
+  padding:
+    26px;
+}
+
+.section-heading {
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap:
+    28px;
+
+  margin-bottom:
+    22px;
+}
+
+.section-heading h2 {
+  margin:
+    6px 0 0;
+
+  font-size:
+    clamp(
+      28px,
+      4vw,
+      42px
     );
+}
 
+.section-description {
+  max-width:
+    620px;
 
-  const wind =
-    Math.round(
-      current
-        .wind_speed_10m ??
-      0
-    );
+  margin:
+    0;
 
+  color:
+    var(--text-secondary);
 
-  byId(
-    "weatherSummary"
-  ).textContent =
-    `${info.label}. ` +
-    `Humidity ${humidity}%, ` +
-    `wind ${wind} km/h ` +
-    `${compassDirection(
-      current.wind_direction_10m
-    )}, ` +
-    `precipitation ${precipitation.toFixed(1)} mm.`;
-
-
-  byId(
-    "humidityValue"
-  ).textContent =
-    `${humidity}%`;
-
-
-  byId(
-    "visibilityValue"
-  ).textContent =
-    formatVisibility(
-      hourly
-        .visibility
-        ?.[index]
-    );
-
-
-  byId(
-    "cloudValue"
-  ).textContent =
-    `${Math.round(
-      current.cloud_cover ??
-      0
-    )}%`;
-
-
-  byId(
-    "pressureValue"
-  ).textContent =
-    `${Math.round(
-      current.pressure_msl ??
-      0
-    )} hPa`;
-
-
-  byId(
-    "currentPrecipValue"
-  ).textContent =
-    `${precipitation.toFixed(1)} mm`;
-
-
-  byId(
-    "currentWindValue"
-  ).textContent =
-    `${wind} km/h`;
-
-
-  byId(
-    "currentGustValue"
-  ).textContent =
-    `${Math.round(
-      current.wind_gusts_10m ??
-      0
-    )} km/h`;
-
-
-  byId(
-    "windDirectionValue"
-  ).textContent =
-    compassDirection(
-      current.wind_direction_10m
-    );
+  line-height:
+    1.6;
 }
 
 
@@ -1187,1083 +847,376 @@ function renderCurrent(
    DAILY FORECAST
    ================================================== */
 
-function renderDaily(
-  data
-) {
+.daily-grid {
+  display:
+    grid;
 
-  const daily =
-    data.daily;
-
-
-  const container =
-    byId(
-      "dailyForecast"
+  grid-template-columns:
+    repeat(
+      7,
+      minmax(0, 1fr)
     );
 
+  gap:
+    12px;
+}
 
-  container.innerHTML =
-    "";
+.day-card {
+  min-width:
+    0;
 
+  padding:
+    18px 12px;
 
-  daily.time.forEach(
-    (
-      time,
-      index
-    ) => {
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
 
-      const info =
-        weatherInfo(
-          daily
-            .weather_code[
-              index
-            ]
-        );
+  border-radius:
+    18px;
 
+  background:
+    rgba(255, 255, 255, 0.07);
 
-      const card =
-        document.createElement(
-          "article"
-        );
+  text-align:
+    center;
+}
 
+.day-name {
+  font-size:
+    17px;
 
-      card.className =
-        "day-card";
+  font-weight:
+    800;
+}
 
+.day-date {
+  margin-top:
+    4px;
 
-      card.innerHTML =
-        `
-          <div class="day-name">
-            ${formatLocalDateTime(
-              time,
-              {
-                weekday:
-                  "short"
-              }
-            )}
-          </div>
+  color:
+    var(--text-muted);
 
-          <div class="day-date">
-            ${formatLocalDateTime(
-              time,
-              {
-                day:
-                  "numeric",
+  font-size:
+    13px;
+}
 
-                month:
-                  "short"
-              }
-            )}
-          </div>
+.day-icon {
+  margin:
+    14px 0 10px;
 
-          <div class="day-icon">
-            ${info.icon}
-          </div>
+  font-size:
+    38px;
+}
 
-          <div class="day-temp">
-            ${Math.round(
-              daily
-                .temperature_2m_max[
-                  index
-                ]
-            )}°
-            /
-            ${Math.round(
-              daily
-                .temperature_2m_min[
-                  index
-                ]
-            )}°
-          </div>
+.day-temp {
+  font-size:
+    21px;
 
-          <div class="day-details">
-            ${info.label}
+  font-weight:
+    800;
+}
 
-            <br>
+.day-details {
+  margin-top:
+    11px;
 
-            Rain:
-            ${Math.round(
-              daily
-                .precipitation_probability_max[
-                  index
-                ] ??
-              0
-            )}%
+  color:
+    var(--text-secondary);
 
-            <br>
+  font-size:
+    12px;
 
-            ${Number(
-              daily
-                .precipitation_sum[
-                  index
-                ] ??
-              0
-            ).toFixed(1)}
-            mm
-
-            <br>
-
-            Wind:
-            ${Math.round(
-              daily
-                .wind_speed_10m_max[
-                  index
-                ] ??
-              0
-            )}
-            km/h
-
-            <br>
-
-            Gust:
-            ${Math.round(
-              daily
-                .wind_gusts_10m_max[
-                  index
-                ] ??
-              0
-            )}
-            km/h
-
-            <br>
-
-            UV:
-            ${Number(
-              daily
-                .uv_index_max[
-                  index
-                ] ??
-              0
-            ).toFixed(1)}
-
-            <br>
-
-            🌅
-            ${formatLocalDateTime(
-              daily
-                .sunrise[
-                  index
-                ],
-              {
-                hour:
-                  "2-digit",
-
-                minute:
-                  "2-digit",
-
-                hourCycle:
-                  "h23"
-              }
-            )}
-
-            <br>
-
-            🌇
-            ${formatLocalDateTime(
-              daily
-                .sunset[
-                  index
-                ],
-              {
-                hour:
-                  "2-digit",
-
-                minute:
-                  "2-digit",
-
-                hourCycle:
-                  "h23"
-              }
-            )}
-          </div>
-        `;
-
-
-      container.appendChild(
-        card
-      );
-    }
-  );
+  line-height:
+    1.65;
 }
 
 
 /* ==================================================
-   HOURLY FORECAST
+   HOURLY
    ================================================== */
 
-function renderHourly(
-  data
-) {
+.hourly-grid {
+  display:
+    grid;
 
-  const hourly =
-    data.hourly;
+  grid-auto-flow:
+    column;
 
+  grid-auto-columns:
+    125px;
 
-  const indexes =
-    futureHourlyIndexes(
-      data,
-      24
-    );
+  gap:
+    10px;
 
+  overflow-x:
+    auto;
 
-  const container =
-    byId(
-      "hourlyForecast"
-    );
+  padding-bottom:
+    8px;
+}
 
+.hour-card {
+  min-height:
+    205px;
 
-  container.innerHTML =
-    "";
+  padding:
+    16px 10px;
 
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
 
-  indexes.forEach(
-    index => {
+  border-radius:
+    17px;
 
-      const info =
-        weatherInfo(
+  background:
+    rgba(255, 255, 255, 0.07);
 
-          hourly
-            .weather_code[
-              index
-            ],
+  text-align:
+    center;
+}
 
-          hourly
-            .is_day[
-              index
-            ]
-        );
+.hour-time {
+  font-weight:
+    800;
+}
 
+.hour-icon {
+  margin:
+    12px 0;
 
-      const card =
-        document.createElement(
-          "article"
-        );
+  font-size:
+    32px;
+}
 
+.hour-temp {
+  font-size:
+    20px;
 
-      card.className =
-        "hour-card";
+  font-weight:
+    800;
+}
 
+.hour-sub {
+  margin-top:
+    8px;
 
-      card.innerHTML =
-        `
-          <div class="hour-time">
+  color:
+    var(--text-muted);
 
-            ${formatLocalDateTime(
-              hourly
-                .time[
-                  index
-                ],
-              {
+  font-size:
+    12px;
 
-                hour:
-                  "2-digit",
-
-                hourCycle:
-                  "h23"
-              }
-            )}
-
-          </div>
-
-          <div class="hour-icon">
-            ${info.icon}
-          </div>
-
-          <div class="hour-temp">
-
-            ${Math.round(
-              hourly
-                .temperature_2m[
-                  index
-                ]
-            )}°C
-
-          </div>
-
-          <div class="hour-sub">
-
-            ${info.label}
-
-            <br>
-
-            Rain
-            ${Math.round(
-              hourly
-                .precipitation_probability[
-                  index
-                ] ??
-              0
-            )}%
-
-            <br>
-
-            ${Number(
-              hourly
-                .precipitation[
-                  index
-                ] ??
-              0
-            ).toFixed(1)}
-            mm
-
-            <br>
-
-            Wind
-            ${Math.round(
-              hourly
-                .wind_speed_10m[
-                  index
-                ] ??
-              0
-            )}
-            km/h
-
-          </div>
-        `;
-
-
-      container.appendChild(
-        card
-      );
-    }
-  );
+  line-height:
+    1.55;
 }
 
 
 /* ==================================================
-   CHART OPTIONS
+   SUMMARY ROW
    ================================================== */
 
-function commonChartOptions() {
+.summary-row {
+  display:
+    grid;
 
-  return {
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
-    responsive:
-      true,
+  gap:
+    14px;
 
-    maintainAspectRatio:
-      false,
+  margin-bottom:
+    20px;
+}
 
-    interaction: {
+.summary-card {
+  padding:
+    20px;
 
-      mode:
-        "index",
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
 
-      intersect:
-        false
-    },
+  border-radius:
+    17px;
 
-    plugins: {
+  background:
+    rgba(255, 255, 255, 0.07);
+}
 
-      legend: {
+.summary-card span,
+.summary-card strong {
+  display:
+    block;
+}
 
-        labels: {
+.summary-card span {
+  color:
+    var(--text-muted);
 
-          color:
-            "white"
-        }
-      }
-    },
+  font-size:
+    13px;
 
-    scales: {
+  font-weight:
+    700;
+}
 
-      x: {
+.summary-card strong {
+  margin-top:
+    7px;
 
-        ticks: {
-
-          color:
-            "rgba(255,255,255,.75)",
-
-          maxTicksLimit:
-            12
-        },
-
-        grid: {
-
-          color:
-            "rgba(255,255,255,.10)"
-        }
-      },
-
-      y: {
-
-        ticks: {
-
-          color:
-            "rgba(255,255,255,.75)"
-        },
-
-        grid: {
-
-          color:
-            "rgba(255,255,255,.10)"
-        }
-      }
-    }
-  };
+  font-size:
+    27px;
 }
 
 
 /* ==================================================
-   HISTORY
+   CHARTS
    ================================================== */
 
-function renderHistory(
-  hours
-) {
+.chart-box {
+  position:
+    relative;
 
-  const data =
-    state.weatherData;
+  width:
+    100%;
 
+  height:
+    360px;
 
-  if (
-    !data
-  ) {
+  margin-top:
+    18px;
 
-    return;
-  }
+  padding:
+    12px;
 
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.10);
 
-  const hourly =
-    data.hourly;
+  border-radius:
+    18px;
 
-
-  const now =
-    Date.now();
-
-
-  const indexes =
-    hourly.time
-
-      .map(
-        (
-          time,
-          index
-        ) => ({
-
-          index:
-            index,
-
-          timestamp:
-            new Date(
-              time
-            ).getTime()
-        })
-      )
-
-      .filter(
-        item =>
-          item.timestamp <=
-            now &&
-          item.timestamp >=
-            now -
-            hours *
-            60 *
-            60 *
-            1000
-      )
-
-      .map(
-        item =>
-          item.index
-      );
-
-
-  if (
-    state.historyChart
-  ) {
-
-    state.historyChart.destroy();
-  }
-
-
-  state.historyChart =
-    new Chart(
-      byId(
-        "historyTemperatureChart"
-      ),
-      {
-
-        type:
-          "line",
-
-        data: {
-
-          labels:
-            indexes.map(
-              index =>
-                formatLocalDateTime(
-                  hourly
-                    .time[
-                      index
-                    ],
-                  {
-
-                    month:
-                      "short",
-
-                    day:
-                      "numeric",
-
-                    hour:
-                      "2-digit",
-
-                    hourCycle:
-                      "h23"
-                  }
-                )
-            ),
-
-          datasets: [
-
-            {
-
-              label:
-                "Temperature °C",
-
-              data:
-                indexes.map(
-                  index =>
-                    hourly
-                      .temperature_2m[
-                        index
-                      ]
-                )
-            },
-
-            {
-
-              label:
-                "Feels Like °C",
-
-              data:
-                indexes.map(
-                  index =>
-                    hourly
-                      .apparent_temperature[
-                        index
-                      ]
-                )
-            }
-          ]
-        },
-
-        options:
-          commonChartOptions()
-      }
-    );
-
-
-  const table =
-    byId(
-      "historyTableBody"
-    );
-
-
-  table.innerHTML =
-    "";
-
-
-  [
-    ...indexes
-  ]
-    .reverse()
-    .forEach(
-      index => {
-
-        const info =
-          weatherInfo(
-
-            hourly
-              .weather_code[
-                index
-              ],
-
-            hourly
-              .is_day[
-                index
-              ]
-          );
-
-
-        const row =
-          document.createElement(
-            "tr"
-          );
-
-
-        row.innerHTML =
-          `
-            <td>
-
-              ${formatLocalDateTime(
-                hourly
-                  .time[
-                    index
-                  ],
-                {
-
-                  day:
-                    "numeric",
-
-                  month:
-                    "short",
-
-                  hour:
-                    "2-digit",
-
-                  minute:
-                    "2-digit",
-
-                  hourCycle:
-                    "h23"
-                }
-              )}
-
-            </td>
-
-            <td>
-              ${info.icon}
-              ${info.label}
-            </td>
-
-            <td>
-              ${Math.round(
-                hourly
-                  .temperature_2m[
-                    index
-                  ]
-              )}°C
-            </td>
-
-            <td>
-              ${Math.round(
-                hourly
-                  .apparent_temperature[
-                    index
-                  ]
-              )}°C
-            </td>
-
-            <td>
-              ${Math.round(
-                hourly
-                  .relative_humidity_2m[
-                    index
-                  ] ??
-                0
-              )}%
-            </td>
-
-            <td>
-              ${Number(
-                hourly
-                  .precipitation[
-                    index
-                  ] ??
-                0
-              ).toFixed(1)}
-              mm
-            </td>
-
-            <td>
-              ${Math.round(
-                hourly
-                  .wind_speed_10m[
-                    index
-                  ] ??
-                0
-              )}
-              km/h
-              ${compassDirection(
-                hourly
-                  .wind_direction_10m[
-                    index
-                  ]
-              )}
-            </td>
-
-            <td>
-              ${Math.round(
-                hourly
-                  .wind_gusts_10m[
-                    index
-                  ] ??
-                0
-              )}
-              km/h
-            </td>
-          `;
-
-
-        table.appendChild(
-          row
-        );
-      }
-    );
+  background:
+    rgba(4, 10, 15, 0.30);
 }
 
 
 /* ==================================================
-   PRECIPITATION
+   TABLE
    ================================================== */
 
-function renderPrecipitation(
-  data
-) {
+.table-wrapper {
+  margin-top:
+    20px;
 
-  const hourly =
-    data.hourly;
+  overflow-x:
+    auto;
 
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
 
-  const indexes =
-    futureHourlyIndexes(
-      data,
-      24
-    );
+  border-radius:
+    16px;
+}
 
+table {
+  width:
+    100%;
 
-  const amount =
-    indexes.map(
-      index =>
-        Number(
-          hourly
-            .precipitation[
-              index
-            ] ??
-          0
-        )
-    );
+  min-width:
+    900px;
 
+  border-collapse:
+    collapse;
+}
 
-  const probability =
-    indexes.map(
-      index =>
-        Number(
-          hourly
-            .precipitation_probability[
-              index
-            ] ??
-          0
-        )
-    );
+th,
+td {
+  padding:
+    12px 14px;
 
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.09);
 
-  byId(
-    "maxRainChance"
-  ).textContent =
-    `${Math.round(
-      Math.max(
-        0,
-        ...probability
-      )
-    )}%`;
+  text-align:
+    left;
+}
 
+th {
+  background:
+    rgba(0, 0, 0, 0.24);
 
-  byId(
-    "next24Precip"
-  ).textContent =
-    `${amount.reduce(
-      (
-        total,
-        value
-      ) =>
-        total +
-        value,
-      0
-    ).toFixed(1)} mm`;
+  color:
+    var(--accent);
 
+  font-size:
+    12px;
 
-  if (
-    state.precipitationChart
-  ) {
+  text-transform:
+    uppercase;
 
-    state.precipitationChart.destroy();
-  }
+  letter-spacing:
+    0.07em;
+}
 
+td {
+  color:
+    var(--text-secondary);
 
-  state.precipitationChart =
-    new Chart(
-      byId(
-        "precipitationChart"
-      ),
-      {
-
-        data: {
-
-          labels:
-            indexes.map(
-              index =>
-                formatLocalDateTime(
-                  hourly
-                    .time[
-                      index
-                    ],
-                  {
-
-                    hour:
-                      "2-digit",
-
-                    hourCycle:
-                      "h23"
-                  }
-                )
-            ),
-
-          datasets: [
-
-            {
-
-              type:
-                "bar",
-
-              label:
-                "Precipitation mm",
-
-              data:
-                amount,
-
-              yAxisID:
-                "y"
-            },
-
-            {
-
-              type:
-                "line",
-
-              label:
-                "Probability %",
-
-              data:
-                probability,
-
-              yAxisID:
-                "y1"
-            }
-          ]
-        },
-
-        options: {
-
-          responsive:
-            true,
-
-          maintainAspectRatio:
-            false,
-
-          plugins: {
-
-            legend: {
-
-              labels: {
-
-                color:
-                  "white"
-              }
-            }
-          },
-
-          scales: {
-
-            x: {
-
-              ticks: {
-
-                color:
-                  "rgba(255,255,255,.75)"
-              },
-
-              grid: {
-
-                color:
-                  "rgba(255,255,255,.10)"
-              }
-            },
-
-            y: {
-
-              beginAtZero:
-                true,
-
-              ticks: {
-
-                color:
-                  "rgba(255,255,255,.75)"
-              },
-
-              grid: {
-
-                color:
-                  "rgba(255,255,255,.10)"
-              }
-            },
-
-            y1: {
-
-              beginAtZero:
-                true,
-
-              suggestedMax:
-                100,
-
-              position:
-                "right",
-
-              ticks: {
-
-                color:
-                  "rgba(255,255,255,.75)",
-
-                callback:
-                  value =>
-                    `${value}%`
-              },
-
-              grid: {
-
-                drawOnChartArea:
-                  false
-              }
-            }
-          }
-        }
-      }
-    );
+  font-size:
+    14px;
 }
 
 
 /* ==================================================
-   WIND
+   HISTORY CONTROLS
    ================================================== */
 
-function renderWind(
-  data
-) {
+.history-controls {
+  display:
+    flex;
 
-  const hourly =
-    data.hourly;
+  align-items:
+    center;
 
+  gap:
+    10px;
+}
 
-  const indexes =
-    futureHourlyIndexes(
-      data,
-      24
-    );
+.history-controls select {
+  min-height:
+    40px;
 
+  padding:
+    0 12px;
 
-  const wind =
-    indexes.map(
-      index =>
-        Number(
-          hourly
-            .wind_speed_10m[
-              index
-            ] ??
-          0
-        )
-    );
+  border:
+    1px solid var(--border);
 
+  border-radius:
+    10px;
 
-  const gust =
-    indexes.map(
-      index =>
-        Number(
-          hourly
-            .wind_gusts_10m[
-              index
-            ] ??
-          0
-        )
-    );
+  background:
+    rgba(255, 255, 255, 0.10);
 
+  color:
+    white;
 
-  byId(
-    "peakWind"
-  ).textContent =
-    `${Math.round(
-      Math.max(
-        0,
-        ...wind
-      )
-    )} km/h`;
+  font:
+    inherit;
+}
 
-
-  byId(
-    "peakGust"
-  ).textContent =
-    `${Math.round(
-      Math.max(
-        0,
-        ...gust
-      )
-    )} km/h`;
-
-
-  if (
-    state.windChart
-  ) {
-
-    state.windChart.destroy();
-  }
-
-
-  state.windChart =
-    new Chart(
-      byId(
-        "windChart"
-      ),
-      {
-
-        type:
-          "line",
-
-        data: {
-
-          labels:
-            indexes.map(
-              index =>
-                formatLocalDateTime(
-                  hourly
-                    .time[
-                      index
-                    ],
-                  {
-
-                    hour:
-                      "2-digit",
-
-                    hourCycle:
-                      "h23"
-                  }
-                )
-            ),
-
-          datasets: [
-
-            {
-
-              label:
-                "Wind km/h",
-
-              data:
-                wind
-            },
-
-            {
-
-              label:
-                "Gust km/h",
-
-              data:
-                gust
-            }
-          ]
-        },
-
-        options:
-          commonChartOptions()
-      }
-    );
+.history-controls option {
+  color:
+    black;
 }
 
 
@@ -2271,743 +1224,217 @@ function renderWind(
    RADAR
    ================================================== */
 
-function initializeMap() {
+.radar-controls {
+  display:
+    flex;
 
-  if (
-    state.radarMap ||
-    typeof L ===
-      "undefined"
-  ) {
+  flex-wrap:
+    wrap;
 
-    return;
-  }
+  align-items:
+    center;
 
+  gap:
+    16px;
 
-  state.radarMap =
-    L
-      .map(
-        "radarMap"
-      )
-      .setView(
-        [
-          -6.2,
-          106.8
-        ],
-        6
-      );
+  margin-bottom:
+    18px;
+}
 
+.radar-slider {
+  flex:
+    1;
 
-  L
-    .tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
+  min-width:
+    250px;
 
-        maxZoom:
-          19,
+  display:
+    flex;
 
-        attribution:
-          "&copy; OpenStreetMap contributors"
-      }
-    )
-    .addTo(
-      state.radarMap
-    );
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  color:
+    var(--text-secondary);
+
+  font-weight:
+    700;
+}
+
+.radar-slider input {
+  flex:
+    1;
+}
+
+#radarMap {
+  width:
+    100%;
+
+  height:
+    520px;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    20px;
+
+  background:
+    #17212b;
+}
+
+.radar-note {
+  margin:
+    12px 0 0;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    13px;
 }
 
 
-async function initializeRadar() {
+/* ==================================================
+   BACK HOME
+   ================================================== */
 
-  initializeMap();
-
-
-  if (
-    !state.radarMap
-  ) {
-
-    return;
-  }
-
-
-  if (
-    Number.isFinite(
-      state.latitude
-    ) &&
-    Number.isFinite(
-      state.longitude
-    )
-  ) {
-
-    state.radarMap.setView(
-      [
-        state.latitude,
-        state.longitude
-      ],
-      7
-    );
-
-
-    if (
-      state.radarMarker
-    ) {
-
-      state.radarMarker.setLatLng(
-        [
-          state.latitude,
-          state.longitude
-        ]
-      );
-
-    } else {
-
-      state.radarMarker =
-        L.marker(
-          [
-            state.latitude,
-            state.longitude
-          ]
-        )
-        .addTo(
-          state.radarMap
-        );
-    }
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-        RAINVIEWER_API
-      );
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        "Radar unavailable"
-      );
-    }
-
-
-    const data =
-      await response.json();
-
-
-    state.radarHost =
-      data.host;
-
-
-    state.radarFrames =
-      data.radar?.past ||
-      [];
-
-
-    const slider =
-      byId(
-        "radarFrameSlider"
-      );
-
-
-    slider.min =
-      "0";
-
-
-    slider.max =
-      String(
-        Math.max(
-          0,
-          state.radarFrames.length -
-          1
-        )
-      );
-
-
-    slider.value =
-      slider.max;
-
-
-    renderRadarFrame(
-      Number(
-        slider.value
-      )
-    );
-
-  } catch (
-    error
-  ) {
-
-    console.error(
-      "Radar error:",
-      error
-    );
-
-
-    byId(
-      "radarTimestamp"
-    ).textContent =
-      "Radar unavailable";
-  }
+.back-home {
+  margin-top:
+    25px;
 }
 
 
-function renderRadarFrame(
-  index
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (
+  max-width:
+  1100px
 ) {
 
-  const frame =
-    state.radarFrames[
-      index
-    ];
-
-
-  if (
-    !frame ||
-    !state.radarHost ||
-    !state.radarMap
-  ) {
-
-    return;
+  .daily-grid {
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      );
   }
-
-
-  if (
-    state.radarLayer
-  ) {
-
-    state.radarMap.removeLayer(
-      state.radarLayer
-    );
-  }
-
-
-  state.radarLayer =
-    L.tileLayer(
-      `${state.radarHost}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,
-      {
-
-        opacity:
-          0.72,
-
-        maxNativeZoom:
-          7,
-
-        maxZoom:
-          12,
-
-        attribution:
-          "Radar © RainViewer"
-      }
-    )
-    .addTo(
-      state.radarMap
-    );
-
-
-  byId(
-    "radarTimestamp"
-  ).textContent =
-    new Intl.DateTimeFormat(
-      "en-GB",
-      {
-
-        timeZone:
-          state.timezone,
-
-        day:
-          "numeric",
-
-        month:
-          "short",
-
-        hour:
-          "2-digit",
-
-        minute:
-          "2-digit",
-
-        hourCycle:
-          "h23"
-      }
-    ).format(
-      new Date(
-        frame.time *
-        1000
-      )
-    );
 }
 
 
-/* ==================================================
-   RADAR PLAY
-   ================================================== */
-
-function toggleRadarPlayback() {
-
-  const button =
-    byId(
-      "radarPlayButton"
-    );
-
-
-  const slider =
-    byId(
-      "radarFrameSlider"
-    );
-
-
-  if (
-    state.radarPlayTimer
-  ) {
-
-    clearInterval(
-      state.radarPlayTimer
-    );
-
-
-    state.radarPlayTimer =
-      null;
-
-
-    button.textContent =
-      "▶ Play Radar";
-
-
-    return;
-  }
-
-
-  if (
-    !state.radarFrames.length
-  ) {
-
-    return;
-  }
-
-
-  button.textContent =
-    "■ Stop Radar";
-
-
-  state.radarPlayTimer =
-    setInterval(
-      () => {
-
-        let next =
-          Number(
-            slider.value
-          ) +
-          1;
-
-
-        if (
-          next >
-          Number(
-            slider.max
-          )
-        ) {
-
-          next =
-            0;
-        }
-
-
-        slider.value =
-          String(
-            next
-          );
-
-
-        renderRadarFrame(
-          next
-        );
-
-      },
-      650
-    );
-}
-
-
-/* ==================================================
-   CITY SEARCH
-   ================================================== */
-
-async function searchCity(
-  query
+@media (
+  max-width:
+  900px
 ) {
 
-  const container =
-    byId(
-      "searchResults"
-    );
-
-
-  if (
-    !query.trim()
-  ) {
-
-    container.hidden =
-      true;
-
-
-    return;
+  .at-a-glance {
+    grid-template-columns:
+      1fr;
   }
 
+  .current-weather {
+    grid-template-columns:
+      1fr;
+  }
 
-  setStatus(
-    `Searching for ${query}...`
-  );
-
-
-  try {
-
-    const params =
-      new URLSearchParams({
-
-        name:
-          query.trim(),
-
-        count:
-          "6",
-
-        language:
-          "en",
-
-        format:
-          "json"
-      });
-
-
-    const response =
-      await fetch(
-        `${GEOCODING_API}?${params}`
+  .daily-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
       );
+  }
 
+  .section-heading {
+    align-items:
+      flex-start;
 
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        "Search unavailable"
-      );
-    }
-
-
-    const data =
-      await response.json();
-
-
-    const results =
-      data.results ||
-      [];
-
-
-    container.innerHTML =
-      "";
-
-
-    if (
-      !results.length
-    ) {
-
-      container.hidden =
-        false;
-
-
-      container.innerHTML =
-        `
-          <div class="search-result">
-            No matching location.
-          </div>
-        `;
-
-
-      return;
-    }
-
-
-    results.forEach(
-      result => {
-
-        const button =
-          document.createElement(
-            "button"
-          );
-
-
-        button.type =
-          "button";
-
-
-        button.className =
-          "search-result-button";
-
-
-        const details =
-          [
-            result.admin1,
-            result.country
-          ]
-          .filter(
-            Boolean
-          )
-          .join(
-            ", "
-          );
-
-
-        button.innerHTML =
-          `
-            <span>
-
-              <strong>
-                ${result.name}
-              </strong>
-
-              <br>
-
-              <small>
-                ${details}
-              </small>
-
-            </span>
-
-            <small>
-              ${Number(
-                result.latitude
-              ).toFixed(2)},
-              ${Number(
-                result.longitude
-              ).toFixed(2)}
-            </small>
-          `;
-
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            container.hidden =
-              true;
-
-
-            byId(
-              "citySearchInput"
-            ).value =
-              result.name;
-
-
-            loadWeather(
-
-              result.latitude,
-
-              result.longitude,
-
-              details
-                ? `${result.name}, ${details}`
-                : result.name
-
-            );
-          }
-        );
-
-
-        container.appendChild(
-          button
-        );
-      }
-    );
-
-
-    container.hidden =
-      false;
-
-
-    setStatus(
-      "Select a location."
-    );
-
-  } catch (
-    error
-  ) {
-
-    console.error(
-      "Search error:",
-      error
-    );
-
-
-    setStatus(
-      "Unable to search locations."
-    );
+    flex-direction:
+      column;
   }
 }
 
 
-/* ==================================================
-   GEOLOCATION
-   ================================================== */
+@media (
+  max-width:
+  600px
+) {
 
-function useBrowserLocation() {
-
-  if (
-    !navigator.geolocation
-  ) {
-
-    setStatus(
-      "Geolocation is not supported. Search for a city instead."
-    );
-
-
-    return;
+  body {
+    padding:
+      10px 0 30px;
   }
 
-
-  setStatus(
-    "Requesting your location..."
-  );
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    position => {
-
-      loadWeather(
-
-        position.coords.latitude,
-
-        position.coords.longitude,
-
-        "My Current Location"
-      );
-    },
-
-
-    error => {
-
-      console.warn(
-        "Geolocation:",
-        error
+  .box {
+    width:
+      calc(
+        100% - 16px
       );
 
+    padding:
+      16px;
 
-      setStatus(
-        "Location permission unavailable. Search for a city instead."
-      );
-    },
-
-
-    {
-
-      enableHighAccuracy:
-        true,
-
-      timeout:
-        12000,
-
-      maximumAge:
-        300000
-    }
-  );
-}
-
-
-/* ==================================================
-   EVENTS
-   ================================================== */
-
-function initializeEvents() {
-
-  byId(
-    "useLocationButton"
-  ).addEventListener(
-    "click",
-    useBrowserLocation
-  );
-
-
-  byId(
-    "citySearchForm"
-  ).addEventListener(
-    "submit",
-    event => {
-
-      event.preventDefault();
-
-
-      searchCity(
-        byId(
-          "citySearchInput"
-        ).value
-      );
-    }
-  );
-
-
-  byId(
-    "historyHoursSelect"
-  ).addEventListener(
-    "change",
-    event => {
-
-      renderHistory(
-        Number(
-          event.target.value
-        )
-      );
-    }
-  );
-
-
-  byId(
-    "radarPlayButton"
-  ).addEventListener(
-    "click",
-    toggleRadarPlayback
-  );
-
-
-  byId(
-    "radarFrameSlider"
-  ).addEventListener(
-    "input",
-    event => {
-
-      renderRadarFrame(
-        Number(
-          event.target.value
-        )
-      );
-    }
-  );
-}
-
-
-/* ==================================================
-   START
-   ================================================== */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    updateClock();
-
-
-    setInterval(
-      updateClock,
-      1000
-    );
-
-
-    initializeEvents();
-
-
-    initializeMap();
-
-
-    useBrowserLocation();
+    border-radius:
+      22px;
   }
-);
+
+  .weather-header {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+
+  .home-button {
+    width:
+      100%;
+  }
+
+  .metric-panel {
+    grid-template-columns:
+      1fr;
+  }
+
+  .daily-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .summary-row {
+    grid-template-columns:
+      1fr;
+  }
+
+  .location-row,
+  .city-search {
+    width:
+      100%;
+  }
+
+  .city-search {
+    min-width:
+      0;
+  }
+
+  .temperature-area {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+
+  #radarMap {
+    height:
+      390px;
+  }
+}
