@@ -1,4 +1,20 @@
 /* ==================================================
+   MUSIC SESSION DASHBOARD
+   script.js
+
+   FEATURES:
+   - Resource Viewer
+   - Local Storage
+   - Smooth Scrolling
+   - Live 24-Hour Clock
+   - DD/MM/YY Date
+   - Dynamic Greeting + Emoji
+   - Live Dashboard Weather
+   - Browser Geolocation
+   ================================================== */
+
+
+/* ==================================================
    PAGE STORAGE KEY
    ================================================== */
 
@@ -32,8 +48,7 @@ function activeResourceKey() {
 
 function saveAll() {
 
-  const data =
-    {};
+  const data = {};
 
 
   document
@@ -766,7 +781,11 @@ function initializeDashboardClock() {
 
 
     /* ==================================================
-       GREETING
+       DYNAMIC GREETING + EMOJI
+
+       05:00 - 11:59 = Morning
+       12:00 - 17:59 = Afternoon
+       18:00 - 04:59 = Evening
        ================================================== */
 
     if (
@@ -775,7 +794,7 @@ function initializeDashboardClock() {
     ) {
 
       greeting.textContent =
-        "Good Morning!";
+        "🌅 Good Morning!";
 
     } else if (
       hour >= 12 &&
@@ -783,64 +802,97 @@ function initializeDashboardClock() {
     ) {
 
       greeting.textContent =
-        "Good Afternoon!";
+        "☀️ Good Afternoon!";
 
     } else {
 
       greeting.textContent =
-        "Good Evening!";
+        "🌙 Good Evening!";
     }
 
 
     /* ==================================================
-       TIME
+       24-HOUR CLOCK
+
+       Examples:
+       08:15:32
+       14:37:09
+       23:58:41
        ================================================== */
 
-    time.textContent =
-      now.toLocaleTimeString(
-        "en-US",
-        {
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          second:
-            "2-digit",
-
-          hour12:
-            true
-
-        }
+    const hours =
+      String(
+        now.getHours()
+      ).padStart(
+        2,
+        "0"
       );
+
+
+    const minutes =
+      String(
+        now.getMinutes()
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    const seconds =
+      String(
+        now.getSeconds()
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    time.textContent =
+      `${hours}:${minutes}:${seconds}`;
 
 
     /* ==================================================
-       DATE
+       DATE FORMAT — D MONTH YYYY
+
+       Examples:
+       1 September 2026
+       25 December 2026
        ================================================== */
 
+    const day =
+      now.getDate();
+
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+
+
+    const month =
+      months[
+        now.getMonth()
+      ];
+
+
+    const year =
+      now.getFullYear();
+
+
     date.textContent =
-      now.toLocaleDateString(
-        "en-US",
-        {
+      `${day} ${month} ${year}`;
 
-          weekday:
-            "long",
-
-          year:
-            "numeric",
-
-          month:
-            "long",
-
-          day:
-            "numeric"
-
-        }
-      );
-  }
+  } // ← THIS CLOSING BRACE WAS MISSING
 
 
   /*
@@ -851,17 +903,16 @@ function initializeDashboardClock() {
 
 
   /*
-    Update every second.
+    Refresh every second.
   */
 
   setInterval(
-
     updateDashboardClock,
-
     1000
-
   );
-}
+
+} // ← closes initializeDashboardClock()
+
 
 
 /* ==================================================
@@ -939,6 +990,18 @@ function dashboardWeatherInfo(
     ],
 
 
+    56: [
+      "Freezing drizzle",
+      "🌧️"
+    ],
+
+
+    57: [
+      "Heavy freezing drizzle",
+      "🌧️"
+    ],
+
+
     61: [
       "Light rain",
       "🌦️"
@@ -953,6 +1016,18 @@ function dashboardWeatherInfo(
 
     65: [
       "Heavy rain",
+      "🌧️"
+    ],
+
+
+    66: [
+      "Freezing rain",
+      "🌧️"
+    ],
+
+
+    67: [
+      "Heavy freezing rain",
       "🌧️"
     ],
 
@@ -975,8 +1050,14 @@ function dashboardWeatherInfo(
     ],
 
 
+    77: [
+      "Snow grains",
+      "🌨️"
+    ],
+
+
     80: [
-      "Rain showers",
+      "Light rain showers",
       "🌦️"
     ],
 
@@ -988,7 +1069,7 @@ function dashboardWeatherInfo(
 
 
     82: [
-      "Heavy showers",
+      "Heavy rain showers",
       "🌧️"
     ],
 
@@ -1012,15 +1093,16 @@ function dashboardWeatherInfo(
 
 
     96: [
-      "Thunderstorm",
+      "Thunderstorm with hail",
       "⛈️"
     ],
 
 
     99: [
-      "Severe thunderstorm",
+      "Severe thunderstorm with hail",
       "⛈️"
     ]
+
   };
 
 
@@ -1084,6 +1166,10 @@ async function loadDashboardWeather(
     return;
   }
 
+
+  /* ==================================================
+     BUILD OPEN-METEO REQUEST
+     ================================================== */
 
   const parameters =
     new URLSearchParams({
@@ -1150,6 +1236,10 @@ async function loadDashboardWeather(
     }
 
 
+    /* ==================================================
+       WEATHER CONDITION
+       ================================================== */
+
     const weather =
       dashboardWeatherInfo(
 
@@ -1160,6 +1250,10 @@ async function loadDashboardWeather(
       );
 
 
+    /* ==================================================
+       TEMPERATURE
+       ================================================== */
+
     temperature.textContent =
 
       Math.round(
@@ -1169,12 +1263,20 @@ async function loadDashboardWeather(
       "°C";
 
 
+    /* ==================================================
+       CONDITION
+       ================================================== */
+
     condition.textContent =
 
       weather.condition +
 
       " • Open detailed weather →";
 
+
+    /* ==================================================
+       ICON
+       ================================================== */
 
     icon.textContent =
       weather.icon;
@@ -1237,23 +1339,19 @@ function initializeDashboardWeather() {
   }
 
 
-  /*
-    ==================================================
-    LOCAL FILE MODE
+  /* ==================================================
+     LOCAL FILE MODE
 
-    When opening index.html directly:
+     Example:
 
-    file:///D:/...
+     file:///D:/Documents/.../index.html
 
-    the clock works normally.
+     The date and clock work normally in local
+     file mode because they only use JavaScript.
 
-    Automatic browser geolocation may not work
-    because file:// is not a normal secure website.
-
-    GitHub Pages uses HTTPS.
-    localhost is also suitable for development.
-    ==================================================
-  */
+     Automatic location-based weather should be
+     tested through GitHub Pages or localhost.
+     ================================================== */
 
   if (
     window.location.protocol ===
@@ -1276,33 +1374,41 @@ function initializeDashboardWeather() {
   }
 
 
-  /*
-    ==================================================
-    GEOLOCATION SUPPORT
-    ==================================================
-  */
+  /* ==================================================
+     CHECK GEOLOCATION SUPPORT
+     ================================================== */
 
   if (
     !navigator.geolocation
   ) {
 
+    temperature.textContent =
+      "--°C";
+
+
     condition.textContent =
       "Location unavailable • Open details →";
+
+
+    icon.textContent =
+      "🌤️";
 
 
     return;
   }
 
 
+  /* ==================================================
+     DETECTING
+     ================================================== */
+
   condition.textContent =
     "Detecting weather...";
 
 
-  /*
-    ==================================================
-    REQUEST LOCATION
-    ==================================================
-  */
+  /* ==================================================
+     REQUEST CURRENT LOCATION
+     ================================================== */
 
   navigator.geolocation.getCurrentPosition(
 
@@ -1359,19 +1465,24 @@ function initializeDashboardWeather() {
 
 
 /* ==================================================
-   PAGE LOAD
+   PAGE INITIALIZATION
    ================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    /*
-      Existing Music Session functions.
-    */
+
+    /* ==================================================
+       LOAD SAVED MUSIC SESSION DATA
+       ================================================== */
 
     loadAll();
 
+
+    /* ==================================================
+       RESOURCE VIEWER
+       ================================================== */
 
     initializeViewerLoading();
 
@@ -1382,31 +1493,36 @@ document.addEventListener(
     initializeViewerToggle();
 
 
+    /* ==================================================
+       SMOOTH NAVIGATION
+       ================================================== */
+
     initializeSmoothAnchorScrolling();
 
 
-    /*
-      New dashboard clock.
+    /* ==================================================
+       LIVE DATE + TIME
 
-      This works offline and under file://.
-    */
+       Example:
+
+       ☀️ Good Afternoon!
+       15:42:18
+       01/09/26
+       ================================================== */
 
     initializeDashboardClock();
 
 
-    /*
-      New dashboard weather.
-
-      Automatic location is intended for
-      HTTPS GitHub Pages or localhost.
-    */
+    /* ==================================================
+       LIVE WEATHER
+       ================================================== */
 
     initializeDashboardWeather();
 
 
-    /*
-      Existing saved field listeners.
-    */
+    /* ==================================================
+       SAVED FIELD LISTENERS
+       ================================================== */
 
     document
       .querySelectorAll(
