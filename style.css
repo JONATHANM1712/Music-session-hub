@@ -148,12 +148,12 @@ body::before {
     no-repeat;
 
   filter:
-    blur(11px)
+    blur(10px)
     brightness(0.9)
     saturate(1.08);
 
   transform:
-    scale(1.05);
+    scale(1.03);
 }
 
 
@@ -1962,48 +1962,6 @@ button.card {
   background:
     #57cc84;
 }
-
-
-/* ==================================================
-   WEATHER QUICK ACCESS CARD
-   ================================================== */
-
-.weather-tool-card {
-
-  background:
-
-    linear-gradient(
-      145deg,
-      rgba(
-        7,
-        18,
-        25,
-        0.70
-      ),
-      rgba(
-        13,
-        22,
-        28,
-        0.86
-      )
-    ),
-
-    url(
-      "images/weather-background.jpg"
-    )
-
-    center /
-    cover
-    no-repeat;
-}
-
-
-.weather-tool-card::after {
-
-  background:
-    #70a7ff;
-}
-
 
 /* ==================================================
    VIEWER
