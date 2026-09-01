@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -10,15 +12,27 @@
 
   <meta
     name="description"
-    content="Music Session dashboard with one dynamic read-only resource preview and quick access to the preset color counter."
+    content="Music Session dashboard with dynamic resources, live date and time, weather, counter, and metronome."
   >
 
-  <title>Music Session Dashboard</title>
+  <title>
+    Music Session Dashboard
+  </title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
 
+
 <body id="top">
+
+
+  <!-- ==================================================
+       TOP BAR
+       ================================================== -->
 
   <header class="topbar">
 
@@ -39,12 +53,21 @@
             🎵
           </span>
 
+
           <span class="brand-text">
-            <strong>Music Session</strong>
-            <small>Dashboard</small>
+
+            <strong>
+              Music Session
+            </strong>
+
+            <small>
+              Dashboard
+            </small>
+
           </span>
 
         </a>
+
 
         <nav
           class="topnav"
@@ -59,9 +82,14 @@
             Resource Viewer
           </a>
 
+          <a href="weather.html">
+            Weather
+          </a>
+
         </nav>
 
       </div>
+
 
       <a
         href="counter.html"
@@ -82,7 +110,137 @@
 
   </header>
 
+
+  <!-- ==================================================
+       MAIN
+       ================================================== -->
+
   <main class="container">
+
+
+    <!-- ==================================================
+         LIVE DATE / TIME + WEATHER
+         ================================================== -->
+
+    <section
+      class="dashboard-glance"
+      aria-label="Current date, time and weather"
+    >
+
+
+      <!-- ==================================================
+           DATE + TIME + GREETING
+           ================================================== -->
+
+      <div
+        class="
+          dashboard-glance-card
+          dashboard-time-card
+        "
+      >
+
+        <span class="dashboard-glance-label">
+          Local Date & Time
+        </span>
+
+
+        <strong
+          id="dashboardGreeting"
+          class="dashboard-greeting"
+        >
+          Good Afternoon!
+        </strong>
+
+
+        <strong
+          id="dashboardTime"
+          class="dashboard-time"
+        >
+          --:--:--
+        </strong>
+
+
+        <span
+          id="dashboardDate"
+          class="dashboard-date"
+        >
+          Loading date...
+        </span>
+
+      </div>
+
+
+      <!-- ==================================================
+           LIVE WEATHER
+           ================================================== -->
+
+      <a
+        href="weather.html"
+        class="
+          dashboard-glance-card
+          dashboard-weather-card
+        "
+        aria-label="Open detailed weather"
+      >
+
+        <div class="dashboard-weather-content">
+
+
+          <div>
+
+            <span class="dashboard-glance-label">
+              Live Weather
+            </span>
+
+
+            <div class="dashboard-weather-main">
+
+              <span
+                id="dashboardWeatherIcon"
+                class="dashboard-weather-icon"
+                aria-hidden="true"
+              >
+                🌤️
+              </span>
+
+
+              <strong
+                id="dashboardWeatherTemperature"
+                class="dashboard-weather-temperature"
+              >
+                --°C
+              </strong>
+
+            </div>
+
+
+            <span
+              id="dashboardWeatherCondition"
+              class="dashboard-weather-condition"
+            >
+              Open detailed weather →
+            </span>
+
+          </div>
+
+
+          <span
+            class="dashboard-weather-arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+
+        </div>
+
+      </a>
+
+    </section>
+
+
+    <!-- ==================================================
+         HERO
+         ================================================== -->
 
     <section
       class="hero"
@@ -95,15 +253,23 @@
           Music Session Workspace
         </span>
 
+
         <h1 id="hero-title">
           Everything for the Music Session in one polished dashboard.
         </h1>
 
+
         <p class="hero-description">
-          Open the session chart, live tracker, Yamaha style reference,
-          Tempcard history, guidelines, Google Meet announcements,
-          improvement records, and the preset color counter from one place.
+
+          Open the session chart, live tracker,
+          Yamaha style reference, Tempcard history,
+          guidelines, Google Meet announcements,
+          improvement records, live weather,
+          metronome, and the preset color counter
+          from one place.
+
         </p>
+
 
         <div class="hero-actions">
 
@@ -114,6 +280,7 @@
             Browse Resources
           </a>
 
+
           <a
             href="counter.html"
             class="secondary-button"
@@ -121,9 +288,18 @@
             Open Counter
           </a>
 
+
+          <a
+            href="weather.html"
+            class="secondary-button"
+          >
+            Open Weather
+          </a>
+
         </div>
 
       </div>
+
 
       <div
         class="hero-summary"
@@ -131,27 +307,58 @@
       >
 
         <div class="summary-card">
-          <strong>7</strong>
-          <span>Available resources</span>
+
+          <strong>
+            7
+          </strong>
+
+          <span>
+            Available resources
+          </span>
+
         </div>
 
-        <div class="summary-card">
-          <strong>1</strong>
-          <span>Dynamic preview viewer</span>
-        </div>
 
         <div class="summary-card">
-          <strong>Read Only</strong>
-          <span>Embedded document access</span>
+
+          <strong>
+            3
+          </strong>
+
+          <span>
+            Interactive tools
+          </span>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <strong>
+            Live
+          </strong>
+
+          <span>
+            Time and weather
+          </span>
+
         </div>
 
       </div>
 
     </section>
 
+
+    <!-- ==================================================
+         QUICK ACCESS
+         ================================================== -->
+
     <section
       id="quick-access"
-      class="section quick-access-section"
+      class="
+        section
+        quick-access-section
+      "
       aria-labelledby="quick-access-title"
     >
 
@@ -169,18 +376,33 @@
 
         </div>
 
+
         <p>
-          Select one resource card to display it in the viewer below.
-          Selecting another card replaces the current preview.
+
+          Select one resource card to display it
+          in the viewer below. Interactive tools
+          open on their own dedicated pages.
+
         </p>
 
       </div>
 
+
       <div class="card-grid">
+
+
+        <!-- ==================================================
+             MUSIC SESSION CHART
+             ================================================== -->
 
         <button
           type="button"
-          class="card resource-card sheet-card is-active"
+          class="
+            card
+            resource-card
+            sheet-card
+            is-active
+          "
           data-resource-title="Music Session Chart Flow"
           data-resource-type="Google Sheets"
           data-resource-description="Main chart flow for organizing and following the Music Session."
@@ -197,6 +419,7 @@
             📊
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -209,6 +432,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -218,9 +442,18 @@
 
         </button>
 
+
+        <!-- ==================================================
+             LIVE TRACKER
+             ================================================== -->
+
         <button
           type="button"
-          class="card resource-card sheet-card"
+          class="
+            card
+            resource-card
+            sheet-card
+          "
           data-resource-title="Live Tracker: Distant Insanity &amp; Main Style Name"
           data-resource-type="Google Sheets"
           data-resource-description="Live tracking for Distant Insanity and current main style names."
@@ -237,6 +470,7 @@
             📈
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -249,6 +483,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -258,9 +493,18 @@
 
         </button>
 
+
+        <!-- ==================================================
+             YAMAHA STYLES
+             ================================================== -->
+
         <button
           type="button"
-          class="card resource-card sheet-card"
+          class="
+            card
+            resource-card
+            sheet-card
+          "
           data-resource-title="Playable Yamaha Styles"
           data-resource-type="Google Sheets"
           data-resource-description="Reference list of Yamaha styles available for the Music Session."
@@ -277,6 +521,7 @@
             🎹
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -289,6 +534,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -298,9 +544,18 @@
 
         </button>
 
+
+        <!-- ==================================================
+             TEMPCARD
+             ================================================== -->
+
         <button
           type="button"
-          class="card resource-card sheet-card"
+          class="
+            card
+            resource-card
+            sheet-card
+          "
           data-resource-title="Tempcard"
           data-resource-type="Google Sheets"
           data-resource-description="Music Session result history and conqueror tracking."
@@ -317,6 +572,7 @@
             🏆
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -329,6 +585,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -338,9 +595,18 @@
 
         </button>
 
+
+        <!-- ==================================================
+             GUIDELINES
+             ================================================== -->
+
         <button
           type="button"
-          class="card resource-card doc-card"
+          class="
+            card
+            resource-card
+            doc-card
+          "
           data-resource-title="Music Session Guidelines"
           data-resource-type="Google Docs"
           data-resource-description="Rules, procedures, and guidance for running the Music Session."
@@ -357,6 +623,7 @@
             📝
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -369,6 +636,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -378,11 +646,20 @@
 
         </button>
 
+
+        <!-- ==================================================
+             GOOGLE MEET
+             ================================================== -->
+
         <button
           type="button"
-          class="card resource-card meet-card"
+          class="
+            card
+            resource-card
+            meet-card
+          "
           data-resource-title="Google Meet Announcements"
-          data-resource-type="Google Docs"
+          data-resource-type="Google Sheets"
           data-resource-description="Recent Google Meet updates that may affect the Music Session."
           data-resource-icon="📣"
           data-resource-url="https://docs.google.com/spreadsheets/d/1P5zKMvawd4gJhKSRdp7oP5b7s4BprOebLRveQnxFM_A/preview"
@@ -397,6 +674,7 @@
             📣
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -409,6 +687,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -418,9 +697,18 @@
 
         </button>
 
+
+        <!-- ==================================================
+             IMPROVEMENT HISTORY
+             ================================================== -->
+
         <button
           type="button"
-          class="card resource-card history-card"
+          class="
+            card
+            resource-card
+            history-card
+          "
           data-resource-title="History of Music Session Improvements"
           data-resource-type="Google Docs"
           data-resource-description="Historical record of Music Session changes and improvements."
@@ -437,6 +725,7 @@
             🕰️
           </span>
 
+
           <span class="card-content">
 
             <span class="card-title">
@@ -449,6 +738,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -458,9 +748,17 @@
 
         </button>
 
+
+        <!-- ==================================================
+             COUNTER
+             ================================================== -->
+
         <a
           href="counter.html"
-          class="card counter-card"
+          class="
+            card
+            counter-card
+          "
         >
 
           <span
@@ -469,6 +767,7 @@
           >
             🔢
           </span>
+
 
           <span class="card-content">
 
@@ -482,6 +781,7 @@
 
           </span>
 
+
           <span
             class="card-arrow"
             aria-hidden="true"
@@ -491,62 +791,137 @@
 
         </a>
 
-  <a
-  href="metronome.html"
-  class="card metronome-card"
->
 
-  <span
-    class="icon"
-    aria-hidden="true"
-  >
-    🎵
-  </span>
+        <!-- ==================================================
+             METRONOME
+             ================================================== -->
 
-  <span class="card-content">
+        <a
+          href="metronome.html"
+          class="
+            card
+            metronome-card
+          "
+        >
 
-    <span class="card-title">
-      Metronome
-    </span>
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            🎵
+          </span>
 
-    <span class="card-description">
-      Keep tempo with adjustable BPM, beats per bar, volume, and live beat and bar counters.
-    </span>
 
-  </span>
+          <span class="card-content">
 
-  <span
-    class="card-arrow"
-    aria-hidden="true"
-  >
-    →
-  </span>
+            <span class="card-title">
+              Metronome
+            </span>
 
-</a>
+            <span class="card-description">
+
+              Keep tempo with adjustable BPM,
+              beats per bar, volume, and live beat
+              and bar counters.
+
+            </span>
+
+          </span>
+
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+
+        </a>
+
+
+        <!-- ==================================================
+             WEATHER
+             ================================================== -->
+
+        <a
+          href="weather.html"
+          class="
+            card
+            weather-tool-card
+          "
+        >
+
+          <span
+            class="icon"
+            aria-hidden="true"
+          >
+            🌤️
+          </span>
+
+
+          <span class="card-content">
+
+            <span class="card-title">
+              Weather
+            </span>
+
+            <span class="card-description">
+
+              Detailed weather, 7-day forecast,
+              recent weather history,
+              precipitation, wind and radar.
+
+            </span>
+
+          </span>
+
+
+          <span
+            class="card-arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+
+        </a>
 
       </div>
 
     </section>
 
+
+    <!-- ==================================================
+         RESOURCE VIEWER
+         ================================================== -->
+
     <section
       id="resource-viewer"
-      class="section viewer-section"
+      class="
+        section
+        viewer-section
+      "
       aria-labelledby="viewer-title"
     >
 
       <div class="viewer-card">
 
+
         <div class="viewer-header">
+
 
           <div class="viewer-title-group">
 
             <span
               id="viewer-icon"
-              class="viewer-icon sheet-icon"
+              class="
+                viewer-icon
+                sheet-icon
+              "
               aria-hidden="true"
             >
               📊
             </span>
+
 
             <div>
 
@@ -557,17 +932,23 @@
                 Google Sheets
               </span>
 
+
               <h2 id="viewer-title">
                 Music Session Chart Flow
               </h2>
 
+
               <p id="viewer-description">
-                Main chart flow for organizing and following the Music Session.
+
+                Main chart flow for organizing
+                and following the Music Session.
+
               </p>
 
             </div>
 
           </div>
+
 
           <div class="viewer-actions">
 
@@ -580,6 +961,7 @@
             >
               Hide Preview
             </button>
+
 
             <a
               id="viewer-open-button"
@@ -595,6 +977,7 @@
 
         </div>
 
+
         <div
           id="resource-frame-container"
           class="iframe-container"
@@ -607,6 +990,7 @@
           >
             Loading preview…
           </div>
+
 
           <iframe
             id="resource-frame"
@@ -624,11 +1008,17 @@
 
   </main>
 
+
+  <!-- ==================================================
+       FOOTER
+       ================================================== -->
+
   <footer class="footer">
 
     <p>
       Music Session Dashboard
     </p>
+
 
     <a href="#top">
       Back to Top ↑
@@ -636,7 +1026,9 @@
 
   </footer>
 
+
   <script src="script.js"></script>
 
 </body>
+
 </html>
