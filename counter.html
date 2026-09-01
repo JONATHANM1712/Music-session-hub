@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -11,23 +10,22 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>
-    Music Session Counter
-  </title>
-
+  <title>Music Session Counter</title>
 
   <link
     rel="stylesheet"
     href="style.css"
   >
 
-
   <style>
+
+    /* ==================================================
+       BASIC PAGE SETUP
+       ================================================== */
 
     * {
       box-sizing: border-box;
     }
-
 
     body {
       margin: 0;
@@ -35,30 +33,26 @@
       min-height: 100vh;
 
       display: flex;
-
       justify-content: center;
-
       align-items: flex-start;
 
-      padding:
-        16px 0;
+      padding: 16px 0;
 
       color: white;
     }
 
 
+    /* ==================================================
+       MAIN GLASS CARD
+       ================================================== */
+
     .box {
-      width:
-        1100px;
+      width: 1100px;
+      max-width: 96%;
 
-      max-width:
-        96%;
+      padding: 20px;
 
-      padding:
-        20px;
-
-      border-radius:
-        25px;
+      border-radius: 25px;
 
       background:
         rgba(
@@ -79,11 +73,11 @@
 
       backdrop-filter:
         blur(10px);
+
       -webkit-backdrop-filter:
         blur(10px);
 
-      text-align:
-        center;
+      text-align: center;
 
       box-shadow:
         0 0 30px
@@ -95,31 +89,33 @@
         );
     }
 
-    h1 {
-      margin:
-        0 0 6px;
 
-      font-size:
-        34px;
+    /* ==================================================
+       TITLE
+       ================================================== */
+
+    h1 {
+      margin: 0 0 6px;
+
+      font-size: 34px;
     }
 
     .subtitle {
-      margin-bottom:
-        15px;
+      margin-bottom: 15px;
 
-      opacity:
-        0.9;
+      opacity: 0.9;
 
-      font-size:
-        18px;
-
-      font-weight:
-        bold;
+      font-size: 18px;
+      font-weight: bold;
     }
 
+
+    /* ==================================================
+       100-SQUARE GRID
+       ================================================== */
+
     .square-grid {
-      display:
-        grid;
+      display: grid;
 
       grid-template-columns:
         repeat(
@@ -127,16 +123,13 @@
           1fr
         );
 
-      gap:
-        8px;
+      gap: 8px;
 
-      margin-bottom:
-        14px;
+      margin-bottom: 14px;
     }
 
     .square-group {
-      display:
-        grid;
+      display: grid;
 
       grid-template-columns:
         repeat(
@@ -144,14 +137,11 @@
           1fr
         );
 
-      gap:
-        0;
+      gap: 0;
 
-      padding:
-        3px;
+      padding: 3px;
 
-      border-radius:
-        10px;
+      border-radius: 10px;
 
       background:
         rgba(
@@ -172,8 +162,7 @@
     }
 
     .square {
-      height:
-        30px;
+      height: 30px;
 
       background:
         rgba(
@@ -213,79 +202,64 @@
         0 7px 7px 0;
     }
 
+
+    /* ==================================================
+       HIDDEN INPUT
+       ================================================== */
+
     .hidden-input {
-      position:
-        absolute;
+      position: absolute;
 
-      opacity:
-        0;
+      opacity: 0;
 
-      pointer-events:
-        none;
+      pointer-events: none;
     }
 
+
+    /* ==================================================
+       INPUT DISPLAY
+       ================================================== */
+
     .input-helper {
-      min-height:
-        60px;
+      min-height: 60px;
 
-      margin-bottom:
-        14px;
+      margin-bottom: 14px;
 
-      padding:
-        14px;
+      padding: 14px;
 
-      display:
-        flex;
+      display: flex;
 
-      align-items:
-        center;
+      align-items: center;
+      justify-content: center;
 
-      justify-content:
-        center;
+      border-radius: 15px;
 
-      border-radius:
-        15px;
+      background: white;
 
-      background:
-        white;
+      color: #777;
 
-      color:
-        #777;
+      font-size: 22px;
 
-      font-size:
-        22px;
+      cursor: text;
 
-      cursor:
-        text;
+      user-select: none;
 
-      user-select:
-        none;
-
-      word-break:
-        break-word;
+      word-break: break-word;
     }
 
     .input-helper::after {
-      content:
-        "";
+      content: "";
 
-      width:
-        2px;
+      width: 2px;
+      height: 26px;
 
-      height:
-        26px;
+      margin-left: 3px;
 
-      margin-left:
-        3px;
+      display: inline-block;
 
-      display:
-        inline-block;
+      flex-shrink: 0;
 
-      flex-shrink:
-        0;
-
-      background:
-        #777;
+      background: #777;
 
       animation:
         blinkCursor
@@ -297,37 +271,38 @@
 
       0%,
       50% {
-        opacity:
-          1;
+        opacity: 1;
       }
 
       51%,
       100% {
-        opacity:
-          0;
+        opacity: 0;
       }
     }
 
-    table {
-      width:
-        100%;
 
-      border-collapse:
-        collapse;
+    /* ==================================================
+       MAIN STYLE TABLE
+       ================================================== */
 
-      overflow:
-        hidden;
+    .style-table {
+      width: 100%;
 
-      border-radius:
-        15px;
+      table-layout: fixed;
+
+      border-collapse: separate;
+      border-spacing: 0;
+
+      overflow: hidden;
+
+      border-radius: 15px;
     }
 
-    th,
-    td {
-      padding:
-        10px;
+    .style-table th,
+    .style-table td {
+      padding: 10px;
 
-      border:
+      border-right:
         2px solid
         rgba(
           255,
@@ -336,17 +311,77 @@
           0.85
         );
 
-      font-size:
-        18px;
+      border-bottom:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
 
-      font-weight:
-        bold;
+      font-size: 18px;
+      font-weight: bold;
 
-      text-align:
-        center;
+      text-align: center;
+      vertical-align: middle;
     }
 
-    th {
+    .style-table th:first-child,
+    .style-table td:first-child {
+      border-left:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+    }
+
+    .style-table tr:first-child th {
+      border-top:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+    }
+
+
+    /* ==================================================
+       FIXED COLUMN WIDTHS
+
+       42%  STYLE
+        8%  QTY
+       42%  STYLE
+        8%  QTY
+
+       This keeps both sides perfectly aligned.
+       ================================================== */
+
+    .style-table th:nth-child(1),
+    .style-table td:nth-child(1),
+    .style-table th:nth-child(3),
+    .style-table td:nth-child(3) {
+      width: 42%;
+    }
+
+    .style-table th:nth-child(2),
+    .style-table td:nth-child(2),
+    .style-table th:nth-child(4),
+    .style-table td:nth-child(4) {
+      width: 8%;
+    }
+
+
+    /* ==================================================
+       TABLE HEADER
+       ================================================== */
+
+    .style-table th {
       background:
         rgba(
           0,
@@ -355,14 +390,15 @@
           0.78
         );
 
-      color:
-        white;
+      color: white;
     }
 
-    .qty {
-      width:
-        90px;
 
+    /* ==================================================
+       QUANTITY CELLS
+       ================================================== */
+
+    .style-table .qty {
       background:
         rgba(
           255,
@@ -371,201 +407,169 @@
           0.9
         );
 
-      color:
-        black;
+      color: black;
 
-      font-size:
-        24px;
+      font-size: 24px;
     }
 
-    .red {
-      background:
-        red;
 
-      color:
-        white;
+    /* ==================================================
+       MAIN STYLE COLORS
+       ================================================== */
+
+    .red {
+      background: red;
+
+      color: white;
     }
 
     .orange {
-      background:
-        orange;
+      background: orange;
 
-      color:
-        black;
+      color: black;
     }
 
     .yellow {
-      background:
-        yellow;
+      background: yellow;
 
-      color:
-        black;
+      color: black;
     }
 
     .green {
-      background:
-        limegreen;
+      background: limegreen;
 
-      color:
-        black;
+      color: black;
     }
 
     .blue {
-      background:
-        blue;
+      background: blue;
 
-      color:
-        white;
+      color: white;
     }
 
     .violet {
-      background:
-        #8000ff;
+      background: #8000ff;
 
-      color:
-        white;
+      color: white;
     }
 
     .pink {
-      background:
-        pink;
+      background: pink;
 
-      color:
-        black;
+      color: black;
     }
 
     .brown {
-      background:
-        brown;
+      background: brown;
 
-      color:
-        white;
+      color: white;
     }
 
     .tan {
-      background:
-        tan;
+      background: tan;
 
-      color:
-        black;
+      color: black;
     }
 
     .cyan {
-      background:
-        cyan;
+      background: cyan;
 
-      color:
-        black;
+      color: black;
     }
 
+
+    /* ==================================================
+       CLEAR BUTTON
+       ================================================== */
+
     .buttons {
-      margin-top:
-        16px;
+      margin-top: 16px;
     }
 
     .buttons button {
-      padding:
-        12px 32px;
+      padding: 12px 32px;
 
-      border:
-        none;
+      border: none;
 
-      border-radius:
-        12px;
+      border-radius: 12px;
 
-      background:
-        #ff3030;
+      background: #ff3030;
 
-      color:
-        white;
+      color: white;
 
-      font-size:
-        22px;
+      font-size: 22px;
+      font-weight: bold;
 
-      font-weight:
-        bold;
-
-      cursor:
-        pointer;
+      cursor: pointer;
     }
 
     .buttons button:hover {
-      background:
-        #cc0000;
+      background: #cc0000;
     }
+
+
+    /* ==================================================
+       BACK HOME
+       ================================================== */
 
     .back-home {
-      display:
-        inline-block;
+      display: inline-block;
 
-      margin-top:
-        16px;
+      margin-top: 16px;
 
-      color:
-        white;
+      color: white;
 
-      text-decoration:
-        none;
+      text-decoration: none;
 
-      font-weight:
-        bold;
+      font-weight: bold;
     }
 
+
+    /* ==================================================
+       RESPONSIVE
+       ================================================== */
+
     @media (
-      max-width:
-      800px
+      max-width: 800px
     ) {
 
       .box {
-        padding:
-          14px;
+        padding: 14px;
       }
 
       h1 {
-        font-size:
-          26px;
+        font-size: 26px;
       }
 
       .subtitle {
-        font-size:
-          14px;
+        font-size: 14px;
       }
 
       .square-grid {
-        gap:
-          4px;
+        gap: 4px;
       }
 
       .square {
-        height:
-          22px;
+        height: 22px;
       }
 
       .input-helper {
-        font-size:
-          17px;
+        font-size: 17px;
       }
 
       .input-helper::after {
-        height:
-          22px;
+        height: 22px;
       }
 
-      th,
-      td {
-        padding:
-          7px;
+      .style-table th,
+      .style-table td {
+        padding: 7px;
 
-        font-size:
-          13px;
+        font-size: 13px;
       }
 
-      .qty {
-        width:
-          55px;
-
-        font-size:
-          18px;
+      .style-table .qty {
+        font-size: 18px;
       }
     }
 
@@ -582,11 +586,14 @@
       Music Session Counter
     </h1>
 
-
     <div class="subtitle">
       Let's arrange everything through the journey with the music session.
     </div>
 
+
+    <!-- ==================================================
+         100-SQUARE COUNTER DISPLAY
+         ================================================== -->
 
     <div
       id="squareGrid"
@@ -595,6 +602,10 @@
     ></div>
 
 
+    <!-- ==================================================
+         NUMBER INPUT DISPLAY
+         ================================================== -->
+
     <div
       id="inputDisplay"
       class="input-helper"
@@ -602,7 +613,6 @@
     >
       Example: 11111 22222 23333 33333
     </div>
-
 
     <input
       id="inputData"
@@ -614,7 +624,17 @@
     >
 
 
-    <table>
+    <!-- ==================================================
+         MAIN STYLE LIST
+
+         EDIT THE STYLE NAMES HERE WHEN THE MAIN STYLE LIST REFRESHES.
+
+         IMPORTANT:
+         Keep count0-count9 IDs unchanged.
+         JavaScript uses these IDs for counting.
+         ================================================== -->
+
+    <table class="style-table">
 
       <tr>
         <th></th>
@@ -623,133 +643,52 @@
         <th>Qty</th>
       </tr>
 
-
       <tr>
-        <td class="red">
-          VocalPopBallad
-        </td>
+        <td class="red">VocalPopBallad</td>
+        <td class="qty" id="count1">0</td>
 
-        <td
-          class="qty"
-          id="count1"
-        >
-          0
-        </td>
-
-        <td class="violet">
-          CanadianTeenPop
-        </td>
-
-        <td
-          class="qty"
-          id="count6"
-        >
-          0
-        </td>
+        <td class="violet">CanadianTeenPop</td>
+        <td class="qty" id="count6">0</td>
       </tr>
 
-
       <tr>
-        <td class="orange">
-          PowerPopBallad
-        </td>
+        <td class="orange">PowerPopBallad</td>
+        <td class="qty" id="count2">0</td>
 
-        <td
-          class="qty"
-          id="count2"
-        >
-          0
-        </td>
-
-        <td class="pink">
-          IrishPopRock
-        </td>
-
-        <td
-          class="qty"
-          id="count7"
-        >
-          0
-        </td>
+        <td class="pink">IrishPopRock</td>
+        <td class="qty" id="count7">0</td>
       </tr>
 
-
       <tr>
-        <td class="yellow">
-          60sVintageRumba
-        </td>
+        <td class="yellow">60sVintageRumba</td>
+        <td class="qty" id="count3">0</td>
 
-        <td
-          class="qty"
-          id="count3"
-        >
-          0
-        </td>
-
-        <td class="brown">
-          Country8Beat2
-        </td>
-
-        <td
-          class="qty"
-          id="count8"
-        >
-          0
-        </td>
+        <td class="brown">Country8Beat2</td>
+        <td class="qty" id="count8">0</td>
       </tr>
 
-
       <tr>
-        <td class="green">
-          70s8BeatBallad
-        </td>
+        <td class="green">70s8BeatBallad</td>
+        <td class="qty" id="count4">0</td>
 
-        <td
-          class="qty"
-          id="count4"
-        >
-          0
-        </td>
-
-        <td class="tan">
-          ElectroRock
-        </td>
-
-        <td
-          class="qty"
-          id="count9"
-        >
-          0
-        </td>
+        <td class="tan">ElectroRock</td>
+        <td class="qty" id="count9">0</td>
       </tr>
 
-
       <tr>
-        <td class="blue">
-          NashvillePop
-        </td>
+        <td class="blue">NashvillePop</td>
+        <td class="qty" id="count5">0</td>
 
-        <td
-          class="qty"
-          id="count5"
-        >
-          0
-        </td>
-
-        <td class="cyan">
-          JustR&B
-        </td>
-
-        <td
-          class="qty"
-          id="count0"
-        >
-          0
-        </td>
+        <td class="cyan">JustR&B</td>
+        <td class="qty" id="count0">0</td>
       </tr>
 
     </table>
 
+
+    <!-- ==================================================
+         CLEAR BUTTON
+         ================================================== -->
 
     <div class="buttons">
 
@@ -763,6 +702,10 @@
     </div>
 
 
+    <!-- ==================================================
+         BACK HOME
+         ================================================== -->
+
     <a
       href="index.html"
       class="back-home"
@@ -775,43 +718,37 @@
 
   <script>
 
-    let isDirty =
-      false;
+    /* ==================================================
+       COUNTER STATE
+       ================================================== */
 
+    let isDirty = false;
+
+
+    /* ==================================================
+       DIGIT COLORS
+       ================================================== */
 
     const digitColors = {
 
-      "1":
-        "red",
+      "1": "red",
+      "2": "orange",
+      "3": "yellow",
+      "4": "limegreen",
+      "5": "blue",
 
-      "2":
-        "orange",
+      "6": "#8000ff",
+      "7": "pink",
+      "8": "brown",
+      "9": "tan",
+      "0": "cyan"
 
-      "3":
-        "yellow",
-
-      "4":
-        "limegreen",
-
-      "5":
-        "blue",
-
-      "6":
-        "#8000ff",
-
-      "7":
-        "pink",
-
-      "8":
-        "brown",
-
-      "9":
-        "tan",
-
-      "0":
-        "cyan"
     };
 
+
+    /* ==================================================
+       FOCUS HIDDEN INPUT
+       ================================================== */
 
     function focusInput() {
 
@@ -820,8 +757,14 @@
           "inputData"
         )
         .focus();
+
     }
 
+
+    /* ==================================================
+       CREATE 100 SQUARES
+       20 groups × 5 squares
+       ================================================== */
 
     function createGrid() {
 
@@ -830,9 +773,7 @@
           "squareGrid"
         );
 
-
-      grid.innerHTML =
-        "";
+      grid.innerHTML = "";
 
 
       for (
@@ -845,7 +786,6 @@
           document.createElement(
             "div"
           );
-
 
         squareGroup.className =
           "square-group";
@@ -862,34 +802,34 @@
               "div"
             );
 
-
           const index =
-            group *
-            5 +
-            i;
-
+            group * 5 + i;
 
           square.className =
             "square";
 
-
           square.id =
-            "sq" +
-            index;
-
+            "sq" + index;
 
           squareGroup.appendChild(
             square
           );
+
         }
 
 
         grid.appendChild(
           squareGroup
         );
+
       }
+
     }
 
+
+    /* ==================================================
+       UPDATE COUNTER
+       ================================================== */
 
     function updateCounter() {
 
@@ -898,12 +838,13 @@
           "inputData"
         );
 
-
       const inputDisplay =
         document.getElementById(
           "inputDisplay"
         );
 
+
+      /* Keep numbers only */
 
       let rawText =
         input.value.replace(
@@ -912,30 +853,34 @@
         );
 
 
+      /* Maximum 100 entries */
+
       rawText =
         rawText.substring(
           0,
           100
         );
 
-
       input.value =
         rawText;
 
+
+      /* Display groups of five */
 
       const formattedText =
         rawText.match(
           /.{1,5}/g
         )?.join(
           " "
-        ) ||
-        "";
+        ) || "";
 
 
       inputDisplay.textContent =
         formattedText ||
         "Example: 11111 22222 23333 33333";
 
+
+      /* Reset all digit totals */
 
       const counts = {
 
@@ -949,16 +894,22 @@
         "7": 0,
         "8": 0,
         "9": 0
+
       };
 
+
+      /* Count digits */
 
       for (
         const char of rawText
       ) {
 
         counts[char]++;
+
       }
 
+
+      /* Reset all squares */
 
       for (
         let i = 0;
@@ -968,8 +919,7 @@
 
         const square =
           document.getElementById(
-            "sq" +
-            i
+            "sq" + i
           );
 
 
@@ -979,9 +929,13 @@
 
           square.style.background =
             "rgba(255,255,255,0.14)";
+
         }
+
       }
 
+
+      /* Color used squares */
 
       for (
         let i = 0;
@@ -992,11 +946,9 @@
         const digit =
           rawText[i];
 
-
         const square =
           document.getElementById(
-            "sq" +
-            i
+            "sq" + i
           );
 
 
@@ -1008,9 +960,13 @@
             digitColors[
               digit
             ];
+
         }
+
       }
 
+
+      /* Update table quantities */
 
       Object
         .keys(
@@ -1021,8 +977,7 @@
 
             document
               .getElementById(
-                "count" +
-                digit
+                "count" + digit
               )
               .textContent =
                 counts[
@@ -1034,26 +989,33 @@
 
 
       isDirty =
-        rawText.length >
-        0;
+        rawText.length > 0;
+
     }
 
+
+    /* ==================================================
+       CLEAR WITHOUT CONFIRMATION
+       ================================================== */
 
     function clearCounterWithoutConfirm() {
 
-      document.getElementById(
-        "inputData"
-      ).value =
-        "";
+      document
+        .getElementById(
+          "inputData"
+        )
+        .value = "";
 
-
-      isDirty =
-        false;
-
+      isDirty = false;
 
       updateCounter();
+
     }
 
+
+    /* ==================================================
+       CLEAR BUTTON
+       ================================================== */
 
     function resetCounter() {
 
@@ -1070,9 +1032,15 @@
         clearCounterWithoutConfirm();
 
         focusInput();
+
       }
+
     }
 
+
+    /* ==================================================
+       LEAVING PAGE WARNING
+       ================================================== */
 
     window.addEventListener(
       "beforeunload",
@@ -1084,12 +1052,17 @@
 
           event.preventDefault();
 
-          event.returnValue =
-            "";
+          event.returnValue = "";
+
         }
+
       }
     );
 
+
+    /* ==================================================
+       STARTUP
+       ================================================== */
 
     window.addEventListener(
       "load",
@@ -1100,6 +1073,7 @@
         updateCounter();
 
         focusInput();
+
       }
     );
 
