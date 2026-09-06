@@ -1,49 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
   <link
-  rel="stylesheet"
-  href="style.css"
->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  <title>Metronome (BETA)</title>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Metronome
+  </title>
+
 
   <style>
+
     * {
-      box-sizing: border-box;
+      box-sizing:
+        border-box;
     }
 
+
     body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 16px 0;
-      position: relative;
-      overflow-x: hidden;
+      margin:
+        0;
+
+      min-height:
+        100vh;
+
+      display:
+        flex;
+
+      justify-content:
+        center;
+
+      align-items:
+        flex-start;
+
+      padding:
+        16px 0;
+
+      position:
+        relative;
+
+      overflow-x:
+        hidden;
 
       font-family:
         Rubik,
         Arial,
         sans-serif;
 
-      color: white;
+      color:
+        white;
     }
+
 
     /* ==================================================
        MAIN BOX
        ================================================== */
 
     .box {
-      width: 980px;
-      max-width: 96%;
-      padding: 24px;
+      width:
+        980px;
 
-      border-radius: 25px;
+      max-width:
+        96%;
+
+      padding:
+        24px;
+
+      border-radius:
+        25px;
 
       background:
         rgba(255, 255, 255, 0.12);
@@ -51,122 +86,193 @@
       border:
         1px solid rgba(255, 255, 255, 0.25);
 
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter:
+        blur(10px);
 
-      text-align: center;
+      -webkit-backdrop-filter:
+        blur(10px);
+
+      text-align:
+        center;
 
       box-shadow:
         0 0 30px rgba(0, 0, 0, 0.4);
     }
 
+
     h1 {
-      margin: 0 0 6px;
-      font-size: 38px;
+      margin:
+        0 0 6px;
+
+      font-size:
+        38px;
     }
 
+
     .subtitle {
-      margin-bottom: 20px;
-      opacity: 0.9;
-      font-size: 17px;
-      font-weight: bold;
+      margin-bottom:
+        20px;
+
+      opacity:
+        0.9;
+
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
     }
+
 
     /* ==================================================
        TOTAL BARS — BEAT LIGHTS — TOTAL BEATS
        ================================================== */
 
     .bar-beat-display {
-      width: 100%;
+      width:
+        100%;
 
-      display: grid;
+      display:
+        grid;
 
       grid-template-columns:
         145px
         minmax(0, 1fr)
         145px;
 
-      align-items: center;
-      gap: 20px;
+      align-items:
+        center;
+
+      gap:
+        20px;
 
       margin:
         16px 0 18px;
     }
+
 
     /* ==================================================
        SIDE COUNTERS
        ================================================== */
 
     .side-counter {
-      min-height: 105px;
+      min-height:
+        105px;
 
-      display: flex;
-      flex-direction: column;
+      display:
+        flex;
 
-      align-items: center;
-      justify-content: center;
+      flex-direction:
+        column;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
     }
+
 
     .side-counter-title {
-      margin-bottom: 7px;
+      margin-bottom:
+        7px;
 
-      color: white;
+      color:
+        white;
 
-      font-size: 17px;
-      font-weight: bold;
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
     }
+
 
     .side-counter-value {
-      color: white;
+      color:
+        white;
 
-      font-size: 40px;
-      font-weight: bold;
+      font-size:
+        40px;
 
-      line-height: 1;
+      font-weight:
+        bold;
+
+      line-height:
+        1;
     }
+
 
     /* ==================================================
        BEAT LIGHTS
        ================================================== */
 
     .center-beats {
-      min-width: 0;
+      min-width:
+        0;
     }
+
 
     .beat-lights {
-      min-height: 72px;
+      min-height:
+        72px;
 
-      display: flex;
-      align-items: center;
-      justify-content: space-evenly;
+      display:
+        flex;
 
-      gap: 12px;
+      align-items:
+        center;
 
-      padding: 5px;
-      margin: 0;
+      justify-content:
+        space-evenly;
+
+      gap:
+        12px;
+
+      padding:
+        5px;
+
+      margin:
+        0;
     }
 
+
     .beat-light {
-      width: 48px;
-      height: 48px;
+      width:
+        48px;
 
-      flex: 0 0 auto;
+      height:
+        48px;
 
-      display: grid;
-      place-items: center;
+      flex:
+        0 0 auto;
 
-      padding: 0;
+      display:
+        grid;
+
+      place-items:
+        center;
+
+      padding:
+        0;
 
       border:
         2px solid rgba(255, 255, 255, 0.80);
 
-      border-radius: 50%;
+      border-radius:
+        50%;
 
-      cursor: pointer;
+      cursor:
+        pointer;
 
-      font-family: inherit;
-      font-size: 17px;
-      font-weight: bold;
+      font-family:
+        inherit;
+
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
 
       transition:
         transform 0.10s ease,
@@ -174,6 +280,7 @@
         box-shadow 0.15s ease,
         opacity 0.15s ease;
     }
+
 
     /* ==================================================
        NORMAL BEAT = GREEN
@@ -188,12 +295,14 @@
           #16852b 72%
         );
 
-      color: #073b10;
+      color:
+        #073b10;
 
       box-shadow:
         inset 0 0 8px rgba(255, 255, 255, 0.65),
         0 0 10px rgba(57, 211, 83, 0.55);
     }
+
 
     /* ==================================================
        ACCENTED BEAT = RED
@@ -208,12 +317,14 @@
           #a80000 75%
         );
 
-      color: white;
+      color:
+        white;
 
       box-shadow:
         inset 0 0 8px rgba(255, 255, 255, 0.60),
         0 0 11px rgba(255, 48, 48, 0.65);
     }
+
 
     /* ==================================================
        OFF BEAT
@@ -231,11 +342,13 @@
       color:
         rgba(255, 255, 255, 0.55);
 
-      opacity: 0.65;
+      opacity:
+        0.65;
 
       box-shadow:
         inset 0 0 5px rgba(255, 255, 255, 0.15);
     }
+
 
     /* ==================================================
        CURRENT PLAYING BEAT
@@ -250,52 +363,69 @@
         0 0 25px rgba(255, 255, 255, 0.90);
     }
 
+
     .beat-light:hover {
       transform:
         scale(1.08);
     }
+
 
     .beat-light.playing:hover {
       transform:
         scale(1.25);
     }
 
+
     /* ==================================================
        BEAT LEGEND
        ================================================== */
 
     .beat-help {
-      margin-top: 3px;
+      margin-top:
+        3px;
 
       color:
         rgba(255, 255, 255, 0.88);
 
-      font-size: 13px;
-      font-weight: bold;
+      font-size:
+        13px;
+
+      font-weight:
+        bold;
     }
+
 
     /* ==================================================
        CONTINUOUS LEFT ↔ RIGHT BEAT ANIMATION
        ================================================== */
 
     .beat-motion-area {
-      position: relative;
+      position:
+        relative;
 
-      height: 64px;
+      height:
+        64px;
 
       margin:
         8px 10px 22px;
     }
 
+
     .beat-track {
-      position: absolute;
+      position:
+        absolute;
 
-      left: 25px;
-      right: 25px;
+      left:
+        25px;
 
-      top: 50%;
+      right:
+        25px;
 
-      height: 3px;
+      top:
+        50%;
+
+      height:
+        3px;
 
       transform:
         translateY(-50%);
@@ -303,19 +433,29 @@
       background:
         rgba(40, 40, 40, 0.75);
 
-      border-radius: 3px;
+      border-radius:
+        3px;
     }
 
+
     .beat-runner {
-      position: absolute;
+      position:
+        absolute;
 
-      top: 50%;
-      left: 25px;
+      top:
+        50%;
 
-      width: 34px;
-      height: 34px;
+      left:
+        25px;
 
-      border-radius: 50%;
+      width:
+        34px;
+
+      height:
+        34px;
+
+      border-radius:
+        50%;
 
       transform:
         translate(-50%, -50%);
@@ -336,101 +476,148 @@
         inset 0 0 7px rgba(255, 255, 255, 0.45),
         0 2px 8px rgba(0, 0, 0, 0.45);
 
-      transition: none;
+      transition:
+        none;
 
-      will-change: left;
+      will-change:
+        left;
     }
+
 
     /* ==================================================
        BPM CONTROL
        ================================================== */
 
     .tempo-main {
-      max-width: 680px;
+      max-width:
+        680px;
 
       margin:
         8px auto 18px;
 
-      display: grid;
+      display:
+        grid;
 
       grid-template-columns:
         110px
         minmax(0, 1fr)
         110px;
 
-      align-items: center;
+      align-items:
+        center;
 
-      gap: 20px;
+      gap:
+        20px;
     }
+
 
     .tempo-side {
-      display: grid;
-      gap: 12px;
+      display:
+        grid;
+
+      gap:
+        12px;
     }
 
-    .step-button {
-      width: 72px;
-      height: 52px;
 
-      margin: auto;
+    .step-button {
+      width:
+        72px;
+
+      height:
+        52px;
+
+      margin:
+        auto;
 
       border:
         2px solid rgba(255, 255, 255, 0.30);
 
-      border-radius: 8px;
+      border-radius:
+        8px;
 
       background:
         rgba(255, 255, 255, 0.08);
 
-      color: white;
+      color:
+        white;
 
-      cursor: pointer;
+      cursor:
+        pointer;
 
-      font-family: inherit;
-      font-size: 20px;
-      font-weight: bold;
+      font-family:
+        inherit;
+
+      font-size:
+        20px;
+
+      font-weight:
+        bold;
     }
+
 
     .step-button:hover {
       background:
         rgba(255, 255, 255, 0.18);
     }
 
+
     .tempo-center {
-      display: flex;
+      display:
+        flex;
 
-      align-items: center;
-      justify-content: center;
+      align-items:
+        center;
 
-      gap: 10px;
+      justify-content:
+        center;
+
+      gap:
+        10px;
     }
 
+
     .bpm-input {
-      width: 150px;
+      width:
+        150px;
 
       padding:
         10px 12px;
 
-      border: none;
-      border-radius: 10px;
+      border:
+        none;
+
+      border-radius:
+        10px;
 
       background:
         rgba(255, 255, 255, 0.94);
 
-      color: #333;
+      color:
+        #333;
 
-      text-align: center;
+      text-align:
+        center;
 
-      font-family: inherit;
-      font-size: 48px;
+      font-family:
+        inherit;
 
-      outline: none;
+      font-size:
+        48px;
+
+      outline:
+        none;
     }
+
 
     .bpm-text {
-      font-size: 20px;
-      font-weight: bold;
+      font-size:
+        20px;
+
+      font-weight:
+        bold;
     }
+
 
     /* ==================================================
        TEMPO SLIDER
@@ -441,19 +628,30 @@
         10px 15px 18px;
     }
 
+
     .tempo-marking {
-      margin-bottom: 8px;
+      margin-bottom:
+        8px;
 
-      text-align: right;
+      text-align:
+        right;
 
-      font-size: 17px;
-      font-weight: bold;
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
     }
+
 
     .tempo-slider {
-      width: 100%;
-      cursor: pointer;
+      width:
+        100%;
+
+      cursor:
+        pointer;
     }
+
 
     /* ==================================================
        VOLUME
@@ -466,167 +664,537 @@
       padding:
         13px 18px;
 
-      display: flex;
+      display:
+        flex;
 
-      align-items: center;
-      justify-content: center;
+      align-items:
+        center;
 
-      gap: 14px;
+      justify-content:
+        center;
 
-      border-radius: 14px;
+      gap:
+        14px;
+
+      border-radius:
+        14px;
 
       background:
         rgba(255, 255, 255, 0.16);
 
-      font-size: 17px;
-      font-weight: bold;
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
     }
 
+
     .volume-control label {
-      white-space: nowrap;
+      white-space:
+        nowrap;
     }
+
 
     .volume-control input[type="range"] {
       width:
         min(420px, 55%);
     }
 
+
     .volume-display {
-      min-width: 60px;
+      min-width:
+        60px;
 
       padding:
         7px 9px;
 
-      border-radius: 8px;
+      border-radius:
+        8px;
 
-      background: white;
+      background:
+        white;
 
-      color: #444;
+      color:
+        #444;
 
-      font-weight: bold;
+      font-weight:
+        bold;
     }
+
+
+    /* ==================================================
+       PREFERENCES
+       ================================================== */
+
+    .preferences-panel {
+      margin:
+        20px 0 8px;
+
+      padding:
+        16px 18px;
+
+      display:
+        grid;
+
+      gap:
+        12px;
+
+      border:
+        1px solid rgba(255, 255, 255, 0.20);
+
+      border-radius:
+        16px;
+
+      background:
+        rgba(255, 255, 255, 0.12);
+
+      text-align:
+        left;
+    }
+
+
+    .preferences-title {
+      font-size:
+        17px;
+
+      font-weight:
+        800;
+    }
+
+
+    .preference-row {
+      min-height:
+        52px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        16px;
+
+      padding:
+        10px 12px;
+
+      border-radius:
+        12px;
+
+      background:
+        rgba(0, 0, 0, 0.16);
+    }
+
+
+    .preference-copy {
+      min-width:
+        0;
+    }
+
+
+    .preference-label {
+      display:
+        block;
+
+      font-size:
+        15px;
+
+      font-weight:
+        800;
+    }
+
+
+    .preference-note {
+      display:
+        block;
+
+      margin-top:
+        3px;
+
+      color:
+        rgba(255, 255, 255, 0.72);
+
+      font-size:
+        12px;
+
+      line-height:
+        1.35;
+    }
+
+
+    .preference-row.locked {
+      opacity:
+        0.62;
+    }
+
+
+    .upgrade-message {
+      display:
+        none;
+
+      margin-top:
+        6px;
+
+      color:
+        #ffd7a3;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+    }
+
+
+    .preference-row.locked .upgrade-message {
+      display:
+        block;
+    }
+
+
+    /* ==================================================
+       TOGGLE SWITCH
+       ================================================== */
+
+    .switch {
+      position:
+        relative;
+
+      width:
+        54px;
+
+      height:
+        30px;
+
+      flex:
+        0 0 auto;
+    }
+
+
+    .switch input {
+      position:
+        absolute;
+
+      opacity:
+        0;
+
+      pointer-events:
+        none;
+    }
+
+
+    .switch-slider {
+      position:
+        absolute;
+
+      inset:
+        0;
+
+      border-radius:
+        999px;
+
+      background:
+        rgba(255, 255, 255, 0.22);
+
+      cursor:
+        pointer;
+
+      transition:
+        background 0.18s ease;
+    }
+
+
+    .switch-slider::before {
+      content:
+        "";
+
+      position:
+        absolute;
+
+      width:
+        22px;
+
+      height:
+        22px;
+
+      left:
+        4px;
+
+      top:
+        4px;
+
+      border-radius:
+        50%;
+
+      background:
+        white;
+
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.28);
+
+      transition:
+        transform 0.18s ease;
+    }
+
+
+    .switch input:checked + .switch-slider {
+      background:
+        #28a745;
+    }
+
+
+    .switch input:checked + .switch-slider::before {
+      transform:
+        translateX(24px);
+    }
+
+
+    .switch input:disabled + .switch-slider {
+      cursor:
+        not-allowed;
+
+      background:
+        rgba(255, 255, 255, 0.12);
+    }
+
+
+    /* ==================================================
+       CURRENT TAB EDGE FLASH
+       ================================================== */
+
+    #screenEdgeFlash {
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      z-index:
+        9999;
+
+      pointer-events:
+        none;
+
+      opacity:
+        0;
+
+      --edge-flash-strong:
+        rgba(57, 211, 83, 0.95);
+
+      --edge-flash-soft:
+        rgba(57, 211, 83, 0.55);
+
+      box-shadow:
+        inset 0 0 0 0.18cm
+        var(--edge-flash-strong),
+
+        inset 0 0 8cm 0.65cm
+        var(--edge-flash-soft);
+    }
+
+
+    #screenEdgeFlash.active {
+      animation:
+        edgeBeatFlash
+        120ms
+        ease-out;
+    }
+
+
+    @keyframes edgeBeatFlash {
+
+      0% {
+        opacity:
+          0.95;
+      }
+
+      100% {
+        opacity:
+          0;
+      }
+
+    }
+
 
     /* ==================================================
        PERFORMANCE ROW
        ================================================== */
 
     .performance-row {
-      display: grid;
+      display:
+        grid;
 
       grid-template-columns:
         1fr
         auto
         1fr;
 
-      align-items: center;
+      align-items:
+        center;
 
-      gap: 25px;
+      gap:
+        25px;
 
       margin:
         22px 15px 12px;
     }
+
 
     /* ==================================================
        BEATS PER BAR / CLICKS PER BEAT
        ================================================== */
 
     .quick-setting {
-      min-width: 130px;
+      min-width:
+        130px;
 
-      display: flex;
-      flex-direction: column;
+      display:
+        flex;
 
-      align-items: center;
-      justify-content: center;
+      flex-direction:
+        column;
 
-      gap: 4px;
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      gap:
+        4px;
     }
+
 
     .quick-setting label {
-      color: white;
+      color:
+        white;
 
-      font-size: 16px;
+      font-size:
+        16px;
 
-      cursor: pointer;
+      cursor:
+        pointer;
     }
 
-    .quick-setting-select {
-      width: 95px;
-      min-height: 48px;
 
-      border: none;
-      border-radius: 8px;
+    .quick-setting-select {
+      width:
+        95px;
+
+      min-height:
+        48px;
+
+      border:
+        none;
+
+      border-radius:
+        8px;
 
       background:
         transparent;
 
-      color: white;
+      color:
+        white;
 
-      text-align: center;
-      text-align-last: center;
+      text-align:
+        center;
 
-      font-family: inherit;
+      text-align-last:
+        center;
 
-      font-size: 32px;
-      font-weight: bold;
+      font-family:
+        inherit;
 
-      cursor: pointer;
+      font-size:
+        32px;
 
-      outline: none;
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+
+      outline:
+        none;
     }
+
 
     .quick-setting-select:hover {
       background:
         rgba(255, 255, 255, 0.10);
     }
 
+
     .quick-setting-select option {
-      background: #333333;
+      background:
+        #333333;
 
-      color: white;
+      color:
+        white;
 
-      font-size: 18px;
+      font-size:
+        18px;
     }
+
 
     /* ==================================================
        START / STOP
        ================================================== */
 
     .start-button {
-      width: 84px;
-      height: 84px;
+      width:
+        84px;
 
-      border: none;
-      border-radius: 50%;
+      height:
+        84px;
 
-      cursor: pointer;
+      border:
+        none;
+
+      border-radius:
+        50%;
+
+      cursor:
+        pointer;
 
       background:
         #28a745;
 
-      color: white;
+      color:
+        white;
 
-      font-family: inherit;
-      font-size: 30px;
+      font-family:
+        inherit;
+
+      font-size:
+        30px;
 
       box-shadow:
         0 6px 16px rgba(0, 0, 0, 0.25);
     }
+
 
     .start-button:hover {
       background:
         #1f7f35;
     }
 
+
     .start-button.stop-button {
       background:
         #ff3030;
     }
 
+
     .start-button.stop-button:hover {
       background:
         #cc0000;
     }
+
 
     /* ==================================================
        TAP TEMPO
@@ -637,47 +1205,67 @@
         12px 0 18px;
     }
 
+
     .tap-button {
-      min-width: 190px;
+      min-width:
+        190px;
 
       padding:
         12px 24px;
 
-      border: none;
-      border-radius: 10px;
+      border:
+        none;
 
-      background: white;
+      border-radius:
+        10px;
 
-      color: #555;
+      background:
+        white;
 
-      cursor: pointer;
+      color:
+        #555;
 
-      font-family: inherit;
+      cursor:
+        pointer;
 
-      font-size: 18px;
-      font-weight: bold;
+      font-family:
+        inherit;
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
     }
+
 
     .tap-button:hover {
       background:
         #dddddd;
     }
 
+
     /* ==================================================
        BACK HOME
        ================================================== */
 
     .back-home {
-      display: inline-block;
+      display:
+        inline-block;
 
-      margin-top: 18px;
+      margin-top:
+        18px;
 
-      color: white;
+      color:
+        white;
 
-      text-decoration: none;
+      text-decoration:
+        none;
 
-      font-weight: bold;
+      font-weight:
+        bold;
     }
+
 
     /* ==================================================
        MOBILE
@@ -686,16 +1274,22 @@
     @media (max-width: 700px) {
 
       .box {
-        padding: 14px;
+        padding:
+          14px;
       }
+
 
       h1 {
-        font-size: 28px;
+        font-size:
+          28px;
       }
 
+
       .subtitle {
-        font-size: 14px;
+        font-size:
+          14px;
       }
+
 
       .bar-beat-display {
         grid-template-columns:
@@ -703,32 +1297,49 @@
           minmax(0, 1fr)
           70px;
 
-        gap: 6px;
+        gap:
+          6px;
       }
+
 
       .side-counter-title {
-        font-size: 11px;
+        font-size:
+          11px;
       }
+
 
       .side-counter-value {
-        font-size: 27px;
+        font-size:
+          27px;
       }
+
 
       .beat-lights {
-        gap: 5px;
-        flex-wrap: wrap;
+        gap:
+          5px;
+
+        flex-wrap:
+          wrap;
       }
+
 
       .beat-light {
-        width: 37px;
-        height: 37px;
+        width:
+          37px;
 
-        font-size: 13px;
+        height:
+          37px;
+
+        font-size:
+          13px;
       }
+
 
       .beat-help {
-        font-size: 9px;
+        font-size:
+          9px;
       }
+
 
       .tempo-main {
         grid-template-columns:
@@ -736,74 +1347,127 @@
           minmax(0, 1fr)
           72px;
 
-        gap: 5px;
+        gap:
+          5px;
       }
+
 
       .step-button {
-        width: 58px;
-        height: 48px;
+        width:
+          58px;
 
-        font-size: 15px;
+        height:
+          48px;
+
+        font-size:
+          15px;
       }
+
 
       .bpm-input {
-        width: 110px;
+        width:
+          110px;
 
-        font-size: 37px;
+        font-size:
+          37px;
       }
+
 
       .bpm-text {
-        display: none;
+        display:
+          none;
       }
+
 
       .volume-control {
-        flex-wrap: wrap;
+        flex-wrap:
+          wrap;
       }
+
 
       .volume-control input[type="range"] {
-        width: 60%;
+        width:
+          60%;
       }
+
 
       .performance-row {
-        gap: 6px;
+        gap:
+          6px;
 
-        margin-left: 0;
-        margin-right: 0;
+        margin-left:
+          0;
+
+        margin-right:
+          0;
       }
+
 
       .quick-setting {
-        min-width: 0;
+        min-width:
+          0;
       }
+
 
       .quick-setting label {
-        font-size: 11px;
+        font-size:
+          11px;
       }
+
 
       .quick-setting-select {
-        width: 65px;
+        width:
+          65px;
 
-        font-size: 25px;
+        font-size:
+          25px;
       }
+
 
       .start-button {
-        width: 68px;
-        height: 68px;
+        width:
+          68px;
 
-        font-size: 24px;
+        height:
+          68px;
+
+        font-size:
+          24px;
       }
+
+
+      .preference-row {
+        align-items:
+          flex-start;
+      }
+
+
+      .preference-label {
+        font-size:
+          13px;
+      }
+
     }
 
   </style>
+
 </head>
 
 
 <body>
 
+  <div
+    id="screenEdgeFlash"
+    aria-hidden="true"
+  ></div>
+
+
   <div class="box">
 
     <h1>
-      Metronome (BETA)
+      Metronome
     </h1>
+
 
     <div class="subtitle">
       Tap each beat light to choose Normal, Accented, or Off.
@@ -838,8 +1502,12 @@
       </div>
 
 
-      <!-- BEAT LIGHTS
-           ALWAYS VISIBLE -->
+      <!-- ==================================================
+           BEAT LIGHTS
+
+           IMPORTANT:
+           ALWAYS VISIBLE
+           ================================================== -->
 
       <div class="center-beats">
 
@@ -848,12 +1516,19 @@
           class="beat-lights"
         ></div>
 
+
         <div class="beat-help">
+
           🟢 Normal
+
           &nbsp; • &nbsp;
+
           🔴 Accented
+
           &nbsp; • &nbsp;
+
           ⚫ Off
+
         </div>
 
       </div>
@@ -893,6 +1568,7 @@
 
       <div class="beat-track"></div>
 
+
       <div
         id="beatRunner"
         class="beat-runner"
@@ -908,8 +1584,6 @@
     <div class="tempo-main">
 
 
-      <!-- MINUS -->
-
       <div class="tempo-side">
 
         <button
@@ -919,6 +1593,7 @@
         >
           −1
         </button>
+
 
         <button
           class="step-button"
@@ -930,8 +1605,6 @@
 
       </div>
 
-
-      <!-- BPM -->
 
       <div class="tempo-center">
 
@@ -945,14 +1618,13 @@
           onchange="setBPM(this.value)"
         >
 
+
         <span class="bpm-text">
           BPM
         </span>
 
       </div>
 
-
-      <!-- PLUS -->
 
       <div class="tempo-side">
 
@@ -963,6 +1635,7 @@
         >
           +1
         </button>
+
 
         <button
           class="step-button"
@@ -990,6 +1663,7 @@
         Andante
       </div>
 
+
       <input
         id="bpmSlider"
         class="tempo-slider"
@@ -1014,6 +1688,7 @@
         🔊 Metronome Volume:
       </label>
 
+
       <input
         id="volumeSlider"
         type="range"
@@ -1023,6 +1698,7 @@
         value="70"
         oninput="updateVolume(this.value)"
       >
+
 
       <span
         id="volumeDisplay"
@@ -1035,13 +1711,109 @@
 
 
     <!-- ==================================================
+         PREFERENCES
+         ================================================== -->
+
+    <div class="preferences-panel">
+
+      <div class="preferences-title">
+        Preferences
+      </div>
+
+
+      <!-- SCREEN EDGE FLASH -->
+
+      <div class="preference-row">
+
+        <div class="preference-copy">
+
+          <span class="preference-label">
+            Flash screen edge to beat
+          </span>
+
+
+          <span class="preference-note">
+            Flashes the edge inward from the current browser tab.
+          </span>
+
+        </div>
+
+
+        <label
+          class="switch"
+          title="Flash screen edge to beat"
+        >
+
+          <input
+            id="edgeFlashToggle"
+            type="checkbox"
+            checked
+            onchange="updateEdgeFlashPreference()"
+          >
+
+          <span class="switch-slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <!-- BAR / BEAT COUNTERS -->
+
+      <div
+        id="counterPreferenceRow"
+        class="preference-row"
+      >
+
+        <div class="preference-copy">
+
+          <span class="preference-label">
+            Display bar and beat counters
+          </span>
+
+
+          <span class="preference-note">
+            Keep in time with the music. Only for Spotify Premium.
+          </span>
+
+
+          <span
+            id="counterUpgradeMessage"
+            class="upgrade-message"
+          >
+            Upgrade to Spotify Premium to enable bar and beat counters.
+          </span>
+
+        </div>
+
+
+        <label
+          class="switch"
+          title="Display bar and beat counters"
+        >
+
+          <input
+            id="counterDisplayToggle"
+            type="checkbox"
+            checked
+            onchange="updateCounterPreference()"
+          >
+
+          <span class="switch-slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================
          BEATS PER BAR — START — CLICKS PER BEAT
          ================================================== -->
 
     <div class="performance-row">
 
-
-      <!-- BEATS PER BAR -->
 
       <div class="quick-setting">
 
@@ -1049,15 +1821,24 @@
           Beats per bar
         </label>
 
+
         <select
           id="beatsPerBar"
           class="quick-setting-select"
           onchange="changeBeatsPerBar()"
         >
 
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
+          <option value="1">
+            1
+          </option>
+
+          <option value="2">
+            2
+          </option>
+
+          <option value="3">
+            3
+          </option>
 
           <option
             value="4"
@@ -1066,17 +1847,26 @@
             4
           </option>
 
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
+          <option value="5">
+            5
+          </option>
+
+          <option value="6">
+            6
+          </option>
+
+          <option value="7">
+            7
+          </option>
+
+          <option value="8">
+            8
+          </option>
 
         </select>
 
       </div>
 
-
-      <!-- START / STOP -->
 
       <button
         id="startButton"
@@ -1089,13 +1879,12 @@
       </button>
 
 
-      <!-- CLICKS PER BEAT -->
-
       <div class="quick-setting">
 
         <label for="clicksPerBeat">
           Clicks per beat
         </label>
+
 
         <select
           id="clicksPerBeat"
@@ -1110,13 +1899,33 @@
             1
           </option>
 
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
+          <option value="2">
+            2
+          </option>
+
+          <option value="3">
+            3
+          </option>
+
+          <option value="4">
+            4
+          </option>
+
+          <option value="5">
+            5
+          </option>
+
+          <option value="6">
+            6
+          </option>
+
+          <option value="7">
+            7
+          </option>
+
+          <option value="8">
+            8
+          </option>
 
         </select>
 
@@ -1156,837 +1965,877 @@
   </div>
 
 
-<script>
+  <script>
 
-  /* ==================================================
-     BASIC SETTINGS
-     ================================================== */
+    /* ==================================================
+       BASIC SETTINGS
+       ================================================== */
 
-  let bpm =
-    100;
-
-  let isRunning =
-    false;
-
-  let timer =
-    null;
-
-  let currentBeat =
-    0;
-
-  let totalBeats =
-    0;
-
-  let totalBars =
-    0;
-
-  let clicksPerBeat =
-    1;
-
-  let metronomeVolume =
-    0.70;
-
-  let audioContext =
-    null;
-
-  let tapTimes =
-    [];
-
-  let beatModes =
-    [];
-
-  let beatAnimationFrame =
-    null;
-
-
-  /* ==================================================
-     INTERNAL FEATURE SWITCHES
-     ================================================== */
-
-
-  /*
-    ==================================================
-    BAR / BEAT COUNTERS
-
-    true [for Spotify Premium all]:
-      Show TOTAL BARS & TOTAL BEATS
-
-    false [for Spotify Free]:
-      Hide TOTAL BARS & TOTAL BEATS
-
-    IMPORTANT:
-      BEAT LIGHTS ALWAYS REMAIN VISIBLE.
-
-    The metronome continues operating
-    internally while counters are hidden.
-    ==================================================
-  */
-
-  const BAR_BEAT_DISPLAY_VISIBLE =
-    false;
-
-
-  /*
-    ==================================================
-    BEAT ANIMATION
-
-    true:
-      Show continuous moving red ball.
-
-    false:
-      Hide the moving beat animation.
-
-    Beat lights are not affected.
-    ==================================================
-  */
-
-  const BEAT_ANIMATION_ENABLED =
-    true;
-
-
-  /* ==================================================
-     AUDIO CONTEXT
-     ================================================== */
-
-  function getAudioContext() {
-
-    if (
-      !audioContext
-    ) {
-
-      audioContext =
-        new (
-          window.AudioContext ||
-          window.webkitAudioContext
-        )();
-
-    }
-
-
-    if (
-      audioContext.state ===
-      "suspended"
-    ) {
-
-      audioContext.resume();
-
-    }
-
-
-    return audioContext;
-  }
-
-
-  /* ==================================================
-     VOLUME
-     ================================================== */
-
-  function updateVolume(
-    value
-  ) {
-
-    let volume =
-      Number(
-        value
-      );
-
-
-    if (
-      Number.isNaN(
-        volume
-      )
-    ) {
-
-      volume =
-        70;
-
-    }
-
-
-    volume =
-      Math.max(
-        0,
-        Math.min(
-          volume,
-          100
-        )
-      );
-
-
-    metronomeVolume =
-      volume /
+    let bpm =
       100;
 
 
-    document.getElementById(
-      "volumeSlider"
-    ).value =
-      volume;
+    let isRunning =
+      false;
 
 
-    document.getElementById(
-      "volumeDisplay"
-    ).textContent =
-      Math.round(
-        volume
-      ) +
-      "%";
-  }
+    let timer =
+      null;
 
 
-  /* ==================================================
-     SINGLE CLICK
-     ================================================== */
+    let currentBeat =
+      0;
 
-  function playSingleClick(
-    mode,
-    delay,
-    isSubdivision
-  ) {
 
-    if (
-      mode ===
-      "off"
-    ) {
+    let totalBeats =
+      0;
 
-      return;
 
-    }
+    let totalBars =
+      0;
 
 
-    const context =
-      getAudioContext();
+    let clicksPerBeat =
+      1;
 
 
-    const oscillator =
-      context.createOscillator();
+    let metronomeVolume =
+      0.70;
 
 
-    const gain =
-      context.createGain();
+    let audioContext =
+      null;
 
 
-    oscillator.type =
-      "square";
-
-
-    const accentThisClick =
-
-      mode === "accent" &&
-      !isSubdivision;
-
-
-    const startTime =
-      context.currentTime +
-      delay;
-
-
-    oscillator.frequency.setValueAtTime(
-
-      accentThisClick
-        ? 1000
-        : 500,
-
-      startTime
-
-    );
-
-
-    let clickVolume;
-
-
-    if (
-      accentThisClick
-    ) {
-
-      clickVolume =
-        metronomeVolume *
-        0.90;
-
-    } else if (
-      isSubdivision
-    ) {
-
-      clickVolume =
-        metronomeVolume *
-        0.48;
-
-    } else {
-
-      clickVolume =
-        metronomeVolume *
-        0.65;
-
-    }
-
-
-    clickVolume =
-      Math.min(
-        clickVolume,
-        1
-      );
-
-
-    const beatDuration =
-      60 /
-      bpm;
-
-
-    const subdivisionDuration =
-      beatDuration /
-      clicksPerBeat;
-
-
-    const clickDuration =
-      Math.max(
-        0.003,
-        Math.min(
-          0.040,
-          subdivisionDuration *
-          0.45
-        )
-      );
-
-
-    if (
-      clickVolume <=
-      0
-    ) {
-
-      gain.gain.setValueAtTime(
-        0,
-        startTime
-      );
-
-    } else {
-
-      gain.gain.setValueAtTime(
-        clickVolume,
-        startTime
-      );
-
-
-      gain.gain.exponentialRampToValueAtTime(
-
-        0.001,
-
-        startTime +
-        clickDuration
-
-      );
-
-    }
-
-
-    oscillator.connect(
-      gain
-    );
-
-
-    gain.connect(
-      context.destination
-    );
-
-
-    oscillator.start(
-      startTime
-    );
-
-
-    oscillator.stop(
-
-      startTime +
-      clickDuration +
-      0.005
-
-    );
-  }
-
-
-  /* ==================================================
-     PLAY CURRENT BEAT
-     ================================================== */
-
-  function playClick(
-    mode
-  ) {
-
-    if (
-      mode ===
-      "off"
-    ) {
-
-      return;
-
-    }
-
-
-    const beatDuration =
-      60 /
-      bpm;
-
-
-    const clickSpacing =
-      beatDuration /
-      clicksPerBeat;
-
-
-    for (
-      let i = 0;
-      i < clicksPerBeat;
-      i++
-    ) {
-
-      playSingleClick(
-
-        mode,
-
-        i *
-        clickSpacing,
-
-        i > 0
-
-      );
-
-    }
-  }
-
-
-  /* ==================================================
-     CREATE BEAT LIGHTS
-     ================================================== */
-
-  function createBeatLights() {
-
-    const container =
-      document.getElementById(
-        "beatLights"
-      );
-
-
-    const beats =
-      Number(
-        document.getElementById(
-          "beatsPerBar"
-        ).value
-      );
-
-
-    const oldModes =
-      [...beatModes];
-
-
-    beatModes =
+    let tapTimes =
       [];
 
 
-    for (
-      let i = 0;
-      i < beats;
-      i++
+    let beatModes =
+      [];
+
+
+    let beatAnimationFrame =
+      null;
+
+
+    /* ==================================================
+       BAR / BEAT COUNTER PREMIUM FEATURE SWITCH
+
+       true:
+         Spotify Premium behavior.
+
+         The on-screen preference remains visible.
+
+         User can switch:
+
+         ON
+         OFF
+
+
+       false:
+         Spotify Free behavior.
+
+         IMPORTANT:
+
+         The preference remains visible.
+
+         Toggle is:
+
+         OFF
+         Disabled
+         Grayed out
+
+         Upgrade message appears.
+
+         Total Bars
+         Total Beats
+         remain hidden.
+
+
+       BEAT LIGHTS ALWAYS REMAIN VISIBLE.
+       🔰🔰REGULARLY SWITCH THIS OPTION BELOW WHEN THE MAIN STYLE LIST REFRESH SWITCHED TO THAT PARTICULAR PLAN.
+       ================================================== */
+
+    const BAR_BEAT_COUNTER_PREMIUM_ENABLED =
+      false;
+
+
+    /* ==================================================
+       BEAT ANIMATION SWITCH
+       ================================================== */
+
+    const BEAT_ANIMATION_ENABLED =
+      true;
+
+
+    /* ==================================================
+       USER PREFERENCES
+       ================================================== */
+
+    let edgeFlashEnabled =
+      true;
+
+
+    let counterDisplayEnabled =
+      true;
+
+
+    /* ==================================================
+       AUDIO CONTEXT
+       ================================================== */
+
+    function getAudioContext() {
+
+      if (
+        !audioContext
+      ) {
+
+        audioContext =
+          new (
+            window.AudioContext ||
+            window.webkitAudioContext
+          )();
+
+      }
+
+
+      if (
+        audioContext.state ===
+        "suspended"
+      ) {
+
+        audioContext.resume();
+
+      }
+
+
+      return audioContext;
+
+    }
+
+
+    /* ==================================================
+       VOLUME
+       ================================================== */
+
+    function updateVolume(
+      value
+    ) {
+
+      let volume =
+        Number(
+          value
+        );
+
+
+      if (
+        Number.isNaN(
+          volume
+        )
+      ) {
+
+        volume =
+          70;
+
+      }
+
+
+      volume =
+        Math.max(
+          0,
+          Math.min(
+            volume,
+            100
+          )
+        );
+
+
+      metronomeVolume =
+        volume /
+        100;
+
+
+      document.getElementById(
+        "volumeSlider"
+      ).value =
+        volume;
+
+
+      document.getElementById(
+        "volumeDisplay"
+      ).textContent =
+        Math.round(
+          volume
+        ) +
+        "%";
+
+    }
+
+
+    /* ==================================================
+       SINGLE CLICK
+       ================================================== */
+
+    function playSingleClick(
+      mode,
+      delay,
+      isSubdivision
     ) {
 
       if (
-        oldModes[i]
+        mode ===
+        "off"
       ) {
 
-        beatModes[i] =
-          oldModes[i];
+        return;
+
+      }
+
+
+      const context =
+        getAudioContext();
+
+
+      const oscillator =
+        context.createOscillator();
+
+
+      const gain =
+        context.createGain();
+
+
+      oscillator.type =
+        "square";
+
+
+      const accentThisClick =
+
+        mode ===
+          "accent" &&
+
+        !isSubdivision;
+
+
+      const startTime =
+        context.currentTime +
+        delay;
+
+
+      oscillator.frequency.setValueAtTime(
+
+        accentThisClick
+          ? 1000
+          : 500,
+
+        startTime
+
+      );
+
+
+      let clickVolume;
+
+
+      if (
+        accentThisClick
+      ) {
+
+        clickVolume =
+          metronomeVolume *
+          0.90;
 
       } else if (
-        i === 0
+        isSubdivision
       ) {
 
-        beatModes[i] =
-          "accent";
+        clickVolume =
+          metronomeVolume *
+          0.48;
 
       } else {
 
-        beatModes[i] =
-          "normal";
+        clickVolume =
+          metronomeVolume *
+          0.65;
 
       }
-    }
 
 
-    container.innerHTML =
-      "";
-
-
-    for (
-      let i = 0;
-      i < beats;
-      i++
-    ) {
-
-      const light =
-        document.createElement(
-          "button"
+      clickVolume =
+        Math.min(
+          clickVolume,
+          1
         );
 
 
-      light.type =
-        "button";
+      const beatDuration =
+        60 /
+        bpm;
 
 
-      light.className =
-        "beat-light";
+      const subdivisionDuration =
+        beatDuration /
+        clicksPerBeat;
 
 
-      light.id =
-        "beatLight" +
-        (i + 1);
+      const clickDuration =
+        Math.max(
+          0.003,
+          Math.min(
+            0.040,
+            subdivisionDuration *
+            0.45
+          )
+        );
 
 
-      light.textContent =
-        i + 1;
+      if (
+        clickVolume <=
+        0
+      ) {
+
+        gain.gain.setValueAtTime(
+          0,
+          startTime
+        );
+
+      } else {
+
+        gain.gain.setValueAtTime(
+          clickVolume,
+          startTime
+        );
 
 
-      light.addEventListener(
-        "click",
-        function() {
+        gain.gain.exponentialRampToValueAtTime(
 
-          cycleBeatMode(
-            i
-          );
+          0.001,
+
+          startTime +
+          clickDuration
+
+        );
+
+      }
+
+
+      oscillator.connect(
+        gain
+      );
+
+
+      gain.connect(
+        context.destination
+      );
+
+
+      oscillator.start(
+        startTime
+      );
+
+
+      oscillator.stop(
+
+        startTime +
+        clickDuration +
+        0.005
+
+      );
+
+    }
+
+
+    /* ==================================================
+       PLAY CURRENT BEAT
+       ================================================== */
+
+    function playClick(
+      mode
+    ) {
+
+      if (
+        mode ===
+        "off"
+      ) {
+
+        return;
+
+      }
+
+
+      const beatDuration =
+        60 /
+        bpm;
+
+
+      const clickSpacing =
+        beatDuration /
+        clicksPerBeat;
+
+
+      for (
+        let i = 0;
+        i < clicksPerBeat;
+        i++
+      ) {
+
+        playSingleClick(
+
+          mode,
+
+          i *
+          clickSpacing,
+
+          i > 0
+
+        );
+
+      }
+
+    }
+
+
+    /* ==================================================
+       CREATE BEAT LIGHTS
+       ================================================== */
+
+    function createBeatLights() {
+
+      const container =
+        document.getElementById(
+          "beatLights"
+        );
+
+
+      const beats =
+        Number(
+          document.getElementById(
+            "beatsPerBar"
+          ).value
+        );
+
+
+      const oldModes =
+        [...beatModes];
+
+
+      beatModes =
+        [];
+
+
+      for (
+        let i = 0;
+        i < beats;
+        i++
+      ) {
+
+        if (
+          oldModes[i]
+        ) {
+
+          beatModes[i] =
+            oldModes[i];
+
+        } else if (
+          i === 0
+        ) {
+
+          beatModes[i] =
+            "accent";
+
+        } else {
+
+          beatModes[i] =
+            "normal";
 
         }
-      );
+
+      }
 
 
-      container.appendChild(
-        light
-      );
-    }
+      container.innerHTML =
+        "";
 
 
-    updateBeatLightStyles();
-  }
-
-
-  /* ==================================================
-     BEAT MODE DESCRIPTION
-     ================================================== */
-
-  function getBeatModeTitle(
-    mode
-  ) {
-
-    if (
-      mode ===
-      "accent"
-    ) {
-
-      return (
-        "Accented — click to turn Off"
-      );
-
-    }
-
-
-    if (
-      mode ===
-      "off"
-    ) {
-
-      return (
-        "Off — click to make Normal"
-      );
-
-    }
-
-
-    return (
-      "Normal — click to make Accented"
-    );
-  }
-
-
-  /* ==================================================
-     BEAT MODE CYCLE
-
-     NORMAL
-       ↓
-     ACCENTED
-       ↓
-     OFF
-       ↓
-     NORMAL
-     ================================================== */
-
-  function cycleBeatMode(
-    index
-  ) {
-
-    const mode =
-      beatModes[index];
-
-
-    if (
-      mode ===
-      "normal"
-    ) {
-
-      beatModes[index] =
-        "accent";
-
-    } else if (
-      mode ===
-      "accent"
-    ) {
-
-      beatModes[index] =
-        "off";
-
-    } else {
-
-      beatModes[index] =
-        "normal";
-
-    }
-
-
-    updateBeatLightStyles();
-  }
-
-
-  /* ==================================================
-     UPDATE BEAT COLORS
-     ================================================== */
-
-  function updateBeatLightStyles() {
-
-    beatModes.forEach(
-
-      function(
-        mode,
-        index
+      for (
+        let i = 0;
+        i < beats;
+        i++
       ) {
 
         const light =
-          document.getElementById(
-            "beatLight" +
-            (index + 1)
+          document.createElement(
+            "button"
           );
 
 
-        if (
-          !light
+        light.type =
+          "button";
+
+
+        light.className =
+          "beat-light";
+
+
+        light.id =
+          "beatLight" +
+          (i + 1);
+
+
+        light.textContent =
+          i + 1;
+
+
+        light.addEventListener(
+          "click",
+          function() {
+
+            cycleBeatMode(
+              i
+            );
+
+          }
+        );
+
+
+        container.appendChild(
+          light
+        );
+
+      }
+
+
+      updateBeatLightStyles();
+
+    }
+
+
+    /* ==================================================
+       BEAT MODE DESCRIPTION
+       ================================================== */
+
+    function getBeatModeTitle(
+      mode
+    ) {
+
+      if (
+        mode ===
+        "accent"
+      ) {
+
+        return (
+          "Accented — click to turn Off"
+        );
+
+      }
+
+
+      if (
+        mode ===
+        "off"
+      ) {
+
+        return (
+          "Off — click to make Normal"
+        );
+
+      }
+
+
+      return (
+        "Normal — click to make Accented"
+      );
+
+    }
+
+
+    /* ==================================================
+       BEAT MODE CYCLE
+       ================================================== */
+
+    function cycleBeatMode(
+      index
+    ) {
+
+      const mode =
+        beatModes[index];
+
+
+      if (
+        mode ===
+        "normal"
+      ) {
+
+        beatModes[index] =
+          "accent";
+
+      } else if (
+        mode ===
+        "accent"
+      ) {
+
+        beatModes[index] =
+          "off";
+
+      } else {
+
+        beatModes[index] =
+          "normal";
+
+      }
+
+
+      updateBeatLightStyles();
+
+    }
+
+
+    /* ==================================================
+       UPDATE BEAT COLORS
+       ================================================== */
+
+    function updateBeatLightStyles() {
+
+      beatModes.forEach(
+
+        function(
+          mode,
+          index
         ) {
 
-          return;
-
-        }
-
-
-        light.classList.remove(
-          "normal",
-          "accent",
-          "off"
-        );
+          const light =
+            document.getElementById(
+              "beatLight" +
+              (index + 1)
+            );
 
 
-        light.classList.add(
-          mode
-        );
+          if (
+            !light
+          ) {
+
+            return;
+
+          }
 
 
-        light.title =
-          getBeatModeTitle(
+          light.classList.remove(
+            "normal",
+            "accent",
+            "off"
+          );
+
+
+          light.classList.add(
             mode
           );
 
 
-        light.setAttribute(
-          "aria-label",
-
-          "Beat " +
-          (index + 1) +
-          ": " +
-          mode
-
-        );
-
-      }
-
-    );
-  }
+          light.title =
+            getBeatModeTitle(
+              mode
+            );
 
 
-  /* ==================================================
-     CURRENT BEAT VISUAL
-     ================================================== */
+          light.setAttribute(
 
-  function flashBeat(
-    beat
-  ) {
+            "aria-label",
 
-    document
-      .querySelectorAll(
-        ".beat-light"
-      )
-      .forEach(
+            "Beat " +
+            (index + 1) +
+            ": " +
+            mode
 
-        function(
-          light
-        ) {
-
-          light.classList.remove(
-            "playing"
           );
 
         }
 
       );
 
-
-    const currentLight =
-      document.getElementById(
-        "beatLight" +
-        beat
-      );
+    }
 
 
-    if (
-      !currentLight
+    /* ==================================================
+       CURRENT BEAT VISUAL
+       ================================================== */
+
+    function flashBeat(
+      beat
     ) {
 
-      return;
+      document
+        .querySelectorAll(
+          ".beat-light"
+        )
+        .forEach(
+
+          function(
+            light
+          ) {
+
+            light.classList.remove(
+              "playing"
+            );
+
+          }
+
+        );
+
+
+      const currentLight =
+        document.getElementById(
+          "beatLight" +
+          beat
+        );
+
+
+      if (
+        !currentLight
+      ) {
+
+        return;
+
+      }
+
+
+      currentLight.classList.add(
+        "playing"
+      );
 
     }
 
 
-    currentLight.classList.add(
-      "playing"
-    );
-  }
+    /* ==================================================
+       SCREEN EDGE FLASH
 
+       NORMAL:
+         GREEN
 
-  /* ==================================================
-     CONTINUOUS BEAT ANIMATION
+       ACCENTED:
+         RED
 
-     One side-to-side journey
-     equals one MAIN beat.
+       OFF:
+         NO FLASH
+       ================================================== */
 
-     Beat 1:
-       LEFT → RIGHT
-
-     Beat 2:
-       RIGHT → LEFT
-
-     Beat 3:
-       LEFT → RIGHT
-     ================================================== */
-
-  function startBeatMotionLeg() {
-
-    if (
-      !BEAT_ANIMATION_ENABLED ||
-      !isRunning
-    ) {
-
-      return;
-
-    }
-
-
-    const area =
-      document.getElementById(
-        "beatMotionArea"
-      );
-
-
-    const runner =
-      document.getElementById(
-        "beatRunner"
-      );
-
-
-    if (
-      !area ||
-      !runner
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      beatAnimationFrame
-    ) {
-
-      cancelAnimationFrame(
-        beatAnimationFrame
-      );
-
-
-      beatAnimationFrame =
-        null;
-
-    }
-
-
-    const minimum =
-      25;
-
-
-    const maximum =
-      Math.max(
-
-        minimum,
-
-        area.clientWidth -
-        25
-
-      );
-
-
-    /*
-      Odd beat:
-      LEFT → RIGHT
-
-      Even beat:
-      RIGHT → LEFT
-    */
-
-    const moveRight =
-      totalBeats %
-      2 ===
-      1;
-
-
-    const startX =
-      moveRight
-        ? minimum
-        : maximum;
-
-
-    const endX =
-      moveRight
-        ? maximum
-        : minimum;
-
-
-    const duration =
-      60000 /
-      bpm;
-
-
-    const startTime =
-      performance.now();
-
-
-    runner.style.left =
-      startX +
-      "px";
-
-
-    function animate(
-      now
+    function flashScreenEdge(
+      mode
     ) {
 
       if (
+        !edgeFlashEnabled ||
+        mode ===
+          "off"
+      ) {
+
+        return;
+
+      }
+
+
+      const overlay =
+        document.getElementById(
+          "screenEdgeFlash"
+        );
+
+
+      if (
+        !overlay
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        mode ===
+        "accent"
+      ) {
+
+        overlay.style.setProperty(
+
+          "--edge-flash-strong",
+
+          "rgba(255, 48, 48, 0.98)"
+
+        );
+
+
+        overlay.style.setProperty(
+
+          "--edge-flash-soft",
+
+          "rgba(255, 48, 48, 0.60)"
+
+        );
+
+      } else {
+
+        overlay.style.setProperty(
+
+          "--edge-flash-strong",
+
+          "rgba(57, 211, 83, 0.98)"
+
+        );
+
+
+        overlay.style.setProperty(
+
+          "--edge-flash-soft",
+
+          "rgba(57, 211, 83, 0.60)"
+
+        );
+
+      }
+
+
+      overlay.classList.remove(
+        "active"
+      );
+
+
+      void overlay.offsetWidth;
+
+
+      overlay.classList.add(
+        "active"
+      );
+
+    }
+
+
+    /* ==================================================
+       EDGE FLASH PREFERENCE
+       ================================================== */
+
+    function updateEdgeFlashPreference() {
+
+      const toggle =
+        document.getElementById(
+          "edgeFlashToggle"
+        );
+
+
+      edgeFlashEnabled =
+        Boolean(
+          toggle &&
+          toggle.checked
+        );
+
+    }
+
+
+    /* ==================================================
+       CONTINUOUS BEAT ANIMATION
+       ================================================== */
+
+    function startBeatMotionLeg() {
+
+      if (
+        !BEAT_ANIMATION_ENABLED ||
         !isRunning
       ) {
 
@@ -1995,683 +2844,395 @@
       }
 
 
-      const elapsed =
-        now -
-        startTime;
-
-
-      const progress =
-        Math.min(
-          elapsed /
-          duration,
-          1
+      const area =
+        document.getElementById(
+          "beatMotionArea"
         );
 
 
-      const position =
-        startX +
-        (
-          endX -
-          startX
-        ) *
-        progress;
-
-
-      runner.style.left =
-        position +
-        "px";
+      const runner =
+        document.getElementById(
+          "beatRunner"
+        );
 
 
       if (
-        progress <
-        1 &&
-        isRunning
+        !area ||
+        !runner
       ) {
 
-        beatAnimationFrame =
-          requestAnimationFrame(
-            animate
-          );
+        return;
 
-      } else {
+      }
+
+
+      if (
+        beatAnimationFrame
+      ) {
+
+        cancelAnimationFrame(
+          beatAnimationFrame
+        );
+
 
         beatAnimationFrame =
           null;
 
-
-        runner.style.left =
-          endX +
-          "px";
-
       }
-    }
 
 
-    beatAnimationFrame =
-      requestAnimationFrame(
-        animate
-      );
-  }
+      const minimum =
+        25;
 
 
-  /* ==================================================
-     RESET BEAT ANIMATION
-     ================================================== */
+      const maximum =
+        Math.max(
 
-  function resetBeatAnimation() {
+          minimum,
 
-    if (
-      beatAnimationFrame
-    ) {
+          area.clientWidth -
+          25
 
-      cancelAnimationFrame(
-        beatAnimationFrame
-      );
+        );
 
 
-      beatAnimationFrame =
-        null;
-
-    }
-
-
-    const runner =
-      document.getElementById(
-        "beatRunner"
-      );
-
-
-    if (
-      runner
-    ) {
-
-      runner.style.left =
-        "25px";
-
-    }
-  }
-
-
-  /* ==================================================
-     METRONOME TICK
-     ================================================== */
-
-  function tick() {
-
-    const beatsPerBar =
-      Number(
-        document.getElementById(
-          "beatsPerBar"
-        ).value
-      );
-
-
-    /*
-      FIRST BEAT
-    */
-
-    if (
-      currentBeat ===
-      0
-    ) {
-
-      currentBeat =
+      const moveRight =
+        totalBeats %
+        2 ===
         1;
 
 
-      if (
-        totalBars ===
-        0
+      const startX =
+        moveRight
+          ? minimum
+          : maximum;
+
+
+      const endX =
+        moveRight
+          ? maximum
+          : minimum;
+
+
+      const duration =
+        60000 /
+        bpm;
+
+
+      const startTime =
+        performance.now();
+
+
+      runner.style.left =
+        startX +
+        "px";
+
+
+      function animate(
+        now
       ) {
 
-        totalBars =
-          1;
+        if (
+          !isRunning
+        ) {
+
+          return;
+
+        }
+
+
+        const elapsed =
+          now -
+          startTime;
+
+
+        const progress =
+          Math.min(
+            elapsed /
+            duration,
+            1
+          );
+
+
+        const position =
+          startX +
+          (
+            endX -
+            startX
+          ) *
+          progress;
+
+
+        runner.style.left =
+          position +
+          "px";
+
+
+        if (
+          progress <
+          1 &&
+          isRunning
+        ) {
+
+          beatAnimationFrame =
+            requestAnimationFrame(
+              animate
+            );
+
+        } else {
+
+          beatAnimationFrame =
+            null;
+
+
+          runner.style.left =
+            endX +
+            "px";
+
+        }
 
       }
 
-    } else {
 
-      currentBeat++;
+      beatAnimationFrame =
+        requestAnimationFrame(
+          animate
+        );
+
+    }
 
 
-      /*
-        Example:
+    /* ==================================================
+       RESET BEAT ANIMATION
+       ================================================== */
 
-        BAR 1
-        Beat 1
-        Beat 2
-        Beat 3
-        Beat 4
-
-        Next Beat 1:
-        BAR 2
-      */
+    function resetBeatAnimation() {
 
       if (
-        currentBeat >
-        beatsPerBar
+        beatAnimationFrame
+      ) {
+
+        cancelAnimationFrame(
+          beatAnimationFrame
+        );
+
+
+        beatAnimationFrame =
+          null;
+
+      }
+
+
+      const runner =
+        document.getElementById(
+          "beatRunner"
+        );
+
+
+      if (
+        runner
+      ) {
+
+        runner.style.left =
+          "25px";
+
+      }
+
+    }
+
+
+    /* ==================================================
+       METRONOME TICK
+       ================================================== */
+
+    function tick() {
+
+      const beatsPerBar =
+        Number(
+          document.getElementById(
+            "beatsPerBar"
+          ).value
+        );
+
+
+      if (
+        currentBeat ===
+        0
       ) {
 
         currentBeat =
           1;
 
 
-        totalBars++;
-
-      }
-    }
-
-
-    /*
-      Main beat only.
-
-      Click subdivisions do not
-      increase Total Beats.
-    */
-
-    totalBeats++;
-
-
-    const mode =
-
-      beatModes[
-        currentBeat -
-        1
-      ] ||
-
-      "normal";
-
-
-    playClick(
-      mode
-    );
-
-
-    flashBeat(
-      currentBeat
-    );
-
-
-    startBeatMotionLeg();
-
-
-    updateDisplays();
-  }
-
-
-  /* ==================================================
-     START / STOP
-     ================================================== */
-
-  function toggleMetronome() {
-
-    getAudioContext();
-
-
-    if (
-      isRunning
-    ) {
-
-      stopMetronome();
-
-    } else {
-
-      startMetronome();
-
-    }
-  }
-
-
-  function startMetronome() {
-
-    if (
-      isRunning
-    ) {
-
-      return;
-
-    }
-
-
-    isRunning =
-      true;
-
-
-    const button =
-      document.getElementById(
-        "startButton"
-      );
-
-
-    button.textContent =
-      "■";
-
-
-    button.title =
-      "Stop Metronome";
-
-
-    button.classList.add(
-      "stop-button"
-    );
-
-
-    /*
-      First beat occurs immediately.
-    */
-
-    tick();
-
-
-    scheduleTimer();
-  }
-
-
-  function stopMetronome() {
-
-    isRunning =
-      false;
-
-
-    clearInterval(
-      timer
-    );
-
-
-    timer =
-      null;
-
-
-    resetBeatAnimation();
-
-
-    const button =
-      document.getElementById(
-        "startButton"
-      );
-
-
-    button.textContent =
-      "▶";
-
-
-    button.title =
-      "Start Metronome";
-
-
-    button.classList.remove(
-      "stop-button"
-    );
-
-
-    /*
-      Automatically reset
-      counters on STOP.
-    */
-
-    totalBars =
-      0;
-
-
-    totalBeats =
-      0;
-
-
-    currentBeat =
-      0;
-
-
-    document
-      .querySelectorAll(
-        ".beat-light"
-      )
-      .forEach(
-
-        function(
-          light
+        if (
+          totalBars ===
+          0
         ) {
 
-          light.classList.remove(
-            "playing"
-          );
+          totalBars =
+            1;
 
         }
 
+      } else {
+
+        currentBeat++;
+
+
+        if (
+          currentBeat >
+          beatsPerBar
+        ) {
+
+          currentBeat =
+            1;
+
+
+          totalBars++;
+
+        }
+
+      }
+
+
+      totalBeats++;
+
+
+      const mode =
+
+        beatModes[
+          currentBeat -
+          1
+        ] ||
+
+        "normal";
+
+
+      playClick(
+        mode
       );
 
 
-    updateDisplays();
-  }
-
-
-  /* ==================================================
-     TIMER
-     ================================================== */
-
-  function scheduleTimer() {
-
-    clearInterval(
-      timer
-    );
-
-
-    const interval =
-      60000 /
-      bpm;
-
-
-    timer =
-      setInterval(
-        tick,
-        interval
-      );
-  }
-
-
-  /* ==================================================
-     BPM
-     ================================================== */
-
-  function setBPM(
-    value
-  ) {
-
-    let newBPM =
-      Number(
-        value
+      flashBeat(
+        currentBeat
       );
 
 
-    if (
-      Number.isNaN(
-        newBPM
-      )
-    ) {
-
-      newBPM =
-        100;
-
-    }
-
-
-    newBPM =
-      Math.max(
-        5,
-        Math.min(
-          newBPM,
-          500
-        )
+      flashScreenEdge(
+        mode
       );
-
-
-    bpm =
-      Math.round(
-        newBPM
-      );
-
-
-    document.getElementById(
-      "bpmInput"
-    ).value =
-      bpm;
-
-
-    document.getElementById(
-      "bpmSlider"
-    ).value =
-      bpm;
-
-
-    updateTempoMarking();
-
-
-    if (
-      isRunning
-    ) {
-
-      scheduleTimer();
 
 
       startBeatMotionLeg();
 
-    }
-  }
 
-
-  function changeBPM(
-    amount
-  ) {
-
-    setBPM(
-      bpm +
-      amount
-    );
-  }
-
-
-  /* ==================================================
-     TEMPO MARKING
-     ================================================== */
-
-  function updateTempoMarking() {
-
-    let marking;
-
-
-    if (
-      bpm <
-      24
-    ) {
-
-      marking =
-        "Larghissimo";
-
-    } else if (
-      bpm <
-      40
-    ) {
-
-      marking =
-        "Grave";
-
-    } else if (
-      bpm <
-      60
-    ) {
-
-      marking =
-        "Largo";
-
-    } else if (
-      bpm <
-      66
-    ) {
-
-      marking =
-        "Larghetto";
-
-    } else if (
-      bpm <
-      76
-    ) {
-
-      marking =
-        "Adagio";
-
-    } else if (
-      bpm <
-      108
-    ) {
-
-      marking =
-        "Andante";
-
-    } else if (
-      bpm <
-      120
-    ) {
-
-      marking =
-        "Moderato";
-
-    } else if (
-      bpm <
-      168
-    ) {
-
-      marking =
-        "Allegro";
-
-    } else if (
-      bpm <
-      200
-    ) {
-
-      marking =
-        "Presto";
-
-    } else {
-
-      marking =
-        "Prestissimo";
+      updateDisplays();
 
     }
 
 
-    document.getElementById(
-      "tempoMarking"
-    ).textContent =
-      marking;
-  }
+    /* ==================================================
+       START / STOP
+       ================================================== */
 
+    function toggleMetronome() {
 
-  /* ==================================================
-     TAP TEMPO
-     ================================================== */
+      getAudioContext();
 
-  function tapTempo() {
-
-    const now =
-      performance.now();
-
-
-    if (
-      tapTimes.length >
-        0 &&
-      now -
-        tapTimes[
-          tapTimes.length -
-          1
-        ] >
-        2000
-    ) {
-
-      tapTimes =
-        [];
-
-    }
-
-
-    tapTimes.push(
-      now
-    );
-
-
-    if (
-      tapTimes.length >
-      8
-    ) {
-
-      tapTimes.shift();
-
-    }
-
-
-    if (
-      tapTimes.length <
-      2
-    ) {
-
-      return;
-
-    }
-
-
-    let totalInterval =
-      0;
-
-
-    for (
-      let i = 1;
-      i <
-      tapTimes.length;
-      i++
-    ) {
-
-      totalInterval +=
-
-        tapTimes[i] -
-        tapTimes[
-          i -
-          1
-        ];
-
-    }
-
-
-    const averageInterval =
-
-      totalInterval /
-      (
-        tapTimes.length -
-        1
-      );
-
-
-    const tappedBPM =
-
-      Math.round(
-        60000 /
-        averageInterval
-      );
-
-
-    setBPM(
-      tappedBPM
-    );
-  }
-
-
-  /* ==================================================
-     BEATS PER BAR
-     ================================================== */
-
-  function changeBeatsPerBar() {
-
-    currentBeat =
-      0;
-
-
-    if (
-      isRunning
-    ) {
-
-      /*
-        Changing Beats per Bar
-        while running begins
-        a fresh bar.
-      */
 
       if (
-        totalBars >
-        0
+        isRunning
       ) {
 
-        totalBars++;
+        stopMetronome();
+
+      } else {
+
+        startMetronome();
 
       }
 
-    } else {
+    }
+
+
+    function startMetronome() {
+
+      if (
+        isRunning
+      ) {
+
+        return;
+
+      }
+
+
+      isRunning =
+        true;
+
+
+      const button =
+        document.getElementById(
+          "startButton"
+        );
+
+
+      button.textContent =
+        "■";
+
+
+      button.title =
+        "Stop Metronome";
+
+
+      button.classList.add(
+        "stop-button"
+      );
+
+
+      tick();
+
+
+      scheduleTimer();
+
+    }
+
+
+    function stopMetronome() {
+
+      isRunning =
+        false;
+
+
+      clearInterval(
+        timer
+      );
+
+
+      timer =
+        null;
+
+
+      resetBeatAnimation();
+
+
+      const button =
+        document.getElementById(
+          "startButton"
+        );
+
+
+      button.textContent =
+        "▶";
+
+
+      button.title =
+        "Start Metronome";
+
+
+      button.classList.remove(
+        "stop-button"
+      );
+
 
       totalBars =
         0;
@@ -2680,184 +3241,286 @@
       totalBeats =
         0;
 
-    }
+
+      currentBeat =
+        0;
 
 
-    createBeatLights();
-
-
-    resetBeatAnimation();
-
-
-    updateDisplays();
-  }
-
-
-  /* ==================================================
-     CLICKS PER BEAT
-     ================================================== */
-
-  function changeClicksPerBeat() {
-
-    let newValue =
-      Number(
-        document.getElementById(
-          "clicksPerBeat"
-        ).value
-      );
-
-
-    if (
-      Number.isNaN(
-        newValue
-      )
-    ) {
-
-      newValue =
-        1;
-
-    }
-
-
-    clicksPerBeat =
-      Math.max(
-        1,
-        Math.min(
-          newValue,
-          8
+      document
+        .querySelectorAll(
+          ".beat-light"
         )
-      );
+        .forEach(
+
+          function(
+            light
+          ) {
+
+            light.classList.remove(
+              "playing"
+            );
+
+          }
+
+        );
 
 
-    document.getElementById(
-      "clicksPerBeat"
-    ).value =
-      clicksPerBeat;
-  }
-
-
-  /* ==================================================
-     COUNTER DISPLAY
-     ================================================== */
-
-  function updateDisplays() {
-
-    document.getElementById(
-      "barCounter"
-    ).textContent =
-      totalBars;
-
-
-    document.getElementById(
-      "beatCounter"
-    ).textContent =
-      totalBeats;
-  }
-
-
-  /* ==================================================
-     COUNTER VISIBILITY
-
-     IMPORTANT:
-     Beat Lights are NEVER hidden.
-     ================================================== */
-
-  function updateBarBeatDisplayVisibility() {
-
-    const barCounterBox =
-      document.getElementById(
-        "barCounterBox"
-      );
-
-
-    const beatCounterBox =
-      document.getElementById(
-        "beatCounterBox"
-      );
-
-
-    /*
-      visibility:hidden keeps the
-      center beat lights perfectly
-      centered because left and right
-      spaces remain reserved.
-    */
-
-    if (
-      barCounterBox
-    ) {
-
-      barCounterBox.style.visibility =
-
-        BAR_BEAT_DISPLAY_VISIBLE
-          ? "visible"
-          : "hidden";
+      updateDisplays();
 
     }
 
 
-    if (
-      beatCounterBox
-    ) {
+    /* ==================================================
+       TIMER
+       ================================================== */
 
-      beatCounterBox.style.visibility =
+    function scheduleTimer() {
 
-        BAR_BEAT_DISPLAY_VISIBLE
-          ? "visible"
-          : "hidden";
-
-    }
-  }
-
-
-  /* ==================================================
-     BEAT ANIMATION VISIBILITY
-     ================================================== */
-
-  function updateBeatAnimationVisibility() {
-
-    const area =
-      document.getElementById(
-        "beatMotionArea"
+      clearInterval(
+        timer
       );
 
 
-    if (
-      !area
-    ) {
+      const interval =
+        60000 /
+        bpm;
 
-      return;
+
+      timer =
+        setInterval(
+          tick,
+          interval
+        );
 
     }
 
 
-    area.style.display =
+    /* ==================================================
+       BPM
+       ================================================== */
 
-      BEAT_ANIMATION_ENABLED
-        ? "block"
-        : "none";
-  }
-
-
-  /* ==================================================
-     KEYBOARD SHORTCUTS
-     ================================================== */
-
-  document.addEventListener(
-    "keydown",
-    function(
-      event
+    function setBPM(
+      value
     ) {
 
-      const tag =
-        event.target.tagName;
+      let newBPM =
+        Number(
+          value
+        );
 
 
       if (
-        tag ===
-          "INPUT" ||
-        tag ===
-          "SELECT"
+        Number.isNaN(
+          newBPM
+        )
+      ) {
+
+        newBPM =
+          100;
+
+      }
+
+
+      newBPM =
+        Math.max(
+          5,
+          Math.min(
+            newBPM,
+            500
+          )
+        );
+
+
+      bpm =
+        Math.round(
+          newBPM
+        );
+
+
+      document.getElementById(
+        "bpmInput"
+      ).value =
+        bpm;
+
+
+      document.getElementById(
+        "bpmSlider"
+      ).value =
+        bpm;
+
+
+      updateTempoMarking();
+
+
+      if (
+        isRunning
+      ) {
+
+        scheduleTimer();
+
+
+        startBeatMotionLeg();
+
+      }
+
+    }
+
+
+    function changeBPM(
+      amount
+    ) {
+
+      setBPM(
+        bpm +
+        amount
+      );
+
+    }
+
+
+    /* ==================================================
+       TEMPO MARKING
+       ================================================== */
+
+    function updateTempoMarking() {
+
+      let marking;
+
+
+      if (
+        bpm <
+        24
+      ) {
+
+        marking =
+          "Larghissimo";
+
+      } else if (
+        bpm <
+        40
+      ) {
+
+        marking =
+          "Grave";
+
+      } else if (
+        bpm <
+        60
+      ) {
+
+        marking =
+          "Largo";
+
+      } else if (
+        bpm <
+        66
+      ) {
+
+        marking =
+          "Larghetto";
+
+      } else if (
+        bpm <
+        76
+      ) {
+
+        marking =
+          "Adagio";
+
+      } else if (
+        bpm <
+        108
+      ) {
+
+        marking =
+          "Andante";
+
+      } else if (
+        bpm <
+        120
+      ) {
+
+        marking =
+          "Moderato";
+
+      } else if (
+        bpm <
+        168
+      ) {
+
+        marking =
+          "Allegro";
+
+      } else if (
+        bpm <
+        200
+      ) {
+
+        marking =
+          "Presto";
+
+      } else {
+
+        marking =
+          "Prestissimo";
+
+      }
+
+
+      document.getElementById(
+        "tempoMarking"
+      ).textContent =
+        marking;
+
+    }
+
+
+    /* ==================================================
+       TAP TEMPO
+       ================================================== */
+
+    function tapTempo() {
+
+      const now =
+        performance.now();
+
+
+      if (
+        tapTimes.length >
+        0 &&
+
+        now -
+        tapTimes[
+          tapTimes.length -
+          1
+        ] >
+        2000
+      ) {
+
+        tapTimes =
+          [];
+
+      }
+
+
+      tapTimes.push(
+        now
+      );
+
+
+      if (
+        tapTimes.length >
+        8
+      ) {
+
+        tapTimes.shift();
+
+      }
+
+
+      if (
+        tapTimes.length <
+        2
       ) {
 
         return;
@@ -2865,117 +3528,85 @@
       }
 
 
-      /*
-        SPACE:
-        START / STOP
-      */
+      let totalInterval =
+        0;
 
-      if (
-        event.code ===
-        "Space"
+
+      for (
+        let i = 1;
+        i <
+        tapTimes.length;
+        i++
       ) {
 
-        event.preventDefault();
+        totalInterval +=
 
-
-        toggleMetronome();
+          tapTimes[i] -
+          tapTimes[
+            i -
+            1
+          ];
 
       }
 
 
-      /*
-        T:
-        TAP TEMPO
-      */
+      const averageInterval =
 
-      if (
-        event.key.toLowerCase() ===
-        "t"
-      ) {
-
-        tapTempo();
-
-      }
-
-
-      /*
-        UP:
-        +1 BPM
-      */
-
-      if (
-        event.key ===
-        "ArrowUp"
-      ) {
-
-        changeBPM(
+        totalInterval /
+        (
+          tapTimes.length -
           1
         );
 
-      }
 
+      const tappedBPM =
 
-      /*
-        DOWN:
-        -1 BPM
-      */
-
-      if (
-        event.key ===
-        "ArrowDown"
-      ) {
-
-        changeBPM(
-          -1
+        Math.round(
+          60000 /
+          averageInterval
         );
 
-      }
+
+      setBPM(
+        tappedBPM
+      );
+
     }
-  );
 
 
-  /* ==================================================
-     WINDOW RESIZE
-     ================================================== */
+    /* ==================================================
+       BEATS PER BAR
+       ================================================== */
 
-  window.addEventListener(
-    "resize",
-    function() {
+    function changeBeatsPerBar() {
 
-      resetBeatAnimation();
+      currentBeat =
+        0;
 
 
       if (
         isRunning
       ) {
 
-        startBeatMotionLeg();
+        if (
+          totalBars >
+          0
+        ) {
+
+          totalBars++;
+
+        }
+
+      } else {
+
+        totalBars =
+          0;
+
+
+        totalBeats =
+          0;
 
       }
-
-    }
-  );
-
-
-  /* ==================================================
-     PAGE LOAD
-     ================================================== */
-
-  window.addEventListener(
-    "load",
-    function() {
-
-      setBPM(
-        100
-      );
-
-
-      updateVolume(
-        70
-      );
-
-
-      changeClicksPerBeat();
 
 
       createBeatLights();
@@ -2986,16 +3617,439 @@
 
       updateDisplays();
 
+    }
+
+
+    /* ==================================================
+       CLICKS PER BEAT
+       ================================================== */
+
+    function changeClicksPerBeat() {
+
+      let newValue =
+        Number(
+          document.getElementById(
+            "clicksPerBeat"
+          ).value
+        );
+
+
+      if (
+        Number.isNaN(
+          newValue
+        )
+      ) {
+
+        newValue =
+          1;
+
+      }
+
+
+      clicksPerBeat =
+        Math.max(
+          1,
+          Math.min(
+            newValue,
+            8
+          )
+        );
+
+
+      document.getElementById(
+        "clicksPerBeat"
+      ).value =
+        clicksPerBeat;
+
+    }
+
+
+    /* ==================================================
+       COUNTER DISPLAY
+       ================================================== */
+
+    function updateDisplays() {
+
+      document.getElementById(
+        "barCounter"
+      ).textContent =
+        totalBars;
+
+
+      document.getElementById(
+        "beatCounter"
+      ).textContent =
+        totalBeats;
+
+    }
+
+
+    /* ==================================================
+       COUNTER VISIBILITY
+
+       BEAT LIGHTS ARE NEVER HIDDEN.
+       ================================================== */
+
+    function updateBarBeatDisplayVisibility() {
+
+      const barCounterBox =
+        document.getElementById(
+          "barCounterBox"
+        );
+
+
+      const beatCounterBox =
+        document.getElementById(
+          "beatCounterBox"
+        );
+
+
+      const canShowCounters =
+
+        BAR_BEAT_COUNTER_PREMIUM_ENABLED &&
+
+        counterDisplayEnabled;
+
+
+      if (
+        barCounterBox
+      ) {
+
+        barCounterBox.style.visibility =
+
+          canShowCounters
+            ? "visible"
+            : "hidden";
+
+      }
+
+
+      if (
+        beatCounterBox
+      ) {
+
+        beatCounterBox.style.visibility =
+
+          canShowCounters
+            ? "visible"
+            : "hidden";
+
+      }
+
+    }
+
+
+    /* ==================================================
+       PREMIUM / FREE COUNTER UI
+       ================================================== */
+
+    function updateSpotifyCounterPreferenceUI() {
+
+      const toggle =
+        document.getElementById(
+          "counterDisplayToggle"
+        );
+
+
+      const row =
+        document.getElementById(
+          "counterPreferenceRow"
+        );
+
+
+      if (
+        !toggle ||
+        !row
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+        TRUE = PREMIUM
+      */
+
+      if (
+        BAR_BEAT_COUNTER_PREMIUM_ENABLED
+      ) {
+
+        row.style.display =
+          "flex";
+
+
+        row.classList.remove(
+          "locked"
+        );
+
+
+        toggle.disabled =
+          false;
+
+
+        toggle.checked =
+          counterDisplayEnabled;
+
+      }
+
+
+      /*
+        FALSE = FREE
+
+        IMPORTANT:
+        CONTROL REMAINS VISIBLE.
+      */
+
+      else {
+
+        counterDisplayEnabled =
+          false;
+
+
+        row.style.display =
+          "flex";
+
+
+        row.classList.add(
+          "locked"
+        );
+
+
+        toggle.checked =
+          false;
+
+
+        toggle.disabled =
+          true;
+
+      }
+
 
       updateBarBeatDisplayVisibility();
 
+    }
 
-      updateBeatAnimationVisibility();
+
+    /* ==================================================
+       COUNTER ON / OFF PREFERENCE
+       ================================================== */
+
+    function updateCounterPreference() {
+
+      if (
+        !BAR_BEAT_COUNTER_PREMIUM_ENABLED
+      ) {
+
+        counterDisplayEnabled =
+          false;
+
+
+        updateSpotifyCounterPreferenceUI();
+
+
+        return;
+
+      }
+
+
+      const toggle =
+        document.getElementById(
+          "counterDisplayToggle"
+        );
+
+
+      counterDisplayEnabled =
+        Boolean(
+          toggle &&
+          toggle.checked
+        );
+
+
+      updateBarBeatDisplayVisibility();
 
     }
-  );
 
-</script>
+
+    /* ==================================================
+       BEAT ANIMATION VISIBILITY
+       ================================================== */
+
+    function updateBeatAnimationVisibility() {
+
+      const area =
+        document.getElementById(
+          "beatMotionArea"
+        );
+
+
+      if (
+        !area
+      ) {
+
+        return;
+
+      }
+
+
+      area.style.display =
+
+        BEAT_ANIMATION_ENABLED
+          ? "block"
+          : "none";
+
+    }
+
+
+    /* ==================================================
+       KEYBOARD SHORTCUTS
+       ================================================== */
+
+    document.addEventListener(
+      "keydown",
+      function(
+        event
+      ) {
+
+        const tag =
+          event.target.tagName;
+
+
+        if (
+          tag ===
+            "INPUT" ||
+
+          tag ===
+            "SELECT"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          event.code ===
+          "Space"
+        ) {
+
+          event.preventDefault();
+
+
+          toggleMetronome();
+
+        }
+
+
+        if (
+          event.key.toLowerCase() ===
+          "t"
+        ) {
+
+          tapTempo();
+
+        }
+
+
+        if (
+          event.key ===
+          "ArrowUp"
+        ) {
+
+          changeBPM(
+            1
+          );
+
+        }
+
+
+        if (
+          event.key ===
+          "ArrowDown"
+        ) {
+
+          changeBPM(
+            -1
+          );
+
+        }
+
+      }
+
+    );
+
+
+    /* ==================================================
+       WINDOW RESIZE
+       ================================================== */
+
+    window.addEventListener(
+      "resize",
+      function() {
+
+        resetBeatAnimation();
+
+
+        if (
+          isRunning
+        ) {
+
+          startBeatMotionLeg();
+
+        }
+
+      }
+
+    );
+
+
+    /* ==================================================
+       PAGE LOAD
+       ================================================== */
+
+    window.addEventListener(
+      "load",
+      function() {
+
+        setBPM(
+          100
+        );
+
+
+        updateVolume(
+          70
+        );
+
+
+        changeClicksPerBeat();
+
+
+        createBeatLights();
+
+
+        resetBeatAnimation();
+
+
+        updateDisplays();
+
+
+        updateEdgeFlashPreference();
+
+
+        updateSpotifyCounterPreferenceUI();
+
+
+        updateBarBeatDisplayVisibility();
+
+
+        updateBeatAnimationVisibility();
+
+      }
+
+    );
+
+  </script>
 
 </body>
+
 </html>
