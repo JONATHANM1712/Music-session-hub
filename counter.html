@@ -27,6 +27,16 @@
       box-sizing: border-box;
     }
 
+    html,
+    body,
+    button,
+    input,
+    select,
+    textarea,
+    table {
+      font-family: Rubik, Arial, sans-serif;
+    }
+
     body {
       margin: 0;
 
@@ -721,8 +731,15 @@
     /* ==================================================
        COUNTER STATE
        ================================================== */
+/* ==================================================
+       SAVED SITE DATA
 
-    let isDirty = false;
+       The counter is stored in this browser's localStorage
+       for the GitHub Pages site and restored automatically.
+       ================================================== */
+
+    const COUNTER_STORAGE_KEY =
+      "musicSessionHub.counter.input.v1";
 
 
     /* ==================================================
@@ -986,10 +1003,22 @@
 
           }
         );
+try {
 
+        localStorage.setItem(
+          COUNTER_STORAGE_KEY,
+          rawText
+        );
 
-      isDirty =
-        rawText.length > 0;
+      } catch (error) {
+
+        console.warn(
+          "Counter data could not be saved.",
+          error
+        );
+
+      }
+
 
     }
 
@@ -1005,10 +1034,7 @@
           "inputData"
         )
         .value = "";
-
-      isDirty = false;
-
-      updateCounter();
+updateCounter();
 
     }
 
@@ -1039,25 +1065,12 @@
 
 
     /* ==================================================
-       LEAVING PAGE WARNING
+       NO BEFOREUNLOAD WARNING
+
+       Counter data is saved automatically to localStorage.
+       The page can reload, close, or navigate away without
+       showing the browser "Changes you made may not be saved" dialog.
        ================================================== */
-
-    window.addEventListener(
-      "beforeunload",
-      event => {
-
-        if (
-          isDirty
-        ) {
-
-          event.preventDefault();
-
-          event.returnValue = "";
-
-        }
-
-      }
-    );
 
 
     /* ==================================================
@@ -1069,6 +1082,34 @@
       () => {
 
         createGrid();
+
+
+        try {
+
+          const savedCounter =
+            localStorage.getItem(
+              COUNTER_STORAGE_KEY
+            );
+
+
+          if (savedCounter !== null) {
+
+            document.getElementById(
+              "inputData"
+            ).value =
+              savedCounter;
+
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "Counter data could not be restored.",
+            error
+          );
+
+        }
+
 
         updateCounter();
 
