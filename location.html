@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Music Session Location Center for current position, Google Maps, local weather, directions, nearby businesses, services, and location-specific results."
+  >
+
+  <title>
+    Music Session Location
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="location.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <!-- ==================================================
+       EXCLUSIVE LOCATION BACKGROUND
+       ================================================== -->
+
+  <div
+    class="location-background"
+    aria-hidden="true"
+  ></div>
+
+
+  <div
+    class="location-overlay"
+    aria-hidden="true"
+  ></div>
+
+
+  <!-- ==================================================
+       MAIN BOX
+       ================================================== -->
+
+  <main class="box">
+
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <header class="location-header">
+
+
+      <div class="location-header-title">
+
+        <h1>
+          📍 Music Session Location
+        </h1>
+
+
+        <p>
+          Identify your current position for nearby areas, local weather,
+          Google Maps directions, businesses, services, and location-specific results.
+        </p>
+
+      </div>
+
+
+      <a
+        href="index.html"
+        class="home-button"
+      >
+        ← Dashboard
+      </a>
+
+    </header>
+
+
+    <!-- ==================================================
+         AT A GLANCE
+         ================================================== -->
+
+    <section
+      class="at-a-glance"
+      aria-label="Location at a glance"
+    >
+
+
+      <article class="glance-card">
+
+        <span class="glance-label">
+          Current Location
+        </span>
+
+
+        <strong
+          id="glanceLocation"
+          class="glance-value"
+        >
+          Detecting location...
+        </strong>
+
+
+        <span
+          id="glanceRegion"
+          class="glance-sub"
+        >
+          Waiting for location access
+        </span>
+
+      </article>
+
+
+      <article class="glance-card">
+
+        <span class="glance-label">
+          Coordinates
+        </span>
+
+
+        <strong
+          id="glanceCoordinates"
+          class="glance-value"
+        >
+          --, --
+        </strong>
+
+
+        <span
+          id="glanceAccuracy"
+          class="glance-sub"
+        >
+          Accuracy unavailable
+        </span>
+
+      </article>
+
+
+      <article class="glance-card">
+
+        <span class="glance-label">
+          Local Conditions
+        </span>
+
+
+        <strong
+          id="glanceWeather"
+          class="glance-value"
+        >
+          --°C
+        </strong>
+
+
+        <span
+          id="glanceWeatherCondition"
+          class="glance-sub"
+        >
+          Waiting for position
+        </span>
+
+      </article>
+
+    </section>
+
+
+    <!-- ==================================================
+         LIVE POSITION + GOOGLE MAPS
+         ================================================== -->
+
+    <section class="location-main">
+
+
+      <!-- LIVE POSITION -->
+
+      <article class="position-panel">
+
+
+        <div class="panel-heading">
+
+          <div>
+
+            <span class="section-label">
+              Live Position
+            </span>
+
+
+            <h2>
+              Where you are now
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div class="position-hero">
+
+          <div
+            class="pin-orb"
+            aria-hidden="true"
+          >
+            📍
+          </div>
+
+
+          <div class="position-copy">
+
+            <strong id="primaryLocation">
+              Detecting your position...
+            </strong>
+
+
+            <span id="primaryAddress">
+              Allow browser location access for the most accurate result.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="controls">
+
+          <button
+            id="detectButton"
+            class="
+              action-button
+              primary
+            "
+            type="button"
+          >
+            📍 Detect My Location
+          </button>
+
+
+          <button
+            id="refreshButton"
+            class="action-button"
+            type="button"
+          >
+            ↻ Refresh Position
+          </button>
+
+
+          <a
+            id="googleMapsButton"
+            class="action-button"
+            href="https://www.google.com/maps"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            🗺️ Open in Google Maps
+          </a>
+
+        </div>
+
+
+        <div
+          id="statusMessage"
+          class="status-message"
+          aria-live="polite"
+        >
+          Ready to detect your location.
+        </div>
+
+
+        <!-- LOCATION SEARCH -->
+
+        <div class="search-panel">
+
+
+          <form
+            id="locationSearchForm"
+            class="search-form"
+          >
+
+            <input
+              id="locationSearchInput"
+              type="search"
+              placeholder="Search another city or place..."
+              autocomplete="off"
+              aria-label="Search another location"
+            >
+
+
+            <button
+              class="search-button"
+              type="submit"
+            >
+              Search
+            </button>
+
+          </form>
+
+
+          <div
+            id="searchResults"
+            class="search-results"
+            hidden
+          ></div>
+
+        </div>
+
+
+        <!-- LOCATION DETAILS -->
+
+        <div class="info-grid">
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              District / Area
+            </span>
+
+            <strong id="districtValue">
+              --
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              City / Municipality
+            </span>
+
+            <strong id="cityValue">
+              --
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Region / Province
+            </span>
+
+            <strong id="regionValue">
+              --
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Country
+            </span>
+
+            <strong id="countryValue">
+              --
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Postal Code
+            </span>
+
+            <strong id="postalValue">
+              --
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Time Zone
+            </span>
+
+            <strong id="timezoneValue">
+              --
+            </strong>
+
+          </article>
+
+        </div>
+
+      </article>
+
+
+      <!-- GOOGLE MAPS -->
+
+      <article class="map-panel">
+
+
+        <div class="map-toolbar">
+
+
+          <div>
+
+            <span class="section-label">
+              Google Maps
+            </span>
+
+            <strong>
+              Interactive Map
+            </strong>
+
+          </div>
+
+
+          <div class="map-links">
+
+            <a
+              id="googleMapSearchLink"
+              class="map-link"
+              href="https://www.google.com/maps"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open Map ↗
+            </a>
+
+
+            <a
+              id="directionsLink"
+              class="map-link"
+              href="https://www.google.com/maps"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Directions ↗
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <div class="google-map-frame-wrap">
+
+          <iframe
+            id="locationMapFrame"
+            class="google-map-frame"
+            title="Google Maps current location"
+            src="https://www.google.com/maps?q=Jakarta&z=10&output=embed"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+
+        </div>
+
+
+        <p class="map-note">
+          The embedded map is provided by Google Maps. Open Map or Directions
+          for the complete Google Maps experience in a new tab.
+        </p>
+
+      </article>
+
+    </section>
+
+
+    <!-- ==================================================
+         LOCAL WEATHER
+         ================================================== -->
+
+    <section class="section-panel">
+
+
+      <div class="section-heading">
+
+
+        <div>
+
+          <span class="section-label">
+            Local Weather
+          </span>
+
+
+          <h2>
+            Conditions at this position
+          </h2>
+
+
+          <p class="section-description">
+            Current temperature, feels-like temperature, humidity,
+            precipitation, and wind based on the selected location.
+          </p>
+
+        </div>
+
+
+        <a
+          href="weather.html"
+          class="map-link"
+        >
+          Open Weather Center →
+        </a>
+
+      </div>
+
+
+      <div class="weather-layout">
+
+
+        <article class="weather-brief">
+
+          <div
+            id="weatherIcon"
+            class="weather-icon"
+            aria-hidden="true"
+          >
+            🌤️
+          </div>
+
+
+          <div>
+
+            <strong
+              id="weatherTemperature"
+              class="weather-temperature"
+            >
+              --°
+            </strong>
+
+
+            <span
+              id="weatherCondition"
+              class="weather-condition"
+            >
+              Waiting for location...
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <div class="weather-metrics">
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Feels Like
+            </span>
+
+            <strong id="feelsLikeValue">
+              --°C
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Humidity
+            </span>
+
+            <strong id="humidityValue">
+              --%
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Precipitation
+            </span>
+
+            <strong id="precipitationValue">
+              -- mm
+            </strong>
+
+          </article>
+
+
+          <article class="metric-card">
+
+            <span class="metric-label">
+              Wind
+            </span>
+
+            <strong id="windValue">
+              -- km/h
+            </strong>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         NEARBY GOOGLE MAPS SEARCH
+         ================================================== -->
+
+    <section class="section-panel">
+
+
+      <div class="section-heading">
+
+
+        <div>
+
+          <span class="section-label">
+            Nearby
+          </span>
+
+
+          <h2>
+            Businesses & Services
+          </h2>
+
+
+          <p class="section-description">
+            Choose a category to search around the selected position
+            directly with Google Maps.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="services"
+        role="group"
+        aria-label="Nearby place categories"
+      >
+
+        <button
+          class="service-button is-active"
+          type="button"
+          data-service="Restaurants"
+          data-icon="🍽️"
+        >
+          🍽️ Restaurants
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="Cafes"
+          data-icon="☕"
+        >
+          ☕ Cafés
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="Hospitals"
+          data-icon="🏥"
+        >
+          🏥 Hospitals
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="Pharmacies"
+          data-icon="💊"
+        >
+          💊 Pharmacies
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="ATMs"
+          data-icon="🏧"
+        >
+          🏧 ATMs
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="Supermarkets"
+          data-icon="🛒"
+        >
+          🛒 Supermarkets
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="Gas stations"
+          data-icon="⛽"
+        >
+          ⛽ Fuel
+        </button>
+
+
+        <button
+          class="service-button"
+          type="button"
+          data-service="Public transport"
+          data-icon="🚌"
+        >
+          🚌 Transit
+        </button>
+
+      </div>
+
+
+      <div
+        id="nearbyStatus"
+        class="status-message"
+      >
+        Detect or select a location to search nearby places.
+      </div>
+
+
+      <div
+        id="nearbyGrid"
+        class="nearby-grid"
+      >
+
+        <div class="empty-state">
+          Nearby Google Maps searches will appear here after a location is selected.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         BACK HOME
+         ================================================== -->
+
+    <a
+      href="index.html"
+      class="back-home"
+    >
+      ← Back to Home
+    </a>
+
+  </main>
+
+
+  <!-- ==================================================
+       EXTERNAL LOCATION JAVASCRIPT
+       ================================================== -->
+
+  <script src="location.js"></script>
+
+</body>
+
+</html>
