@@ -724,29 +724,31 @@ button {
 
 /* ==================================================
    DASHBOARD LOCATION CARD
-
-   Uses the same exclusive background image as
-   location.html.
+   Same background treatment as Weather
    ================================================== */
 
-.dashboard-location-card {
+.dashboard-glance-card.dashboard-location-card {
   position: relative;
-
   overflow: hidden;
-
   isolation: isolate;
-
   min-width: 0;
 
   color: white;
 
+  /* Fallback background */
   background:
     rgba(17, 24, 31, 0.76);
 
   text-decoration: none;
 }
 
-.dashboard-location-card::before {
+
+/* ==================================================
+   LOCATION BACKGROUND IMAGE
+   Same blur level as Weather: 2px
+   ================================================== */
+
+.dashboard-glance-card.dashboard-location-card::before {
   content: "";
 
   position: absolute;
@@ -758,12 +760,10 @@ button {
   background:
     linear-gradient(
       90deg,
-      rgba(4, 14, 19, 0.82),
-      rgba(5, 14, 20, 0.48)
+      rgba(4, 14, 19, 0.78),
+      rgba(5, 14, 20, 0.45)
     ),
-    url(
-      "images/location-background.jpg"
-    )
+    url("images/location-background.jpg")
     center / cover
     no-repeat;
 
@@ -774,25 +774,10 @@ button {
     none;
 }
 
-.dashboard-location-card::after {
-  content: "";
 
-  position: absolute;
-
-  inset: 0;
-
-  z-index: 1;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.035),
-      rgba(0, 0, 0, 0.12)
-    );
-
-  pointer-events:
-    none;
-}
+/* ==================================================
+   LOCATION CONTENT
+   ================================================== */
 
 .dashboard-location-content {
   position: relative;
@@ -800,6 +785,7 @@ button {
   z-index: 2;
 
   width: 100%;
+
   min-height: 100%;
 
   display: flex;
@@ -812,9 +798,15 @@ button {
   gap: 18px;
 }
 
+
 .dashboard-location-content > div {
   min-width: 0;
 }
+
+
+/* ==================================================
+   LOCATION MAIN ROW
+   ================================================== */
 
 .dashboard-location-main {
   margin-top: 12px;
@@ -828,6 +820,11 @@ button {
   min-width: 0;
 }
 
+
+/* ==================================================
+   LOCATION ICON
+   ================================================== */
+
 .dashboard-location-icon {
   flex: 0 0 auto;
 
@@ -835,18 +832,17 @@ button {
     clamp(42px, 4vw, 56px);
 
   line-height: 1;
-
-  filter:
-    drop-shadow(
-      0 5px 10px rgba(0, 0, 0, 0.30)
-    );
 }
+
+
+/* ==================================================
+   LOCATION NAME
+   ================================================== */
 
 .dashboard-location-name {
   min-width: 0;
 
-  display:
-    -webkit-box;
+  display: -webkit-box;
 
   overflow: hidden;
 
@@ -854,6 +850,9 @@ button {
     vertical;
 
   -webkit-line-clamp:
+    2;
+
+  line-clamp:
     2;
 
   color: white;
@@ -870,10 +869,12 @@ button {
 
   overflow-wrap:
     anywhere;
-
-  text-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.34);
 }
+
+
+/* ==================================================
+   LOCATION STATUS
+   ================================================== */
 
 .dashboard-location-status {
   display: block;
@@ -888,13 +889,20 @@ button {
   font-weight: 700;
 
   line-height: 1.35;
-
-  text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.34);
 }
 
+
+/* ==================================================
+   LOCATION ARROW
+   ================================================== */
+
 .dashboard-location-arrow {
+  position: relative;
+
+  z-index: 2;
+
   width: 52px;
+
   height: 52px;
 
   display: grid;
@@ -916,12 +924,20 @@ button {
   font-size: 23px;
 
   font-weight: 800;
+}
 
-  backdrop-filter:
-    blur(8px);
 
-  -webkit-backdrop-filter:
-    blur(8px);
+/* ==================================================
+   LOCATION HOVER
+   ================================================== */
+
+.dashboard-location-card:hover
+.dashboard-location-arrow {
+  transform:
+    translateX(3px);
+
+  background:
+    rgba(255, 255, 255, 0.20);
 }
 
 
