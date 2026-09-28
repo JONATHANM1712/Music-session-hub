@@ -12,7 +12,7 @@
 
   <meta
     name="description"
-    content="Music Session dashboard with dynamic resources, live date and time, weather, counter, and metronome."
+    content="Music Session dashboard with dynamic resources, live date and time, current location, weather, counter, and metronome."
   >
 
   <title>
@@ -23,6 +23,124 @@
     rel="stylesheet"
     href="style.css"
   >
+
+
+  <!-- LOCATION DASHBOARD INTEGRATION -->
+  <style>
+    /* Three-card live row: Time -> Location -> Weather */
+    .dashboard-glance {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 22px !important;
+      align-items: stretch;
+    }
+
+    .dashboard-location-card {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      min-width: 0;
+      color: #fff;
+      text-decoration: none;
+      background:
+        linear-gradient(90deg, rgba(14, 21, 26, 0.82), rgba(14, 21, 26, 0.56)),
+        url("location-background.jpg") center center / cover no-repeat;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .dashboard-location-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.16));
+      pointer-events: none;
+    }
+
+    .dashboard-location-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .dashboard-location-content {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .dashboard-location-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      min-width: 0;
+    }
+
+    .dashboard-location-icon {
+      flex: 0 0 auto;
+      font-size: clamp(2rem, 3vw, 3.35rem);
+      line-height: 1;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.28));
+    }
+
+    .dashboard-location-name {
+      min-width: 0;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      font-size: clamp(1.35rem, 2vw, 2.15rem);
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.34);
+    }
+
+    .dashboard-location-status {
+      display: block;
+      margin-top: 10px;
+      color: rgba(255,255,255,0.86);
+      font-weight: 700;
+      line-height: 1.35;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.34);
+    }
+
+    .dashboard-location-arrow {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.42);
+      background: rgba(13, 18, 22, 0.32);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 1.7rem;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1180px) {
+      .dashboard-glance {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .dashboard-time-card {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .dashboard-glance {
+        grid-template-columns: 1fr !important;
+      }
+
+      .dashboard-time-card {
+        grid-column: auto;
+      }
+    }
+  </style>
 
 </head>
 
@@ -82,6 +200,10 @@
             Resource Viewer
           </a>
 
+          <a href="location.html">
+            Location
+          </a>
+
           <a href="weather.html">
             Weather
           </a>
@@ -119,12 +241,12 @@
 
 
     <!-- ==================================================
-         LIVE DATE / TIME + WEATHER
+         LIVE DATE / TIME + LOCATION + WEATHER
          ================================================== -->
 
     <section
       class="dashboard-glance"
-      aria-label="Current date, time and weather"
+      aria-label="Current date, time, location and weather"
     >
 
 
@@ -168,6 +290,66 @@
         </span>
 
       </div>
+
+
+      <!-- ==================================================
+           CURRENT LOCATION
+           ================================================== -->
+
+      <a
+        href="location.html"
+        class="
+          dashboard-glance-card
+          dashboard-location-card
+        "
+        aria-label="Open detailed location"
+      >
+
+        <div class="dashboard-location-content">
+
+          <div>
+
+            <span class="dashboard-glance-label">
+              Current Location
+            </span>
+
+            <div class="dashboard-location-main">
+
+              <span
+                class="dashboard-location-icon"
+                aria-hidden="true"
+              >
+                📍
+              </span>
+
+              <strong
+                id="dashboardLocationName"
+                class="dashboard-location-name"
+              >
+                Detecting location...
+              </strong>
+
+            </div>
+
+            <span
+              id="dashboardLocationStatus"
+              class="dashboard-location-status"
+            >
+              Waiting for location access
+            </span>
+
+          </div>
+
+          <span
+            class="dashboard-location-arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+
+        </div>
+
+      </a>
 
 
       <!-- ==================================================
@@ -264,7 +446,7 @@
           Open the session chart, live tracker,
           Yamaha style reference, Tempcard history,
           guidelines, Google Meet announcements,
-          improvement records, live weather,
+          improvement records, live location, live weather,
           metronome, and the preset color counter
           from one place.
 
@@ -290,57 +472,19 @@
 
 
           <a
+            href="location.html"
+            class="secondary-button"
+          >
+            Open Location
+          </a>
+
+
+          <a
             href="weather.html"
             class="secondary-button"
           >
             Open Weather
           </a>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="hero-summary"
-        aria-label="Dashboard summary"
-      >
-
-        <div class="summary-card">
-
-          <strong>
-            7
-          </strong>
-
-          <span>
-            Available resources
-          </span>
-
-        </div>
-
-
-        <div class="summary-card">
-
-          <strong>
-            3
-          </strong>
-
-          <span>
-            Interactive tools
-          </span>
-
-        </div>
-
-
-        <div class="summary-card">
-
-          <strong>
-            Live
-          </strong>
-
-          <span>
-            Time and weather
-          </span>
 
         </div>
 
@@ -1029,6 +1173,113 @@
 
   </footer>
 
+
+
+  <!-- CURRENT LOCATION CARD -->
+  <script>
+    (() => {
+      const nameElement = document.getElementById("dashboardLocationName");
+      const statusElement = document.getElementById("dashboardLocationStatus");
+
+      if (!nameElement || !statusElement) return;
+
+      let hadCachedLocation = false;
+
+      const setFallback = (name, status) => {
+        nameElement.textContent = name;
+        statusElement.textContent = status;
+      };
+
+      const displayAddress = (address = {}, fallback = "Current position") => {
+        const area =
+          address.suburb ||
+          address.neighbourhood ||
+          address.city_district ||
+          address.city ||
+          address.town ||
+          address.village ||
+          fallback;
+
+        const region = address.city || address.state || address.country || "";
+        nameElement.textContent = region && region !== area
+          ? `${area}, ${region}`
+          : area;
+      };
+
+      try {
+        const cached = JSON.parse(localStorage.getItem("musicSessionLocation") || "null");
+        if (cached && Number.isFinite(Number(cached.latitude)) && Number.isFinite(Number(cached.longitude))) {
+          hadCachedLocation = true;
+          displayAddress(cached.address || {}, "Last detected position");
+          statusElement.textContent = "Last location • Refreshing…";
+        }
+      } catch (_) {
+        // Cached location is optional.
+      }
+
+      const reverseGeocode = async (latitude, longitude, accuracy = null) => {
+        try {
+          const url = new URL("https://nominatim.openstreetmap.org/reverse");
+          url.searchParams.set("format", "jsonv2");
+          url.searchParams.set("lat", latitude);
+          url.searchParams.set("lon", longitude);
+          url.searchParams.set("zoom", "12");
+          url.searchParams.set("addressdetails", "1");
+
+          const response = await fetch(url, {
+            headers: { "Accept": "application/json" }
+          });
+
+          if (!response.ok) throw new Error("Reverse geocoding unavailable");
+
+          const data = await response.json();
+          const address = data.address || {};
+          displayAddress(address, data.name || "Current position");
+          statusElement.textContent = "Location detected • Open details →";
+
+          try {
+            localStorage.setItem("musicSessionLocation", JSON.stringify({
+              latitude: Number(latitude),
+              longitude: Number(longitude),
+              accuracy: accuracy == null ? null : Number(accuracy),
+              address,
+              savedAt: Date.now()
+            }));
+          } catch (_) {
+            // Local storage is optional.
+          }
+        } catch (error) {
+          nameElement.textContent = `${Number(latitude).toFixed(3)}, ${Number(longitude).toFixed(3)}`;
+          statusElement.textContent = "Coordinates detected • Open details →";
+        }
+      };
+
+      if (!navigator.geolocation) {
+        setFallback("Location unavailable", "Geolocation is not supported • Open details →");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => reverseGeocode(coords.latitude, coords.longitude, coords.accuracy),
+        (error) => {
+          if (hadCachedLocation) {
+            statusElement.textContent = "Showing last location • Open details →";
+            return;
+          }
+
+          const message = error.code === 1
+            ? "Location permission needed"
+            : "Unable to detect location";
+          setFallback(message, "Open Location to retry →");
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
+        }
+      );
+    })();
+  </script>
 
   <script src="script.js"></script>
 
