@@ -1,3526 +1,2648 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
+  <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>
-    Metronome
-  </title>
-
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metronome</title>
   <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body,
-    button,
-    input,
-    select,
-    option,
-    textarea,
-    label {
-      font-family:
-        Rubik,
-        Arial,
-        sans-serif;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font-family: inherit;
-    }
-
+    * { box-sizing: border-box; }
+    html, body, button, input, select, option, label { font-family: Rubik, Arial, sans-serif; }
 
     body {
       margin: 0;
       min-height: 100vh;
-
       display: flex;
       justify-content: center;
       align-items: flex-start;
-
-      padding: 16px 0;
-
-      position: relative;
-      overflow-x: hidden;
-
+      padding: 8px 0;
       color: white;
-
-      font-family:
-        Rubik,
-        Arial,
-        sans-serif;
+      overflow-x: hidden;
     }
-
 
     .box {
-      width: 980px;
+      width: 1040px;
       max-width: 96%;
-
-      padding: 24px;
-
+      padding: 22px 26px 18px;
       border-radius: 25px;
-
-      background:
-        rgba(255, 255, 255, 0.12);
-
-      border:
-        1px solid rgba(255, 255, 255, 0.25);
-
-      backdrop-filter:
-        blur(10px);
-
-      -webkit-backdrop-filter:
-        blur(10px);
-
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       text-align: center;
-
-      box-shadow:
-        0 0 30px
-        rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 30px rgba(0,0,0,.4);
+      position: relative;
     }
 
+    .top-row { position: relative; }
+    h1 { margin: 0 0 5px; font-size: 40px; }
+    .subtitle { margin-bottom: 13px; opacity: .9; font-size: 17px; font-weight: bold; }
 
-    h1 {
-      margin:
-        0 0 6px;
-
-      font-size:
-        38px;
+    .settings-button {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(0,0,0,.20);
+      color: white;
+      cursor: pointer;
+      font-size: 23px;
     }
-
-
-    .subtitle {
-      margin-bottom:
-        20px;
-
-      opacity:
-        0.9;
-
-      font-size:
-        17px;
-
-      font-weight:
-        bold;
-    }
-
-
-    /* ==================================================
-       BAR / BEAT DISPLAY
-       ================================================== */
 
     .bar-beat-display {
       width: 100%;
-
       display: grid;
-
-      grid-template-columns:
-        145px
-        minmax(0, 1fr)
-        145px;
-
+      grid-template-columns: 145px minmax(0,1fr) 145px;
       align-items: center;
-
       gap: 20px;
-
-      margin:
-        16px 0 18px;
+      margin: 8px 0 8px;
     }
-
 
     .side-counter {
-      min-height:
-        105px;
-
+      min-height: 94px;
       display: flex;
-
-      flex-direction:
-        column;
-
+      flex-direction: column;
       align-items: center;
-
       justify-content: center;
     }
+    .side-counter-title { margin-bottom: 5px; font-size: 17px; font-weight: bold; }
+    .side-counter-value { font-size: 38px; font-weight: bold; line-height: 1; }
 
-
-    .side-counter-title {
-      margin-bottom:
-        7px;
-
-      font-size:
-        17px;
-
-      font-weight:
-        bold;
-    }
-
-
-    .side-counter-value {
-      font-size:
-        40px;
-
-      font-weight:
-        bold;
-
-      line-height:
-        1;
-    }
-
-
-    /* ==================================================
-       BEAT LIGHTS
-       ================================================== */
-
-    .center-beats {
-      min-width: 0;
-    }
-
-
+    .center-beats { min-width: 0; }
     .beat-lights {
-      min-height: 72px;
-
+      min-height: 68px;
       display: flex;
-
       align-items: center;
-
-      justify-content:
-        space-evenly;
-
+      justify-content: space-evenly;
       gap: 12px;
-
-      padding: 5px;
+      padding: 3px;
     }
-
-
     .beat-light {
-      width: 48px;
-      height: 48px;
-
-      flex:
-        0 0 auto;
-
-      display: grid;
-
-      place-items: center;
-
-      border:
-        2px solid
-        rgba(255, 255, 255, 0.80);
-
-      border-radius:
-        50%;
-
+      width: 48px; height: 48px;
+      flex: 0 0 auto;
+      display: grid; place-items: center;
+      border: 2px solid rgba(255,255,255,.8);
+      border-radius: 50%;
       cursor: pointer;
-
-      font-family:
-        inherit;
-
-      font-size:
-        17px;
-
-      font-weight:
-        bold;
-
-      transition:
-        transform 0.10s ease,
-        background 0.15s ease,
-        box-shadow 0.15s ease,
-        opacity 0.15s ease;
-    }
-
-
-    .beat-light.normal {
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #c5ffca,
-          #39d353 38%,
-          #16852b 72%
-        );
-
-      color:
-        #073b10;
-    }
-
-
-    .beat-light.accent {
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #ffaaaa,
-          #ff3030 42%,
-          #a80000 75%
-        );
-
-      color:
-        white;
-    }
-
-
-    .beat-light.off {
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #777777,
-          #454545 45%,
-          #222222 80%
-        );
-
-      color:
-        rgba(255, 255, 255, 0.55);
-
-      opacity:
-        0.65;
-    }
-
-
-    .beat-light.playing {
-      transform:
-        scale(1.25);
-
-      box-shadow:
-        0 0 0 5px
-        rgba(255, 255, 255, 0.25),
-
-        0 0 25px
-        rgba(255, 255, 255, 0.90);
-    }
-
-
-    .beat-help {
-      margin-top: 3px;
-
-      font-size: 13px;
-
+      color: white;
+      font-size: 17px;
       font-weight: bold;
+      transition: transform .10s ease, background .15s ease, box-shadow .15s ease, opacity .15s ease;
     }
-
-
-    /* ==================================================
-       BEAT MOTION
-       ================================================== */
+    .beat-light.normal {
+      background: radial-gradient(circle at 35% 30%,#c5ffca,#39d353 38%,#16852b 72%);
+      color: #073b10;
+    }
+    .beat-light.accent {
+      background: radial-gradient(circle at 35% 30%,#ffaaaa,#ff3030 42%,#a80000 75%);
+      color: white;
+    }
+    .beat-light.off {
+      background: radial-gradient(circle at 35% 30%,#777,#454545 45%,#222 80%);
+      color: rgba(255,255,255,.55);
+      opacity: .65;
+    }
+    .beat-light.playing {
+      transform: scale(1.25);
+      box-shadow: 0 0 0 5px rgba(255,255,255,.25), 0 0 25px rgba(255,255,255,.9);
+    }
+    .beat-help { margin-top: 1px; font-size: 13px; font-weight: bold; }
 
     .beat-motion-area {
       position: relative;
-
-      height: 64px;
-
-      margin:
-        8px 10px 22px;
+      height: 58px;
+      margin: 4px 10px 14px;
+      transition: opacity .18s ease;
     }
-
-
+    .beat-motion-area.animation-hidden { opacity: 0; }
     .beat-track {
       position: absolute;
-
-      left: 25px;
-      right: 25px;
-
-      top: 50%;
-
+      left: 25px; right: 25px; top: 50%;
       height: 3px;
-
-      transform:
-        translateY(-50%);
-
-      background:
-        rgba(40, 40, 40, 0.75);
-
-      border-radius:
-        3px;
+      transform: translateY(-50%);
+      background: rgba(40,40,40,.75);
+      border-radius: 3px;
     }
-
-
     .beat-runner {
       position: absolute;
-
-      top: 50%;
-      left: 25px;
-
-      width: 34px;
-      height: 34px;
-
-      border-radius:
-        50%;
-
-      transform:
-        translate(-50%, -50%);
-
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #ff9b9b,
-          #ed2727 38%,
-          #bd0c0c 65%,
-          #740000 100%
-        );
+      top: 50%; left: 25px;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      transform: translate(-50%,-50%);
+      background: radial-gradient(circle at 35% 30%,#ff9b9b,#ed2727 38%,#bd0c0c 65%,#740000 100%);
     }
-
-
-    /* ==================================================
-       BPM
-       ================================================== */
 
     .tempo-main {
-      max-width:
-        680px;
-
-      margin:
-        8px auto 18px;
-
+      max-width: 720px;
+      margin: 5px auto 9px;
       display: grid;
-
-      grid-template-columns:
-        110px
-        minmax(0, 1fr)
-        110px;
-
+      grid-template-columns: 110px minmax(0,1fr) 110px;
       align-items: center;
-
       gap: 20px;
     }
-
-
-    .tempo-side {
-      display: grid;
-
-      gap: 12px;
-    }
-
-
+    .tempo-side { display: grid; gap: 10px; }
     .step-button {
-      width: 72px;
-      height: 52px;
-
-      margin: auto;
-
-      border:
-        2px solid
-        rgba(255, 255, 255, 0.30);
-
-      border-radius:
-        8px;
-
-      background:
-        rgba(255, 255, 255, 0.08);
-
+      width: 76px; height: 50px; margin: auto;
+      border: 2px solid rgba(255,255,255,.30);
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
       color: white;
-
       cursor: pointer;
-
       font-size: 20px;
-
       font-weight: bold;
     }
-
-
-    .tempo-center {
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      gap: 10px;
-    }
-
-
+    .tempo-center { display: flex; align-items: center; justify-content: center; gap: 10px; }
     .bpm-input {
-      width: 150px;
-
-      padding:
-        10px 12px;
-
+      width: 160px;
+      padding: 9px 12px;
       border: none;
-
-      border-radius:
-        10px;
-
-      background:
-        rgba(255, 255, 255, 0.94);
-
-      color:
-        #333;
-
-      text-align:
-        center;
-
-      font-size:
-        48px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.94);
+      color: #333;
+      text-align: center;
+      font-size: 48px;
     }
+    .playback-detail { min-height: 19px; font-size: 12px; opacity: .80; margin-top: 3px; }
+    #tempoMarking { font-size: 16px; font-weight: bold; margin: 2px 0 5px; }
 
-
-    .tempo-slider-section {
-      margin:
-        10px 15px 18px;
-    }
-
-
-    .tempo-slider {
-      width: 100%;
-    }
-
-
-    /* ==================================================
-       VOLUME
-       ================================================== */
+    .tempo-slider-section { margin: 5px 15px 10px; }
+    .tempo-slider { width: 100%; }
 
     .volume-control {
-      margin:
-        18px 0;
-
-      padding:
-        13px 18px;
-
+      margin: 10px 0;
+      padding: 12px 18px;
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       gap: 14px;
-
-      border-radius:
-        14px;
-
-      background:
-        rgba(255, 255, 255, 0.16);
-
-      font-weight:
-        bold;
+      border-radius: 14px;
+      background: rgba(255,255,255,.16);
+      font-weight: bold;
     }
-
-
-    .volume-control input[type="range"] {
-      width:
-        min(420px, 55%);
-    }
-
-
+    .volume-control input[type=range] { width: min(420px,55%); }
     .volume-display {
-      min-width:
-        60px;
-
-      padding:
-        7px 9px;
-
-      border-radius:
-        8px;
-
-      background:
-        white;
-
-      color:
-        #444;
+      min-width: 60px;
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: white;
+      color: #444;
     }
 
-
-    /* ==================================================
-       PREFERENCES
-       ================================================== */
-
-    .preferences-panel {
-      margin:
-        20px 0 8px;
-
-      padding:
-        16px 18px;
-
+    .percentage-section {
+      margin: 10px 0 8px;
+      border-top: 1px solid rgba(255,255,255,.16);
+      border-bottom: 1px solid rgba(255,255,255,.16);
+      padding: 8px 0;
+    }
+    .percentage-title {
+      font-size: 12px;
+      font-weight: 800;
+      opacity: .8;
+      margin-bottom: 5px;
+    }
+    .percentage-row {
       display: grid;
-
-      gap: 12px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.20);
-
-      border-radius:
-        16px;
-
-      background:
-        rgba(255, 255, 255, 0.12);
-
-      text-align:
-        left;
+      grid-template-columns: repeat(5,1fr);
+      max-width: 690px;
+      margin: auto;
     }
-
-
-    .preferences-title {
-      font-size:
-        17px;
-
-      font-weight:
-        800;
-    }
-
-
-    .preference-row {
-      min-height:
-        52px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content:
-        space-between;
-
-      gap: 16px;
-
-      padding:
-        10px 12px;
-
-      border-radius:
-        12px;
-
-      background:
-        rgba(0, 0, 0, 0.16);
-    }
-
-
-    .preference-label {
-      display: block;
-
-      font-size:
-        15px;
-
-      font-weight:
-        800;
-    }
-
-
-    .preference-note {
-      display: block;
-
-      margin-top:
-        3px;
-
-      color:
-        rgba(255, 255, 255, 0.72);
-
-      font-size:
-        12px;
-    }
-
-
-    .preference-row.locked {
-      opacity:
-        0.62;
-    }
-
-
-    .upgrade-message {
-      display: none;
-
-      margin-top:
-        6px;
-
-      color:
-        #ffd7a3;
-
-      font-size:
-        12px;
-
-      font-weight:
-        700;
-    }
-
-
-    .preference-row.locked
-    .upgrade-message {
-      display: block;
-    }
-
-
-    /* ==================================================
-       SWITCH
-       ================================================== */
-
-    .switch {
-      position: relative;
-
-      width: 54px;
-      height: 30px;
-
-      flex:
-        0 0 auto;
-    }
-
-
-    .switch input {
-      position: absolute;
-
-      opacity: 0;
-
-      pointer-events: none;
-    }
-
-
-    .switch-slider {
-      position: absolute;
-
-      inset: 0;
-
-      border-radius:
-        999px;
-
-      background:
-        rgba(255, 255, 255, 0.22);
-
+    .percentage-button {
+      min-height: 48px;
+      border: 0;
+      border-right: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.12);
+      color: white;
       cursor: pointer;
+      font-size: 17px;
+      font-weight: 700;
     }
-
-
-    .switch-slider::before {
-      content: "";
-
-      position: absolute;
-
-      width: 22px;
-      height: 22px;
-
-      left: 4px;
-      top: 4px;
-
-      border-radius:
-        50%;
-
-      background:
-        white;
-
-      transition:
-        transform 0.18s ease;
-    }
-
-
-    .switch input:checked +
-    .switch-slider {
-      background:
-        #28a745;
-    }
-
-
-    .switch input:checked +
-    .switch-slider::before {
-      transform:
-        translateX(24px);
-    }
-
-
-    .switch input:disabled +
-    .switch-slider {
-      cursor:
-        not-allowed;
-
-      background:
-        rgba(255, 255, 255, 0.12);
-    }
-
-
-    /* ==================================================
-       EDGE FLASH
-       ================================================== */
-
-    #screenEdgeFlash {
-      position: fixed;
-
-      inset: 0;
-
-      z-index:
-        9999;
-
-      pointer-events:
-        none;
-
-      opacity: 0;
-
-      --edge-flash-strong:
-        rgba(57, 211, 83, 0.95);
-
-      --edge-flash-soft:
-        rgba(57, 211, 83, 0.55);
-
-      box-shadow:
-
-        inset
-        0 0 0 0.18cm
-        var(--edge-flash-strong),
-
-        inset
-        0 0 8cm 0.65cm
-        var(--edge-flash-soft);
-    }
-
-
-    #screenEdgeFlash.active {
-      animation:
-        edgeBeatFlash
-        120ms
-        ease-out;
-    }
-
-
-    @keyframes edgeBeatFlash {
-
-      0% {
-        opacity:
-          0.95;
-      }
-
-      100% {
-        opacity:
-          0;
-      }
-
-    }
-
-
-    /* ==================================================
-       PERFORMANCE
-       ================================================== */
+    .percentage-button:first-child { border-radius: 10px 0 0 10px; }
+    .percentage-button:last-child { border-radius: 0 10px 10px 0; border-right: 0; }
+    .percentage-button.active { background: #6fb9d2; color: #fff; }
+    .percentage-button:disabled { cursor: not-allowed; opacity: .38; }
+    .percentage-message { min-height: 15px; margin-top: 3px; font-size: 11px; opacity: .75; }
 
     .performance-row {
       display: grid;
-
-      grid-template-columns:
-        1fr
-        auto
-        1fr;
-
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-
-      gap: 25px;
-
-      margin:
-        22px 15px 12px;
+      gap: 32px;
+      margin: 11px 15px 5px;
     }
-
-
     .quick-setting {
       display: flex;
-
-      flex-direction:
-        column;
-
+      flex-direction: column;
       align-items: center;
-
+      justify-content: center;
       gap: 4px;
     }
-
-
+    .quick-setting label {
+      font-size: 16px;
+      font-weight: 700;
+    }
     .quick-setting-select {
-      width: 95px;
-
-      min-height:
-        48px;
-
+      width: 100px;
+      min-height: 48px;
       border: none;
-
-      background:
-        transparent;
-
+      background: transparent;
       color: white;
-
-      text-align:
-        center;
-
-      font-size:
-        32px;
-
-      font-weight:
-        bold;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
     }
-
-
-    .quick-setting-select option {
-      background:
-        #333;
-
-      color:
-        white;
-    }
-
-
+    .quick-setting-select option { background: #333; color: white; }
     .start-button {
-      width: 84px;
-      height: 84px;
-
+      width: 80px;
+      height: 80px;
       border: none;
-
-      border-radius:
-        50%;
-
-      background:
-        #28a745;
-
+      border-radius: 50%;
+      background: #28a745;
       color: white;
-
       cursor: pointer;
-
-      font-size:
-        30px;
+      font-size: 30px;
     }
+    .start-button.stop-button { background: #ff3030; }
 
-
-    .start-button.stop-button {
-      background:
-        #ff3030;
+    .bottom-actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      margin-top: 5px;
     }
-
-
     .tap-button {
-      min-width:
-        190px;
-
-      padding:
-        12px 24px;
-
+      min-width: 200px;
+      padding: 11px 24px;
       border: none;
-
-      border-radius:
-        10px;
-
-      background:
-        white;
-
-      color:
-        #555;
-
+      border-radius: 10px;
+      background: white;
+      color: #555;
       cursor: pointer;
-
-      font-weight:
-        bold;
+      font-weight: bold;
+    }
+    .back-home {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
     }
 
+    /* SETTINGS DIALOG */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,.52);
+      backdrop-filter: blur(5px);
+    }
+    .settings-overlay.open { display: flex; }
+    .settings-dialog {
+      width: min(620px,94vw);
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 20px;
+      background: rgba(45,34,42,.96);
+      box-shadow: 0 20px 70px rgba(0,0,0,.55);
+      text-align: left;
+    }
+    .settings-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; margin-bottom: 12px;
+    }
+    .settings-header h2 { margin: 0; }
+    .close-settings {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.08); color: white;
+      cursor: pointer; font-size: 22px;
+    }
+    .preference-row {
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 11px 12px;
+      margin-top: 9px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+    }
+    .preference-row.locked { opacity: .58; }
+    .preference-label { display: block; font-size: 15px; font-weight: 800; }
+    .preference-note { display: block; margin-top: 3px; color: rgba(255,255,255,.72); font-size: 12px; }
+    .upgrade-message { display: none; margin-top: 5px; color: #ffd7a3; font-size: 12px; font-weight: 700; }
+    .preference-row.locked .upgrade-message { display: block; }
 
-    .back-home {
-      display:
-        inline-block;
+    .threshold-control {
+      display: flex; align-items: center; gap: 8px; flex: 0 0 auto;
+    }
+    .threshold-input {
+      width: 82px; padding: 8px;
+      border: 0; border-radius: 8px;
+      text-align: center; font-weight: bold; font-size: 16px;
+    }
 
-      margin-top:
-        18px;
+    .switch { position: relative; width: 54px; height: 30px; flex: 0 0 auto; }
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch-slider {
+      position: absolute; inset: 0; border-radius: 999px;
+      background: rgba(255,255,255,.22); cursor: pointer;
+    }
+    .switch-slider::before {
+      content: ""; position: absolute;
+      width: 22px; height: 22px; left: 4px; top: 4px;
+      border-radius: 50%; background: white;
+      transition: transform .18s ease;
+    }
+    .switch input:checked + .switch-slider { background: #28a745; }
+    .switch input:checked + .switch-slider::before { transform: translateX(24px); }
+    .switch input:disabled + .switch-slider { cursor: not-allowed; background: rgba(255,255,255,.12); }
 
-      color:
-        white;
+    #screenEdgeFlash {
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0;
+      --edge-flash-strong: rgba(57,211,83,.95);
+      --edge-flash-soft: rgba(57,211,83,.55);
+      box-shadow: inset 0 0 0 .18cm var(--edge-flash-strong), inset 0 0 8cm .65cm var(--edge-flash-soft);
+    }
+    #screenEdgeFlash.active { animation: edgeBeatFlash 120ms ease-out; }
+    @keyframes edgeBeatFlash { 0% { opacity:.95; } 100% { opacity:0; } }
 
-      text-decoration:
-        none;
+    @media (max-height: 820px) and (min-width: 700px) {
+      body { padding: 4px 0; }
+      .box { padding-top: 13px; padding-bottom: 12px; }
+      h1 { font-size: 36px; }
+      .subtitle { margin-bottom: 6px; }
+      .bar-beat-display { margin: 2px 0; }
+      .side-counter { min-height: 78px; }
+      .beat-lights { min-height: 58px; }
+      .beat-motion-area { height: 45px; margin-bottom: 5px; }
+      .tempo-main { margin-top: 2px; margin-bottom: 5px; }
+      .step-button { height: 44px; }
+      .bpm-input { font-size: 42px; padding: 5px 10px; }
+      .tempo-slider-section { margin-bottom: 6px; }
+      .volume-control { margin: 5px 0; padding: 8px 16px; }
+      .percentage-section { margin: 5px 0; padding: 5px 0; }
+      .percentage-button { min-height: 39px; }
+      .performance-row { margin-top: 5px; }
+      .start-button { width: 68px; height: 68px; }
+      .bottom-actions { gap: 5px; margin-top: 2px; }
+    }
 
-      font-weight:
-        bold;
+    @media (max-width: 680px) {
+      body { overflow-y: auto; }
+      .box { padding: 15px; }
+      .bar-beat-display { grid-template-columns: 85px minmax(0,1fr) 85px; gap: 5px; }
+      .tempo-main { grid-template-columns: 80px minmax(0,1fr) 80px; gap: 5px; }
+      .quick-setting { flex-direction: column; gap: 3px; }
+      .bottom-actions { flex-direction: column; gap: 8px; }
+      .percentage-button { font-size: 14px; }
+    }
+
+    .preference-column {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .preference-column-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(72px, 1fr));
+      gap: 8px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .preset-field {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 7px 8px;
+      border-radius: 9px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .preset-field input {
+      width: 54px;
+      padding: 6px 4px;
+      border: 0;
+      border-radius: 7px;
+      background: rgba(255,255,255,.94);
+      color: #333;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .preset-field span {
+      font-weight: 800;
+    }
+
+    .preset-field input:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .threshold-wrapper {
+      width: min(280px, 46vw);
+      display: grid;
+      grid-template-columns: minmax(100px, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .threshold-range {
+      width: 100%;
+    }
+
+    .settings-premium-note {
+      margin: 12px 2px 0;
+      color: rgba(255,255,255,.62);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 620px) {
+      .preset-grid {
+        grid-template-columns: repeat(2, minmax(90px, 1fr));
+      }
+
+      .threshold-wrapper {
+        width: 100%;
+        grid-template-columns: 1fr auto;
+      }
+
+      .preference-row {
+        align-items: flex-start;
+      }
     }
 
   </style>
-
 </head>
-
-
 <body>
-
-
-  <div
-    id="screenEdgeFlash"
-    aria-hidden="true"
-  ></div>
-
+  <div id="screenEdgeFlash" aria-hidden="true"></div>
 
   <div class="box">
-
-
-    <h1>
-      Metronome
-    </h1>
-
-
-    <div class="subtitle">
-      Tap each beat light to choose Normal, Accented, or Off.
+    <div class="top-row">
+      <h1>Metronome</h1>
+      <button class="settings-button" type="button" onclick="openSettings()" aria-label="Open metronome settings">⚙</button>
     </div>
 
-
-    <!-- ==================================================
-         COUNTERS + BEAT LIGHTS
-         ================================================== -->
+    <div class="subtitle">Tap each beat light to choose Normal, Accented, or Off.</div>
 
     <div class="bar-beat-display">
-
-
-      <div
-        id="barCounterBox"
-        class="side-counter"
-      >
-
-        <div class="side-counter-title">
-          Total Bars
-        </div>
-
-        <div
-          id="barCounter"
-          class="side-counter-value"
-        >
-          0
-        </div>
-
+      <div id="barCounterBox" class="side-counter">
+        <div class="side-counter-title">Total Bars</div>
+        <div id="barCounter" class="side-counter-value">0</div>
       </div>
-
 
       <div class="center-beats">
-
-        <div
-          id="beatLights"
-          class="beat-lights"
-        ></div>
-
-
-        <div class="beat-help">
-
-          🟢 Normal
-          &nbsp; • &nbsp;
-          🔴 Accented
-          &nbsp; • &nbsp;
-          ⚫ Off
-
-        </div>
-
+        <div id="beatLights" class="beat-lights"></div>
+        <div class="beat-help">🟢 Normal &nbsp; • &nbsp; 🔴 Accented &nbsp; • &nbsp; ⚫ Off</div>
       </div>
 
-
-      <div
-        id="beatCounterBox"
-        class="side-counter"
-      >
-
-        <div class="side-counter-title">
-          Total Beats
-        </div>
-
-        <div
-          id="beatCounter"
-          class="side-counter-value"
-        >
-          0
-        </div>
-
+      <div id="beatCounterBox" class="side-counter">
+        <div class="side-counter-title">Total Beats</div>
+        <div id="beatCounter" class="side-counter-value">0</div>
       </div>
-
-
     </div>
 
-
-    <!-- BEAT MOTION -->
-
-    <div
-      id="beatMotionArea"
-      class="beat-motion-area"
-    >
-
+    <div id="beatMotionArea" class="beat-motion-area">
       <div class="beat-track"></div>
-
-      <div
-        id="beatRunner"
-        class="beat-runner"
-      ></div>
-
+      <div id="beatRunner" class="beat-runner"></div>
     </div>
-
-
-    <!-- BPM -->
 
     <div class="tempo-main">
+      <div class="tempo-side">
+        <button class="step-button" onclick="changeOriginalBPM(-1)">−1</button>
+        <button class="step-button" onclick="changeOriginalBPM(-5)">−5</button>
+      </div>
 
+      <div>
+        <div class="tempo-center">
+          <input id="bpmInput" class="bpm-input" type="number" min="5" max="500" value="100" onchange="setOriginalBPM(this.value)">
+          <strong>BPM</strong>
+        </div>
+        <div id="playbackDetail" class="playback-detail"></div>
+      </div>
 
       <div class="tempo-side">
-
-        <button
-          class="step-button"
-          onclick="changeBPM(-1)"
-        >
-          −1
-        </button>
-
-        <button
-          class="step-button"
-          onclick="changeBPM(-5)"
-        >
-          −5
-        </button>
-
+        <button class="step-button" onclick="changeOriginalBPM(1)">+1</button>
+        <button class="step-button" onclick="changeOriginalBPM(5)">+5</button>
       </div>
-
-
-      <div class="tempo-center">
-
-        <input
-          id="bpmInput"
-          class="bpm-input"
-          type="number"
-          min="5"
-          max="500"
-          value="100"
-          onchange="setBPM(this.value)"
-        >
-
-        <strong>
-          BPM
-        </strong>
-
-      </div>
-
-
-      <div class="tempo-side">
-
-        <button
-          class="step-button"
-          onclick="changeBPM(1)"
-        >
-          +1
-        </button>
-
-        <button
-          class="step-button"
-          onclick="changeBPM(5)"
-        >
-          +5
-        </button>
-
-      </div>
-
-
     </div>
 
+    <div id="tempoMarking">Andante</div>
 
     <div class="tempo-slider-section">
-
-      <div id="tempoMarking">
-        Andante
-      </div>
-
-      <input
-        id="bpmSlider"
-        class="tempo-slider"
-        type="range"
-        min="5"
-        max="500"
-        value="100"
-        oninput="setBPM(this.value)"
-      >
-
+      <input id="bpmSlider" class="tempo-slider" type="range" min="5" max="500" value="100" oninput="setOriginalBPM(this.value)">
     </div>
-
-
-    <!-- VOLUME -->
 
     <div class="volume-control">
-
-      <label>
-        🔊 Metronome Volume:
-      </label>
-
-      <input
-        id="volumeSlider"
-        type="range"
-        min="0"
-        max="100"
-        value="70"
-        oninput="updateVolume(this.value)"
-      >
-
-      <span
-        id="volumeDisplay"
-        class="volume-display"
-      >
-        70%
-      </span>
-
+      <label>🔊 Metronome Volume:</label>
+      <input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="updateVolume(this.value)">
+      <span id="volumeDisplay" class="volume-display">70%</span>
     </div>
 
-
-    <!-- ==================================================
-         PREFERENCES
-         ================================================== -->
-
-    <div class="preferences-panel">
-
-
-      <div class="preferences-title">
-        Preferences
+    <div id="percentageSection" class="percentage-section">
+      <div class="percentage-title">TEMPO PERCENTAGE</div>
+      <div id="percentageRow" class="percentage-row">
+        <button class="percentage-button" data-index="0" onclick="selectTempoPercentageByIndex(0)">50%</button>
+        <button class="percentage-button" data-index="1" onclick="selectTempoPercentageByIndex(1)">75%</button>
+        <button class="percentage-button" data-index="2" onclick="selectTempoPercentageByIndex(2)">85%</button>
+        <button class="percentage-button" data-index="3" onclick="selectTempoPercentageByIndex(3)">95%</button>
+        <button class="percentage-button" data-index="4" onclick="selectTempoPercentageByIndex(4)">100%</button>
       </div>
-
-
-      <!-- EDGE FLASH -->
-
-      <div class="preference-row">
-
-        <div>
-
-          <span class="preference-label">
-            Flash screen edge to beat
-          </span>
-
-          <span class="preference-note">
-            Flashes the edge inward from the current browser tab.
-          </span>
-
-        </div>
-
-
-        <label class="switch">
-
-          <!--
-            FIRST VISIT = OFF
-
-            There is intentionally
-            NO "checked" attribute.
-          -->
-
-          <input
-            id="edgeFlashToggle"
-            type="checkbox"
-            onchange="updateEdgeFlashPreference()"
-          >
-
-          <span class="switch-slider"></span>
-
-        </label>
-
-      </div>
-
-
-      <!-- COUNTERS -->
-
-      <div
-        id="counterPreferenceRow"
-        class="preference-row"
-      >
-
-        <div>
-
-          <span class="preference-label">
-            Display bar and beat counters
-          </span>
-
-          <span class="preference-note">
-            Keep in time with the music. Only for Spotify Premium.
-          </span>
-
-          <span class="upgrade-message">
-            Upgrade to Spotify Premium to enable bar and beat counters.
-          </span>
-
-        </div>
-
-
-        <label class="switch">
-
-          <input
-            id="counterDisplayToggle"
-            type="checkbox"
-            checked
-            onchange="updateCounterPreference()"
-          >
-
-          <span class="switch-slider"></span>
-
-        </label>
-
-      </div>
-
-
     </div>
-
-
-    <!-- ==================================================
-         PERFORMANCE
-         ================================================== -->
 
     <div class="performance-row">
-
-
       <div class="quick-setting">
-
-        <label>
-          Beats per bar
-        </label>
-
-        <select
-          id="beatsPerBar"
-          class="quick-setting-select"
-          onchange="changeBeatsPerBar()"
-        >
-
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-
-          <option
-            value="4"
-            selected
-          >
-            4
-          </option>
-
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-
+        <label for="beatsPerBar">Beats per bar</label>
+        <select id="beatsPerBar" class="quick-setting-select" onchange="changeBeatsPerBar()">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          <option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
+          <option value="7">7</option><option value="8">8</option>
         </select>
-
       </div>
 
-
-      <button
-        id="startButton"
-        class="start-button"
-        onclick="toggleMetronome()"
-      >
-        ▶
-      </button>
-
+      <button id="startButton" class="start-button" onclick="toggleMetronome()">▶</button>
 
       <div class="quick-setting">
-
-        <label>
-          Clicks per beat
-        </label>
-
-        <select
-          id="clicksPerBeat"
-          class="quick-setting-select"
-          onchange="changeClicksPerBeat()"
-        >
-
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-
+        <label for="clicksPerBeat">Clicks per beat</label>
+        <select id="clicksPerBeat" class="quick-setting-select" onchange="changeClicksPerBeat()">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
         </select>
-
       </div>
-
-
     </div>
 
-
-    <div>
-
-      <button
-        class="tap-button"
-        onclick="tapTempo()"
-      >
-        TAP TEMPO
-      </button>
-
+    <div class="bottom-actions">
+      <button class="tap-button" onclick="tapTempo()">TAP TEMPO</button>
+      <a href="index.html" class="back-home">← Back to Home</a>
     </div>
-
-
-    <a
-      href="index.html"
-      class="back-home"
-    >
-      ← Back to Home
-    </a>
-
-
   </div>
 
+  <div id="settingsOverlay" class="settings-overlay" onclick="settingsBackdropClick(event)">
+    <div class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="settings-header">
+        <h2 id="settingsTitle">Metronome Settings</h2>
+        <button class="close-settings" type="button" onclick="closeSettings()" aria-label="Close settings">×</button>
+      </div>
 
-  <script>
+      <div class="preference-row">
+        <div>
+          <span class="preference-label">Flash screen edge to beat</span>
+          <span class="preference-note">Flashes the edge inward from the current browser tab.</span>
+        </div>
+        <label class="switch">
+          <input id="edgeFlashToggle" type="checkbox" onchange="updateEdgeFlashPreference()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
 
-    /* ==================================================
-       METRONOME STATE
-       ================================================== */
+      <div id="counterPreferenceRow" class="preference-row">
+        <div>
+          <span class="preference-label">Display Bar &amp; Beat Counters</span>
+          <span class="preference-note">
+            Shows Total Bars and Total Beats beside the beat lights. Spotify Premium only.
+          </span>
+          <span class="upgrade-message">
+            Spotify Premium is required to display Bar &amp; Beat Counters.
+          </span>
+        </div>
+        <label class="switch">
+          <input id="counterDisplayToggle" type="checkbox" checked onchange="updateCounterPreference()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
 
-    let bpm =
-      100;
+      <div id="percentagePresetPreferenceRow" class="preference-row preference-column">
+        <div class="preference-column-head">
+          <div>
+            <span class="preference-label">Customize Tempo Percentage Buttons</span>
+            <span class="preference-note">
+              We recommended that one of the settings is 100%.
+            </span>
+            <span class="upgrade-message">
+              Premium is required to change these values.
+            </span>
+          </div>
+        </div>
 
+        <div class="preset-grid">
+          <label class="preset-field">
+            <input id="tempoPreset0" type="number" min="10" max="100" value="50"
+                   onchange="updatePercentagePreset(0, this.value)">
+            <span>%</span>
+          </label>
 
-    let isRunning =
-      false;
+          <label class="preset-field">
+            <input id="tempoPreset1" type="number" min="10" max="100" value="75"
+                   onchange="updatePercentagePreset(1, this.value)">
+            <span>%</span>
+          </label>
 
+          <label class="preset-field">
+            <input id="tempoPreset2" type="number" min="10" max="100" value="85"
+                   onchange="updatePercentagePreset(2, this.value)">
+            <span>%</span>
+          </label>
 
-    let timer =
-      null;
+          <label class="preset-field">
+            <input id="tempoPreset3" type="number" min="10" max="100" value="95"
+                   onchange="updatePercentagePreset(3, this.value)">
+            <span>%</span>
+          </label>
 
+          <label class="preset-field">
+            <input id="tempoPreset4" type="number" min="10" max="100" value="100"
+                   onchange="updatePercentagePreset(4, this.value)">
+            <span>%</span>
+          </label>
+        </div>
+      </div>
 
-    let currentBeat =
-      0;
+      <div class="preference-row">
+        <div>
+          <span class="preference-label">Hide beat animation</span>
+          <span class="preference-note">
+            The travelling red animation is hidden when the tempo is above:
+          </span>
+        </div>
 
+        <div class="threshold-wrapper">
+          <input id="animationThresholdRange"
+                 class="threshold-range"
+                 type="range"
+                 min="60"
+                 max="280"
+                 value="200"
+                 oninput="updateAnimationThreshold(this.value)">
 
-    let totalBeats =
-      0;
+          <div class="threshold-control">
+            <input id="animationThresholdInput"
+                   class="threshold-input"
+                   type="number"
+                   min="60"
+                   max="280"
+                   value="200"
+                   onchange="updateAnimationThreshold(this.value)">
+            <strong>BPM</strong>
+          </div>
+        </div>
+      </div>
 
+      <div class="settings-premium-note">
+        Spotify Premium entitlement is controlled only by the <strong>SPOTIFY_PREMIUM</strong> constant in this file.
+        Tempo Percentage Buttons always remain visible. Spotify Free uses fixed 50%, 75%, 85%, 95%, and 100% presets; Spotify Premium restores the last customized values saved in this browser.
+      </div>
+    </div>
+  </div>
 
-    let totalBars =
-      0;
+<script>
+  /* =========================================================
+     SPOTIFY PREMIUM ACCESS — CODE ONLY
+     (ALWAYS LOOK THIS PORTION. Change this portion when you are switching to a Free or a Premium plan.)
+     =========================================================
 
+     true:
+       Premium-only settings are available.
 
-    let clicksPerBeat =
-      1;
+     false:
+       Bar & Beat Counters are hidden.
+       Tempo Percentage Buttons are hidden.
+       Their preference controls are disabled.
 
+     There is intentionally NO Spotify Premium switch in the UI.
+     ========================================================= */
+  const SPOTIFY_PREMIUM = true;
 
-    let metronomeVolume =
-      0.70;
+  const STORAGE_KEY = "musicSessionMetronomeSettingsV7";
+  const LEGACY_STORAGE_KEYS = [
+    "musicSessionMetronomeSettingsV6",
+    "musicSessionMetronomeSettingsV5",
+    "musicSessionMetronomeSettingsV4",
+    "musicSessionMetronomeSettingsV3",
+    "musicSessionMetronomeSettings"
+  ];
 
+  /* =========================================================
+     METRONOME STATE
+     ========================================================= */
+  let originalBpm = 100;
+  let playbackBpm = 100;
 
-    let audioContext =
-      null;
+  let isRunning = false;
+  let timer = null;
+  let currentBeat = 0;
+  let totalBeats = 0;
+  let totalBars = 0;
+  let clicksPerBeat = 1;
+  let metronomeVolume = 0.70;
+  let audioContext = null;
+  let tapTimes = [];
+  let beatModes = [];
 
+  let beatAnimationFrame = null;
+  let beatRunnerDirection = 1;
 
-    let tapTimes =
-      [];
+  /* =========================================================
+     USER PREFERENCES
+     ========================================================= */
+  let edgeFlashEnabled = false;
 
+  // Premium-only display preference.
+  let counterDisplayEnabled = true;
 
-    let beatModes =
-      [];
+  /*
+    Tempo percentage buttons are ALWAYS visible.
 
+    Spotify Free:
+      fixed presets 50%, 75%, 85%, 95%, 100%
 
-    let beatAnimationFrame =
-      null;
+    Spotify Premium:
+      restores the last customized values from localStorage.
+  */
+  const FREE_TEMPO_PRESETS = [50, 75, 85, 95, 100];
 
+  let premiumTempoPresets = [50, 75, 85, 95, 100];
+  let tempoPresets = [...FREE_TEMPO_PRESETS];
+  let selectedTempoIndex = 4;
 
-    /* ==================================================
-       SPOTIFY PREMIUM ACCESS
+  // Beat animation cutoff is limited to 60–280 BPM.
+  let animationThreshold = 200;
 
-       THIS IS NOT THE USER'S ON/OFF PREFERENCE.
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
 
-       true:
-         Spotify Premium.
+  /* =========================================================
+     SPOTIFY PLAN DEFAULTS
 
-         Counter switch:
-           visible
-           enabled
-           ON/OFF selectable
+     SPOTIFY_PREMIUM is controlled only in code.
 
-       false:
-         Spotify Free.
+     Spotify Free:
+       • Bar & Beat Counters are hidden
+       • Tempo Percentage Buttons always remain visible
+       • Presets are fixed at 50%, 75%, 85%, 95%, 100%
+       • Preset values cannot be edited in Settings
 
-         Counter switch:
-           visible
-           OFF
-           disabled
-           grayed out
+     Spotify Premium:
+       • Counter preference is available
+       • Preset customization is available
+       • Last customized preset values are restored from
+         browser localStorage
 
-         Upgrade message:
-           visible
-       ================================================== */
-
-    const SPOTIFY_PREMIUM =
-      true;
-
-
-
-    /* ==================================================
-       USER PREFERENCES
-
-       Edge flash first visit:
-         OFF
-
-       Counter first visit:
-         ON
-
-       These values are remembered
-       using browser localStorage.
-       ================================================== */
-
-    let edgeFlashEnabled =
-      false;
-
-
-    let counterDisplayEnabled =
-      true;
-
-
-    /* ==================================================
-       STORAGE
-       ================================================== */
-
-    const METRONOME_STORAGE_KEY =
-      "musicSessionMetronomeSettings";
-
-
-    const EDGE_FLASH_STORAGE_KEY =
-      "musicSessionEdgeFlashEnabled";
-
-
-    function loadEdgeFlashPreference() {
-
-      const saved =
-        localStorage.getItem(
-          EDGE_FLASH_STORAGE_KEY
-        );
-
-
-      edgeFlashEnabled =
-        saved === null
-          ? false
-          : saved === "true";
-
-
-      const toggle =
-        document.getElementById(
-          "edgeFlashToggle"
-        );
-
-
-      if (
-        toggle
-      ) {
-
-        toggle.checked =
-          edgeFlashEnabled;
-
-      }
-
+     Free defaults never overwrite saved Premium custom values.
+     ========================================================= */
+  function applySpotifyPlanDefaults() {
+    if (SPOTIFY_PREMIUM) {
+      tempoPresets = [...premiumTempoPresets];
+      return;
     }
 
+    counterDisplayEnabled = false;
+    tempoPresets = [...FREE_TEMPO_PRESETS];
+  }
 
-    function getSavedMetronomeSettings() {
+  function getActiveTempoPercentage() {
+    selectedTempoIndex =
+      clamp(
+        Math.round(Number(selectedTempoIndex) || 0),
+        0,
+        tempoPresets.length - 1
+      );
 
-      try {
+    return tempoPresets[selectedTempoIndex];
+  }
 
-        const saved =
-          JSON.parse(
-            localStorage.getItem(
-              METRONOME_STORAGE_KEY
-            )
-          );
+  function calculatePlaybackBpm() {
+    const percent =
+      getActiveTempoPercentage();
 
+    playbackBpm =
+      clamp(
+        Math.round(
+          originalBpm *
+          percent /
+          100
+        ),
+        5,
+        500
+      );
+  }
 
-        if (
-          saved &&
-          typeof saved ===
-            "object"
-        ) {
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  function readStorageObject(key) {
+    try {
+      const raw = localStorage.getItem(key);
 
-          return saved;
-
-        }
-
-      } catch (
-        error
-      ) {
-
-        console.warn(
-          "Could not read metronome settings.",
-          error
-        );
-
+      if (!raw) {
+        return null;
       }
 
+      const parsed = JSON.parse(raw);
+
+      return (
+        parsed &&
+        typeof parsed === "object"
+      )
+        ? parsed
+        : null;
+
+    } catch (error) {
+      console.warn(
+        "Could not read metronome settings from " + key + ".",
+        error
+      );
 
       return null;
+    }
+  }
 
+  function getSavedSettings() {
+    const current = readStorageObject(STORAGE_KEY);
+
+    if (current) {
+      return current;
     }
 
+    for (const key of LEGACY_STORAGE_KEYS) {
+      const legacy = readStorageObject(key);
 
-    function saveMetronomeSettings() {
-
-      const beatsPerBarElement =
-        document.getElementById(
-          "beatsPerBar"
-        );
-
-
-      const settings = {
-
-        bpm:
-          bpm,
-
-        volume:
-          metronomeVolume,
-
-        beatsPerBar:
-          beatsPerBarElement
-            ? Number(
-                beatsPerBarElement.value
-              )
-            : 4,
-
-        clicksPerBeat:
-          clicksPerBeat,
-
-        beatModes:
-          [...beatModes],
-
-        /*
-          Save the user's Premium
-          counter preference separately.
-
-          SPOTIFY_PREMIUM itself
-          is NOT stored.
-        */
-
-        counterDisplayEnabled:
-          counterDisplayEnabled
-
-      };
-
-
-      try {
-
-        localStorage.setItem(
-
-          METRONOME_STORAGE_KEY,
-
-          JSON.stringify(
-            settings
-          )
-
-        );
-
-      } catch (
-        error
-      ) {
-
-        console.warn(
-          "Could not save metronome settings.",
-          error
-        );
-
+      if (legacy) {
+        return legacy;
       }
-
     }
 
+    return null;
+  }
 
-    function loadMetronomeSettings() {
-
-      const saved =
-        getSavedMetronomeSettings();
-
-
-      if (
-        !saved
-      ) {
-
-        return;
-
-      }
-
-
-      if (
-        typeof saved.counterDisplayEnabled ===
-          "boolean"
-      ) {
-
-        counterDisplayEnabled =
-          saved.counterDisplayEnabled;
-
-      }
-
-
-      if (
-        Number.isFinite(
-          saved.bpm
-        )
-      ) {
-
-        bpm =
-          Math.max(
-            5,
-            Math.min(
-              Math.round(
-                saved.bpm
-              ),
-              500
-            )
-          );
-
-      }
-
-
-      if (
-        Number.isFinite(
-          saved.volume
-        )
-      ) {
-
-        metronomeVolume =
-          Math.max(
-            0,
-            Math.min(
-              saved.volume,
-              1
-            )
-          );
-
-      }
-
-
-      if (
-        Number.isInteger(
-          saved.clicksPerBeat
-        )
-      ) {
-
-        clicksPerBeat =
-          Math.max(
-            1,
-            Math.min(
-              saved.clicksPerBeat,
-              8
-            )
-          );
-
-      }
-
-
-      if (
-        Array.isArray(
-          saved.beatModes
-        )
-      ) {
-
-        beatModes =
-          saved.beatModes.filter(
-
-            function(
-              mode
-            ) {
-
-              return (
-
-                mode ===
-                  "normal" ||
-
-                mode ===
-                  "accent" ||
-
-                mode ===
-                  "off"
-
-              );
-
-            }
-
-          );
-
-      }
-
-    }
-
-
-    function applyMetronomeSettingsToUI() {
-
-      const saved =
-        getSavedMetronomeSettings();
-
-
-      const edgeToggle =
-        document.getElementById(
-          "edgeFlashToggle"
-        );
-
-
-      const counterToggle =
-        document.getElementById(
-          "counterDisplayToggle"
-        );
-
-
-      const beatsElement =
-        document.getElementById(
-          "beatsPerBar"
-        );
-
-
-      const clicksElement =
-        document.getElementById(
-          "clicksPerBeat"
-        );
-
-
-      counterToggle.checked =
-        counterDisplayEnabled;
-
-
-      if (
-        saved &&
-        Number.isInteger(
-          saved.beatsPerBar
-        )
-      ) {
-
-        beatsElement.value =
-          Math.max(
-            1,
-            Math.min(
-              saved.beatsPerBar,
-              8
-            )
-          );
-
-      }
-
-
-      clicksElement.value =
-        clicksPerBeat;
-
-
+  function saveSettings() {
+    const beatsElement =
       document.getElementById(
-        "bpmInput"
-      ).value =
-        bpm;
-
-
-      document.getElementById(
-        "bpmSlider"
-      ).value =
-        bpm;
-
-
-      document.getElementById(
-        "volumeSlider"
-      ).value =
-        Math.round(
-          metronomeVolume *
-          100
-        );
-
-
-      document.getElementById(
-        "volumeDisplay"
-      ).textContent =
-
-        Math.round(
-          metronomeVolume *
-          100
-        ) +
-        "%";
-
-    }
-
-
-    /* ==================================================
-       AUDIO
-       ================================================== */
-
-    function getAudioContext() {
-
-      if (
-        !audioContext
-      ) {
-
-        audioContext =
-          new (
-            window.AudioContext ||
-            window.webkitAudioContext
-          )();
-
-      }
-
-
-      if (
-        audioContext.state ===
-          "suspended"
-      ) {
-
-        audioContext.resume();
-
-      }
-
-
-      return audioContext;
-
-    }
-
-
-    function playSingleClick(
-      mode,
-      delay,
-      subdivision
-    ) {
-
-      if (
-        mode ===
-          "off"
-      ) {
-
-        return;
-
-      }
-
-
-      const context =
-        getAudioContext();
-
-
-      const oscillator =
-        context.createOscillator();
-
-
-      const gain =
-        context.createGain();
-
-
-      const startTime =
-        context.currentTime +
-        delay;
-
-
-      const accent =
-
-        mode ===
-          "accent" &&
-
-        !subdivision;
-
-
-      oscillator.type =
-        "square";
-
-
-oscillator.frequency.setValueAtTime(
-
-  subdivision
-    ? 250
-    : accent
-      ? 1000
-      : 500,
-
-  startTime
-
-);
-
-
-      let volume;
-
-
-      if (
-        accent
-      ) {
-
-        volume =
-          metronomeVolume *
-          0.90;
-
-      } else if (
-        subdivision
-      ) {
-
-        volume =
-          metronomeVolume *
-          0.48;
-
-      } else {
-
-        volume =
-          metronomeVolume *
-          0.65;
-
-      }
-
-
-      volume =
-        Math.max(
-          0.001,
-          Math.min(
-            volume,
-            1
-          )
-        );
-
-
-      gain.gain.setValueAtTime(
-        volume,
-        startTime
+        "beatsPerBar"
       );
 
+    const settings = {
+      originalBpm:
+        originalBpm,
 
-      gain.gain.exponentialRampToValueAtTime(
+      volume:
+        metronomeVolume,
 
-        0.001,
+      beatsPerBar:
+        beatsElement
+          ? Number(
+              beatsElement.value
+            )
+          : 4,
 
-        startTime +
-        0.04
+      clicksPerBeat:
+        clicksPerBeat,
 
-      );
+      beatModes:
+        [...beatModes],
 
+      edgeFlashEnabled:
+        edgeFlashEnabled,
 
-      oscillator.connect(
-        gain
-      );
+      counterDisplayEnabled:
+        counterDisplayEnabled,
 
+      premiumTempoPresets:
+        [...premiumTempoPresets],
 
-      gain.connect(
-        context.destination
-      );
+      selectedTempoIndex:
+        selectedTempoIndex,
 
+      animationThreshold:
+        animationThreshold
+    };
 
-      oscillator.start(
-        startTime
-      );
-
-
-      oscillator.stop(
-        startTime +
-        0.05
-      );
-
-    }
-
-
-    function playClick(
-      mode
-    ) {
-
-      if (
-        mode ===
-          "off"
-      ) {
-
-        return;
-
-      }
-
-
-      const beatDuration =
-        60 /
-        bpm;
-
-
-      const spacing =
-        beatDuration /
-        clicksPerBeat;
-
-
-      for (
-        let i = 0;
-        i < clicksPerBeat;
-        i++
-      ) {
-
-        playSingleClick(
-
-          mode,
-
-          i *
-          spacing,
-
-          i >
-          0
-
-        );
-
-      }
-
-    }
-
-
-    /* ==================================================
-       BEAT LIGHTS
-       ================================================== */
-
-    function createBeatLights() {
-
-      const container =
-        document.getElementById(
-          "beatLights"
-        );
-
-
-      const beats =
-        Number(
-          document.getElementById(
-            "beatsPerBar"
-          ).value
-        );
-
-
-      const oldModes =
-        [...beatModes];
-
-
-      beatModes =
-        [];
-
-
-      for (
-        let i = 0;
-        i < beats;
-        i++
-      ) {
-
-        if (
-          oldModes[i]
-        ) {
-
-          beatModes[i] =
-            oldModes[i];
-
-        } else {
-
-          beatModes[i] =
-            i === 0
-              ? "accent"
-              : "normal";
-
-        }
-
-      }
-
-
-      container.innerHTML =
-        "";
-
-
-      for (
-        let i = 0;
-        i < beats;
-        i++
-      ) {
-
-        const light =
-          document.createElement(
-            "button"
-          );
-
-
-        light.type =
-          "button";
-
-
-        light.id =
-          "beatLight" +
-          (i + 1);
-
-
-        light.className =
-          "beat-light";
-
-
-        light.textContent =
-          i + 1;
-
-
-        light.addEventListener(
-
-          "click",
-
-          function() {
-
-            cycleBeatMode(
-              i
-            );
-
-          }
-
-        );
-
-
-        container.appendChild(
-          light
-        );
-
-      }
-
-
-      updateBeatLightStyles();
-
-    }
-
-
-    function cycleBeatMode(
-      index
-    ) {
-
-      if (
-        beatModes[index] ===
-          "normal"
-      ) {
-
-        beatModes[index] =
-          "accent";
-
-      } else if (
-        beatModes[index] ===
-          "accent"
-      ) {
-
-        beatModes[index] =
-          "off";
-
-      } else {
-
-        beatModes[index] =
-          "normal";
-
-      }
-
-
-      updateBeatLightStyles();
-
-
-      saveMetronomeSettings();
-
-    }
-
-
-    function updateBeatLightStyles() {
-
-      beatModes.forEach(
-
-        function(
-          mode,
-          index
-        ) {
-
-          const light =
-            document.getElementById(
-              "beatLight" +
-              (index + 1)
-            );
-
-
-          if (
-            !light
-          ) {
-
-            return;
-
-          }
-
-
-          light.classList.remove(
-            "normal",
-            "accent",
-            "off"
-          );
-
-
-          light.classList.add(
-            mode
-          );
-
-        }
-
-      );
-
-    }
-
-
-    function flashBeat(
-      beat
-    ) {
-
-      document
-        .querySelectorAll(
-          ".beat-light"
-        )
-        .forEach(
-
-          function(
-            light
-          ) {
-
-            light.classList.remove(
-              "playing"
-            );
-
-          }
-
-        );
-
-
-      const light =
-        document.getElementById(
-          "beatLight" +
-          beat
-        );
-
-
-      if (
-        light
-      ) {
-
-        light.classList.add(
-          "playing"
-        );
-
-      }
-
-    }
-
-
-    /* ==================================================
-       EDGE FLASH
-       ================================================== */
-
-    function flashScreenEdge(
-      mode
-    ) {
-
-      if (
-        !edgeFlashEnabled ||
-        mode ===
-          "off"
-      ) {
-
-        return;
-
-      }
-
-
-      const overlay =
-        document.getElementById(
-          "screenEdgeFlash"
-        );
-
-
-      if (
-        mode ===
-          "accent"
-      ) {
-
-        overlay.style.setProperty(
-          "--edge-flash-strong",
-          "rgba(255,48,48,0.98)"
-        );
-
-
-        overlay.style.setProperty(
-          "--edge-flash-soft",
-          "rgba(255,48,48,0.60)"
-        );
-
-      } else {
-
-        overlay.style.setProperty(
-          "--edge-flash-strong",
-          "rgba(57,211,83,0.98)"
-        );
-
-
-        overlay.style.setProperty(
-          "--edge-flash-soft",
-          "rgba(57,211,83,0.60)"
-        );
-
-      }
-
-
-      overlay.classList.remove(
-        "active"
-      );
-
-
-      void overlay.offsetWidth;
-
-
-      overlay.classList.add(
-        "active"
-      );
-
-    }
-
-
-    function updateEdgeFlashPreference() {
-
-      const toggle =
-        document.getElementById(
-          "edgeFlashToggle"
-        );
-
-
-      edgeFlashEnabled =
-        Boolean(
-          toggle &&
-          toggle.checked
-        );
-
-
+    try {
       localStorage.setItem(
-        EDGE_FLASH_STORAGE_KEY,
-        String(
-          edgeFlashEnabled
+        STORAGE_KEY,
+        JSON.stringify(
+          settings
         )
       );
 
+    } catch (error) {
+      console.warn(
+        "Could not save metronome settings.",
+        error
+      );
+    }
+  }
+
+  function loadSettings() {
+    const saved =
+      getSavedSettings();
+
+    if (!saved) {
+      return;
     }
 
-
-    /* ==================================================
-       COUNTER PREFERENCE
-
-       CORRECTED TRUE / FALSE LOGIC
-       ================================================== */
-
-    function updateBarBeatDisplayVisibility() {
-
-      const bar =
-        document.getElementById(
-          "barCounterBox"
-        );
-
-
-      const beat =
-        document.getElementById(
-          "beatCounterBox"
-        );
-
-
-      /*
-        BOTH conditions must be true:
-
-        1. User has Premium.
-        2. Premium user chose ON.
-      */
-
-      const canShowCounters =
-
-        SPOTIFY_PREMIUM &&
-
-        counterDisplayEnabled;
-
-
-      bar.style.visibility =
-
-        canShowCounters
-          ? "visible"
-          : "hidden";
-
-
-      beat.style.visibility =
-
-        canShowCounters
-          ? "visible"
-          : "hidden";
-
-    }
-
-
-    function updateSpotifyCounterPreferenceUI() {
-
-      const toggle =
-        document.getElementById(
-          "counterDisplayToggle"
-        );
-
-
-      const row =
-        document.getElementById(
-          "counterPreferenceRow"
-        );
-
-
-      /*
-        PREMIUM
-      */
-
-      if (
-        SPOTIFY_PREMIUM
-      ) {
-
-        row.classList.remove(
-          "locked"
-        );
-
-
-        toggle.disabled =
-          false;
-
-
-        toggle.checked =
-          counterDisplayEnabled;
-
-      }
-
-
-      /*
-        FREE
-
-        IMPORTANT:
-
-        We only DISPLAY the toggle as OFF.
-
-        We DO NOT change
-        counterDisplayEnabled.
-
-        Therefore the remembered
-        Premium preference is preserved.
-      */
-
-      else {
-
-        row.classList.add(
-          "locked"
-        );
-
-
-        toggle.disabled =
-          true;
-
-
-        toggle.checked =
-          false;
-
-      }
-
-
-      updateBarBeatDisplayVisibility();
-
-    }
-
-
-    function updateCounterPreference() {
-
-      /*
-        FREE:
-
-        Do not allow interaction.
-        Do not overwrite saved preference.
-      */
-
-      if (
-        !SPOTIFY_PREMIUM
-      ) {
-
-        updateSpotifyCounterPreferenceUI();
-
-
-        return;
-
-      }
-
-
-      /*
-        PREMIUM:
-
-        Save user's ON/OFF choice.
-      */
-
-      const toggle =
-        document.getElementById(
-          "counterDisplayToggle"
-        );
-
-
-      counterDisplayEnabled =
-        toggle.checked;
-
-
-      updateBarBeatDisplayVisibility();
-
-
-      saveMetronomeSettings();
-
-    }
-
-
-    /* ==================================================
-       VOLUME
-       ================================================== */
-
-    function updateVolume(
-      value
+    /*
+      BPM migration:
+      - V5 uses originalBpm
+      - older versions may use bpm
+    */
+    if (
+      Number.isFinite(
+        saved.originalBpm
+      )
     ) {
-
-      let volume =
-        Number(
-          value
-        );
-
-
-      volume =
-        Math.max(
-          0,
-          Math.min(
-            volume,
-            100
-          )
-        );
-
-
-      metronomeVolume =
-        volume /
-        100;
-
-
-      document.getElementById(
-        "volumeDisplay"
-      ).textContent =
-
-        Math.round(
-          volume
-        ) +
-        "%";
-
-
-      saveMetronomeSettings();
-
-    }
-
-
-    /* ==================================================
-       BPM
-       ================================================== */
-
-    function setBPM(
-      value
-    ) {
-
-      let valueNumber =
-        Number(
-          value
-        );
-
-
-      if (
-        Number.isNaN(
-          valueNumber
-        )
-      ) {
-
-        valueNumber =
-          100;
-
-      }
-
-
-      bpm =
-        Math.max(
+      originalBpm =
+        clamp(
+          Math.round(
+            saved.originalBpm
+          ),
           5,
-          Math.min(
-            Math.round(
-              valueNumber
-            ),
-            500
-          )
+          500
         );
 
-
-      document.getElementById(
-        "bpmInput"
-      ).value =
-        bpm;
-
-
-      document.getElementById(
-        "bpmSlider"
-      ).value =
-        bpm;
-
-
-      updateTempoMarking();
-
-
-      if (
-        isRunning
-      ) {
-
-        scheduleTimer();
-
-      }
-
-
-      saveMetronomeSettings();
-
-    }
-
-
-    function changeBPM(
-      amount
+    } else if (
+      Number.isFinite(
+        saved.bpm
+      )
     ) {
-
-      setBPM(
-        bpm +
-        amount
-      );
-
+      originalBpm =
+        clamp(
+          Math.round(
+            saved.bpm
+          ),
+          5,
+          500
+        );
     }
 
-
-    function updateTempoMarking() {
-
-      let marking;
-
-
-      if (
-        bpm <
-        40
-      ) {
-
-        marking =
-          "Grave";
-
-      } else if (
-        bpm <
-        60
-      ) {
-
-        marking =
-          "Largo";
-
-      } else if (
-        bpm <
-        76
-      ) {
-
-        marking =
-          "Adagio";
-
-      } else if (
-        bpm <
-        108
-      ) {
-
-        marking =
-          "Andante";
-
-      } else if (
-        bpm <
-        120
-      ) {
-
-        marking =
-          "Moderato";
-
-      } else if (
-        bpm <
-        168
-      ) {
-
-        marking =
-          "Allegro";
-
-      } else if (
-        bpm <
-        200
-      ) {
-
-        marking =
-          "Presto";
-
-      } else {
-
-        marking =
-          "Prestissimo";
-
-      }
-
-
-      document.getElementById(
-        "tempoMarking"
-      ).textContent =
-        marking;
-
+    if (
+      Number.isFinite(
+        saved.volume
+      )
+    ) {
+      metronomeVolume =
+        clamp(
+          saved.volume,
+          0,
+          1
+        );
     }
 
-
-    /* ==================================================
-       BAR / CLICK SETTINGS
-       ================================================== */
-
-    function changeBeatsPerBar() {
-
-      currentBeat =
-        0;
-
-
-      createBeatLights();
-
-
-      updateDisplays();
-
-
-      saveMetronomeSettings();
-
-    }
-
-
-    function changeClicksPerBeat() {
-
+    if (
+      Number.isInteger(
+        saved.clicksPerBeat
+      )
+    ) {
       clicksPerBeat =
-        Number(
-          document.getElementById(
-            "clicksPerBeat"
-          ).value
+        clamp(
+          saved.clicksPerBeat,
+          1,
+          8
+        );
+    }
+
+    if (
+      Array.isArray(
+        saved.beatModes
+      )
+    ) {
+      beatModes =
+        saved.beatModes.filter(
+          mode =>
+            mode === "normal" ||
+            mode === "accent" ||
+            mode === "off"
+        );
+    }
+
+    if (
+      typeof saved.edgeFlashEnabled ===
+        "boolean"
+    ) {
+      edgeFlashEnabled =
+        saved.edgeFlashEnabled;
+    }
+
+    /*
+      Premium feature preference migration.
+
+      Older central-switch version:
+        premiumFeaturesEnabled
+
+      Older separate version:
+        counterDisplayEnabled
+        tempoPercentageEnabled
+    */
+    if (
+      typeof saved.counterDisplayEnabled ===
+        "boolean"
+    ) {
+      counterDisplayEnabled =
+        saved.counterDisplayEnabled;
+
+    } else if (
+      typeof saved.premiumFeaturesEnabled ===
+        "boolean"
+    ) {
+      counterDisplayEnabled =
+        saved.premiumFeaturesEnabled;
+    }
+
+    /*
+      V7 stores Premium customization separately. Free may use
+      fixed defaults without deleting those Premium values.
+    */
+    const savedPremiumPresets =
+      Array.isArray(saved.premiumTempoPresets)
+        ? saved.premiumTempoPresets
+        : Array.isArray(saved.tempoPresets)
+          ? saved.tempoPresets
+          : null;
+
+    if (
+      savedPremiumPresets &&
+      savedPremiumPresets.length === 5
+    ) {
+      premiumTempoPresets =
+        savedPremiumPresets.map(
+          value =>
+            clamp(
+              Math.round(
+                Number(value) || 100
+              ),
+              10,
+              100
+            )
+        );
+    }
+
+    if (
+      Number.isInteger(
+        saved.selectedTempoIndex
+      )
+    ) {
+      selectedTempoIndex =
+        clamp(
+          saved.selectedTempoIndex,
+          0,
+          4
         );
 
-
-      saveMetronomeSettings();
-
-    }
-
-
-    /* ==================================================
-       DISPLAY
-       ================================================== */
-
-    function updateDisplays() {
-
-      document.getElementById(
-        "barCounter"
-      ).textContent =
-        totalBars;
-
-
-      document.getElementById(
-        "beatCounter"
-      ).textContent =
-        totalBeats;
-
-    }
-
-
-    /* ==================================================
-       TICK
-       ================================================== */
-
-    function tick() {
-
-      const beats =
-        Number(
-          document.getElementById(
-            "beatsPerBar"
-          ).value
+    } else if (
+      Number.isFinite(
+        saved.tempoPercentage
+      )
+    ) {
+      /*
+        Migration from versions that stored
+        the selected percentage itself.
+      */
+      const oldPercentage =
+        clamp(
+          Math.round(
+            saved.tempoPercentage
+          ),
+          10,
+          100
         );
 
+      const exactIndex =
+        premiumTempoPresets.indexOf(
+          oldPercentage
+        );
 
-      currentBeat++;
-
-
-      if (
-        currentBeat >
-        beats
-      ) {
-
-        currentBeat =
-          1;
-
-      }
-
-
-      totalBeats++;
-
-
-      if (
-        currentBeat ===
-          1
-      ) {
-
-        totalBars++;
-
-      }
-
-
-      const mode =
-
-        beatModes[
-          currentBeat -
-          1
-        ] ||
-
-        "normal";
-
-
-playClick(
-  mode
-);
-
-
-flashBeat(
-  currentBeat
-);
-
-
-flashScreenEdge(
-  mode
-);
-
-
-/*
-  Move the red beat runner
-  for this beat.
-*/
-
-startBeatMotionLeg();
-
-
-updateDisplays();
-
+      selectedTempoIndex =
+        exactIndex >= 0
+          ? exactIndex
+          : 4;
     }
 
+    if (
+      Number.isFinite(
+        saved.animationThreshold
+      )
+    ) {
+      animationThreshold =
+        clamp(
+          Math.round(
+            saved.animationThreshold
+          ),
+          60,
+          280
+        );
+    }
+  }
 
-    /* ==================================================
-       START / STOP
-       ================================================== */
+  function applySettingsToUI() {
+    const saved =
+      getSavedSettings();
 
-    function scheduleTimer() {
-
-      clearInterval(
-        timer
+    const beatsElement =
+      document.getElementById(
+        "beatsPerBar"
       );
 
-
-      timer =
-        setInterval(
-
-          tick,
-
-          60000 /
-          bpm
-
+    if (
+      saved &&
+      Number.isInteger(
+        saved.beatsPerBar
+      )
+    ) {
+      beatsElement.value =
+        clamp(
+          saved.beatsPerBar,
+          1,
+          8
         );
-
     }
 
+    document.getElementById(
+      "clicksPerBeat"
+    ).value =
+      clicksPerBeat;
 
-    function toggleMetronome() {
+    document.getElementById(
+      "volumeSlider"
+    ).value =
+      Math.round(
+        metronomeVolume *
+        100
+      );
 
-      if (
-        isRunning
-      ) {
+    document.getElementById(
+      "volumeDisplay"
+    ).textContent =
+      Math.round(
+        metronomeVolume *
+        100
+      ) +
+      "%";
 
-        stopMetronome();
+    document.getElementById(
+      "edgeFlashToggle"
+    ).checked =
+      edgeFlashEnabled;
 
-      } else {
+    document.getElementById(
+      "counterDisplayToggle"
+    ).checked =
+      counterDisplayEnabled;
 
-        startMetronome();
+    tempoPresets.forEach(
+      (value, index) => {
+        const input =
+          document.getElementById(
+            "tempoPreset" +
+            index
+          );
 
+        if (input) {
+          input.value =
+            value;
+        }
       }
+    );
 
+    document.getElementById(
+      "animationThresholdInput"
+    ).value =
+      animationThreshold;
+
+    document.getElementById(
+      "animationThresholdRange"
+    ).value =
+      animationThreshold;
+
+    updatePremiumUI();
+    updateTempoUI();
+  }
+
+  /* =========================================================
+     SETTINGS DIALOG
+     ========================================================= */
+  function openSettings() {
+    document.getElementById(
+      "settingsOverlay"
+    ).classList.add(
+      "open"
+    );
+
+    document.body.style.overflow =
+      "hidden";
+  }
+
+  function closeSettings() {
+    document.getElementById(
+      "settingsOverlay"
+    ).classList.remove(
+      "open"
+    );
+
+    document.body.style.overflow =
+      "";
+  }
+
+  function settingsBackdropClick(
+    event
+  ) {
+    if (
+      event.target.id ===
+      "settingsOverlay"
+    ) {
+      closeSettings();
+    }
+  }
+
+  document.addEventListener(
+    "keydown",
+    event => {
+      if (
+        event.key ===
+        "Escape"
+      ) {
+        closeSettings();
+      }
+    }
+  );
+
+  /* =========================================================
+     AUDIO
+     ========================================================= */
+  function getAudioContext() {
+    if (
+      !audioContext
+    ) {
+      audioContext =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
     }
 
+    if (
+      audioContext.state ===
+      "suspended"
+    ) {
+      audioContext.resume();
+    }
 
-    function startMetronome() {
+    return audioContext;
+  }
 
+  function playSingleClick(
+    mode,
+    delay,
+    subdivision
+  ) {
+    if (
+      mode ===
+      "off"
+    ) {
+      return;
+    }
+
+    const context =
       getAudioContext();
 
+    const oscillator =
+      context.createOscillator();
 
-      isRunning =
-        true;
+    const gain =
+      context.createGain();
 
+    const startTime =
+      context.currentTime +
+      delay;
 
-      const button =
-        document.getElementById(
-          "startButton"
-        );
+    const accent =
+      mode ===
+        "accent" &&
+      !subdivision;
 
+    oscillator.type =
+      "square";
 
-      button.textContent =
-        "■";
+    oscillator.frequency.setValueAtTime(
+      subdivision
+        ? 250
+        : accent
+          ? 1000
+          : 500,
+      startTime
+    );
 
+    let volume =
+      accent
+        ? metronomeVolume *
+          0.90
+        : subdivision
+          ? metronomeVolume *
+            0.48
+          : metronomeVolume *
+            0.65;
 
-      button.classList.add(
-        "stop-button"
+    volume =
+      clamp(
+        volume,
+        0.001,
+        1
       );
 
+    gain.gain.setValueAtTime(
+      volume,
+      startTime
+    );
 
-      tick();
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      startTime +
+      0.04
+    );
 
+    oscillator.connect(
+      gain
+    );
 
-      scheduleTimer();
+    gain.connect(
+      context.destination
+    );
 
+    oscillator.start(
+      startTime
+    );
+
+    oscillator.stop(
+      startTime +
+      0.05
+    );
+  }
+
+  function playClick(
+    mode
+  ) {
+    if (
+      mode ===
+      "off"
+    ) {
+      return;
     }
 
+    const beatDuration =
+      60 /
+      playbackBpm;
 
-    function stopMetronome() {
+    const spacing =
+      beatDuration /
+      clicksPerBeat;
 
-      isRunning =
-        false;
+    for (
+      let i = 0;
+      i < clicksPerBeat;
+      i++
+    ) {
+      playSingleClick(
+        mode,
+        i *
+          spacing,
+        i >
+          0
+      );
+    }
+  }
 
+  /* =========================================================
+     BEAT LIGHTS
+     ========================================================= */
+  function createBeatLights() {
+    const container =
+      document.getElementById(
+        "beatLights"
+      );
 
+    const beats =
+      Number(
+        document.getElementById(
+          "beatsPerBar"
+        ).value
+      );
+
+    const oldModes =
+      [...beatModes];
+
+    beatModes =
+      [];
+
+    for (
+      let i = 0;
+      i < beats;
+      i++
+    ) {
+      beatModes[i] =
+        oldModes[i] ||
+        (
+          i === 0
+            ? "accent"
+            : "normal"
+        );
+    }
+
+    container.innerHTML =
+      "";
+
+    for (
+      let i = 0;
+      i < beats;
+      i++
+    ) {
+      const light =
+        document.createElement(
+          "button"
+        );
+
+      light.type =
+        "button";
+
+      light.id =
+        "beatLight" +
+        (i + 1);
+
+      light.className =
+        "beat-light";
+
+      light.textContent =
+        i + 1;
+
+      light.addEventListener(
+        "click",
+        () =>
+          cycleBeatMode(
+            i
+          )
+      );
+
+      container.appendChild(
+        light
+      );
+    }
+
+    updateBeatLightStyles();
+  }
+
+  function cycleBeatMode(
+    index
+  ) {
+    beatModes[index] =
+      beatModes[index] ===
+        "normal"
+        ? "accent"
+        : beatModes[index] ===
+            "accent"
+          ? "off"
+          : "normal";
+
+    updateBeatLightStyles();
+    saveSettings();
+  }
+
+  function updateBeatLightStyles() {
+    beatModes.forEach(
+      (
+        mode,
+        index
+      ) => {
+        const light =
+          document.getElementById(
+            "beatLight" +
+            (index + 1)
+          );
+
+        if (
+          !light
+        ) {
+          return;
+        }
+
+        light.classList.remove(
+          "normal",
+          "accent",
+          "off"
+        );
+
+        light.classList.add(
+          mode
+        );
+      }
+    );
+  }
+
+  function flashBeat(
+    beat
+  ) {
+    document
+      .querySelectorAll(
+        ".beat-light"
+      )
+      .forEach(
+        light =>
+          light.classList.remove(
+            "playing"
+          )
+      );
+
+    const light =
+      document.getElementById(
+        "beatLight" +
+        beat
+      );
+
+    if (
+      light
+    ) {
+      light.classList.add(
+        "playing"
+      );
+    }
+  }
+
+  /* =========================================================
+     EDGE FLASH
+     ========================================================= */
+  function flashScreenEdge(
+    mode
+  ) {
+    if (
+      !edgeFlashEnabled ||
+      mode ===
+        "off"
+    ) {
+      return;
+    }
+
+    const overlay =
+      document.getElementById(
+        "screenEdgeFlash"
+      );
+
+    const accent =
+      mode ===
+      "accent";
+
+    overlay.style.setProperty(
+      "--edge-flash-strong",
+      accent
+        ? "rgba(255,48,48,0.98)"
+        : "rgba(57,211,83,0.98)"
+    );
+
+    overlay.style.setProperty(
+      "--edge-flash-soft",
+      accent
+        ? "rgba(255,48,48,0.60)"
+        : "rgba(57,211,83,0.60)"
+    );
+
+    overlay.classList.remove(
+      "active"
+    );
+
+    void overlay.offsetWidth;
+
+    overlay.classList.add(
+      "active"
+    );
+  }
+
+  function updateEdgeFlashPreference() {
+    edgeFlashEnabled =
+      document.getElementById(
+        "edgeFlashToggle"
+      ).checked;
+
+    saveSettings();
+  }
+
+  /* =========================================================
+     PREMIUM-ONLY USER PREFERENCES
+
+     SPOTIFY_PREMIUM determines access.
+     These switches only choose whether an entitled user
+     wants each Premium feature displayed.
+     ========================================================= */
+  function updateCounterPreference() {
+    if (
+      !SPOTIFY_PREMIUM
+    ) {
+      updatePremiumUI();
+      return;
+    }
+
+    counterDisplayEnabled =
+      document.getElementById(
+        "counterDisplayToggle"
+      ).checked;
+
+    updateCounterVisibility();
+    saveSettings();
+  }
+
+  function updateCounterVisibility() {
+    const canShow =
+      SPOTIFY_PREMIUM &&
+      counterDisplayEnabled;
+
+    document.getElementById(
+      "barCounterBox"
+    ).style.visibility =
+      canShow
+        ? "visible"
+        : "hidden";
+
+    document.getElementById(
+      "beatCounterBox"
+    ).style.visibility =
+      canShow
+        ? "visible"
+        : "hidden";
+  }
+
+  function updatePremiumUI() {
+    applySpotifyPlanDefaults();
+
+    const premiumAvailable =
+      SPOTIFY_PREMIUM;
+
+    const counterRow =
+      document.getElementById(
+        "counterPreferenceRow"
+      );
+
+    const counterToggle =
+      document.getElementById(
+        "counterDisplayToggle"
+      );
+
+    const presetRow =
+      document.getElementById(
+        "percentagePresetPreferenceRow"
+      );
+
+    counterRow.classList.toggle(
+      "locked",
+      !premiumAvailable
+    );
+
+    presetRow.classList.toggle(
+      "locked",
+      !premiumAvailable
+    );
+
+    counterToggle.disabled =
+      !premiumAvailable;
+
+    counterToggle.checked =
+      premiumAvailable
+        ? counterDisplayEnabled
+        : false;
+
+    tempoPresets.forEach(
+      (
+        value,
+        index
+      ) => {
+        const input =
+          document.getElementById(
+            "tempoPreset" +
+            index
+          );
+
+        if (input) {
+          input.value =
+            value;
+
+          input.disabled =
+            !premiumAvailable;
+        }
+      }
+    );
+
+    updateCounterVisibility();
+    updatePercentageButtons();
+  }
+
+  /* =========================================================
+     CUSTOM TEMPO PERCENTAGE BUTTONS
+     ========================================================= */
+  function updatePercentagePreset(
+    index,
+    value
+  ) {
+    if (
+      !SPOTIFY_PREMIUM
+    ) {
+      updatePremiumUI();
+      return;
+    }
+
+    const safeIndex =
+      clamp(
+        Math.round(
+          Number(index) || 0
+        ),
+        0,
+        4
+      );
+
+    const safeValue =
+      clamp(
+        Math.round(
+          Number(value) || 100
+        ),
+        10,
+        100
+      );
+
+    tempoPresets[safeIndex] =
+      safeValue;
+
+    premiumTempoPresets[safeIndex] =
+      safeValue;
+
+    const input =
+      document.getElementById(
+        "tempoPreset" +
+        safeIndex
+      );
+
+    if (input) {
+      input.value =
+        safeValue;
+    }
+
+    calculatePlaybackBpm();
+    updateTempoUI();
+
+    if (
+      isRunning
+    ) {
+      scheduleTimer();
+    }
+
+    saveSettings();
+  }
+
+  function selectTempoPercentageByIndex(
+    index
+  ) {
+    selectedTempoIndex =
+      clamp(
+        Math.round(
+          Number(index) || 0
+        ),
+        0,
+        4
+      );
+
+    calculatePlaybackBpm();
+    updateTempoUI();
+
+    if (
+      isRunning
+    ) {
+      scheduleTimer();
+    }
+
+    saveSettings();
+  }
+
+  function updatePercentageButtons() {
+    document
+      .querySelectorAll(
+        ".percentage-button"
+      )
+      .forEach(
+        (
+          button,
+          index
+        ) => {
+          const percent =
+            tempoPresets[index];
+
+          button.textContent =
+            percent +
+            "%";
+
+          button.disabled =
+            false;
+
+          button.classList.toggle(
+            "active",
+            index ===
+              selectedTempoIndex
+          );
+        }
+      );
+  }
+
+  /* =========================================================
+     BEAT ANIMATION CUTOFF — 60 TO 280 BPM
+     ========================================================= */
+  function updateAnimationThreshold(
+    value
+  ) {
+    animationThreshold =
+      clamp(
+        Math.round(
+          Number(value) || 200
+        ),
+        60,
+        280
+      );
+
+    document.getElementById(
+      "animationThresholdInput"
+    ).value =
+      animationThreshold;
+
+    document.getElementById(
+      "animationThresholdRange"
+    ).value =
+      animationThreshold;
+
+    updateAnimationVisibility();
+    saveSettings();
+  }
+
+  function updateAnimationVisibility() {
+    const area =
+      document.getElementById(
+        "beatMotionArea"
+      );
+
+    const hide =
+      playbackBpm >
+      animationThreshold;
+
+    area.classList.toggle(
+      "animation-hidden",
+      hide
+    );
+
+    if (
+      hide &&
+      beatAnimationFrame
+    ) {
+      cancelAnimationFrame(
+        beatAnimationFrame
+      );
+
+      beatAnimationFrame =
+        null;
+    }
+
+    if (
+      !hide &&
+      !isRunning
+    ) {
+      resetBeatAnimation();
+    }
+  }
+
+  /* =========================================================
+     VOLUME
+     ========================================================= */
+  function updateVolume(
+    value
+  ) {
+    const volume =
+      clamp(
+        Number(value),
+        0,
+        100
+      );
+
+    metronomeVolume =
+      volume /
+      100;
+
+    document.getElementById(
+      "volumeDisplay"
+    ).textContent =
+      Math.round(
+        volume
+      ) +
+      "%";
+
+    saveSettings();
+  }
+
+  /* =========================================================
+     BPM
+     ========================================================= */
+  function setOriginalBPM(
+    value
+  ) {
+    originalBpm =
+      clamp(
+        Math.round(
+          Number(value) || 100
+        ),
+        5,
+        500
+      );
+
+    calculatePlaybackBpm();
+    updateTempoUI();
+
+    if (
+      isRunning
+    ) {
+      scheduleTimer();
+    }
+
+    saveSettings();
+  }
+
+  function changeOriginalBPM(
+    amount
+  ) {
+    setOriginalBPM(
+      originalBpm +
+      amount
+    );
+  }
+
+  function updateTempoUI() {
+    calculatePlaybackBpm();
+
+    document.getElementById(
+      "bpmInput"
+    ).value =
+      originalBpm;
+
+    document.getElementById(
+      "bpmSlider"
+    ).value =
+      originalBpm;
+
+    const percent =
+      getActiveTempoPercentage();
+
+    document.getElementById(
+      "playbackDetail"
+    ).textContent =
+      percent === 100
+        ? (
+            "Original tempo • Playback " +
+            playbackBpm +
+            " BPM"
+          )
+        : (
+            "Playback " +
+            playbackBpm +
+            " BPM • " +
+            percent +
+            "% of " +
+            originalBpm +
+            " BPM"
+          );
+
+    updateTempoMarking();
+    updatePercentageButtons();
+    updateAnimationVisibility();
+  }
+
+  function updateTempoMarking() {
+    const bpm =
+      playbackBpm;
+
+    let marking;
+
+    if (
+      bpm <
+      40
+    ) {
+      marking =
+        "Grave";
+
+    } else if (
+      bpm <
+      60
+    ) {
+      marking =
+        "Largo";
+
+    } else if (
+      bpm <
+      76
+    ) {
+      marking =
+        "Adagio";
+
+    } else if (
+      bpm <
+      108
+    ) {
+      marking =
+        "Andante";
+
+    } else if (
+      bpm <
+      120
+    ) {
+      marking =
+        "Moderato";
+
+    } else if (
+      bpm <
+      168
+    ) {
+      marking =
+        "Allegro";
+
+    } else if (
+      bpm <
+      200
+    ) {
+      marking =
+        "Presto";
+
+    } else {
+      marking =
+        "Prestissimo";
+    }
+
+    document.getElementById(
+      "tempoMarking"
+    ).textContent =
+      marking;
+  }
+
+  /* =========================================================
+     BAR / CLICK SETTINGS
+     ========================================================= */
+  function changeBeatsPerBar() {
+    currentBeat =
+      0;
+
+    createBeatLights();
+    updateDisplays();
+    saveSettings();
+  }
+
+  function changeClicksPerBeat() {
+    clicksPerBeat =
+      Number(
+        document.getElementById(
+          "clicksPerBeat"
+        ).value
+      );
+
+    saveSettings();
+  }
+
+  /* =========================================================
+     COUNTER DISPLAY
+     ========================================================= */
+  function updateDisplays() {
+    document.getElementById(
+      "barCounter"
+    ).textContent =
+      totalBars;
+
+    document.getElementById(
+      "beatCounter"
+    ).textContent =
+      totalBeats;
+  }
+
+  /* =========================================================
+     TICK
+     ========================================================= */
+  function tick() {
+    const beats =
+      Number(
+        document.getElementById(
+          "beatsPerBar"
+        ).value
+      );
+
+    currentBeat++;
+
+    if (
+      currentBeat >
+      beats
+    ) {
+      currentBeat =
+        1;
+    }
+
+    totalBeats++;
+
+    if (
+      currentBeat ===
+      1
+    ) {
+      totalBars++;
+    }
+
+    const mode =
+      beatModes[
+        currentBeat -
+        1
+      ] ||
+      "normal";
+
+    playClick(
+      mode
+    );
+
+    flashBeat(
+      currentBeat
+    );
+
+    flashScreenEdge(
+      mode
+    );
+
+    if (
+      playbackBpm <=
+      animationThreshold
+    ) {
+      startBeatMotionLeg();
+    }
+
+    updateDisplays();
+  }
+
+  /* =========================================================
+     START / STOP
+     ========================================================= */
+  function scheduleTimer() {
+    clearInterval(
+      timer
+    );
+
+    timer =
+      setInterval(
+        tick,
+        60000 /
+        playbackBpm
+      );
+  }
+
+  function toggleMetronome() {
+    if (
+      isRunning
+    ) {
+      stopMetronome();
+
+    } else {
+      startMetronome();
+    }
+  }
+
+  function startMetronome() {
+    getAudioContext();
+
+    isRunning =
+      true;
+
+    const button =
+      document.getElementById(
+        "startButton"
+      );
+
+    button.textContent =
+      "■";
+
+    button.classList.add(
+      "stop-button"
+    );
+
+    tick();
+    scheduleTimer();
+  }
+
+  function stopMetronome() {
+    isRunning =
+      false;
+
+    clearInterval(
+      timer
+    );
+
+    timer =
+      null;
+
+    if (
+      beatAnimationFrame
+    ) {
+      cancelAnimationFrame(
+        beatAnimationFrame
+      );
+
+      beatAnimationFrame =
+        null;
+    }
+
+    resetBeatAnimation();
+
+    currentBeat =
+      0;
+
+    totalBars =
+      0;
+
+    totalBeats =
+      0;
+
+    const button =
+      document.getElementById(
+        "startButton"
+      );
+
+    button.textContent =
+      "▶";
+
+    button.classList.remove(
+      "stop-button"
+    );
+
+    document
+      .querySelectorAll(
+        ".beat-light"
+      )
+      .forEach(
+        light =>
+          light.classList.remove(
+            "playing"
+          )
+      );
+
+    updateDisplays();
+  }
+
+  /* =========================================================
+     TAP TEMPO
+     ========================================================= */
+  function tapTempo() {
+    const now =
+      performance.now();
+
+    if (
+      tapTimes.length &&
+      now -
+      tapTimes[
+        tapTimes.length -
+        1
+      ] >
+      2000
+    ) {
+      tapTimes =
+        [];
+    }
+
+    tapTimes.push(
+      now
+    );
+
+    if (
+      tapTimes.length >
+      8
+    ) {
+      tapTimes.shift();
+    }
+
+    if (
+      tapTimes.length <
+      2
+    ) {
+      return;
+    }
+
+    let total =
+      0;
+
+    for (
+      let i = 1;
+      i < tapTimes.length;
+      i++
+    ) {
+      total +=
+        tapTimes[i] -
+        tapTimes[
+          i -
+          1
+        ];
+    }
+
+    const average =
+      total /
+      (
+        tapTimes.length -
+        1
+      );
+
+    /*
+      Tap Tempo establishes the ORIGINAL tempo.
+      A selected Premium percentage is then applied to it.
+    */
+    setOriginalBPM(
+      Math.round(
+        60000 /
+        average
+      )
+    );
+  }
+
+  /* =========================================================
+     BEAT MOTION
+     ========================================================= */
+  function resetBeatAnimation() {
+    if (
+      beatAnimationFrame
+    ) {
+      cancelAnimationFrame(
+        beatAnimationFrame
+      );
+
+      beatAnimationFrame =
+        null;
+    }
+
+    const runner =
+      document.getElementById(
+        "beatRunner"
+      );
+
+    if (
+      !runner
+    ) {
+      return;
+    }
+
+    beatRunnerDirection =
+      1;
+
+    runner.style.left =
+      "25px";
+  }
+
+  function startBeatMotionLeg() {
+    if (
+      playbackBpm >
+      animationThreshold
+    ) {
+      return;
+    }
+
+    const runner =
+      document.getElementById(
+        "beatRunner"
+      );
+
+    const area =
+      document.getElementById(
+        "beatMotionArea"
+      );
+
+    if (
+      !runner ||
+      !area
+    ) {
+      return;
+    }
+
+    if (
+      beatAnimationFrame
+    ) {
+      cancelAnimationFrame(
+        beatAnimationFrame
+      );
+    }
+
+    const edge =
+      25;
+
+    const startX =
+      beatRunnerDirection ===
+        1
+        ? edge
+        : area.clientWidth -
+          edge;
+
+    const endX =
+      beatRunnerDirection ===
+        1
+        ? area.clientWidth -
+          edge
+        : edge;
+
+    const duration =
+      60000 /
+      playbackBpm;
+
+    const startTime =
+      performance.now();
+
+    function animateRunner(
+      now
+    ) {
+      const elapsed =
+        now -
+        startTime;
+
+      const progress =
+        Math.min(
+          elapsed /
+          duration,
+          1
+        );
+
+      const x =
+        startX +
+        (
+          endX -
+          startX
+        ) *
+        progress;
+
+      runner.style.left =
+        x +
+        "px";
+
+      if (
+        progress <
+          1 &&
+        isRunning &&
+        playbackBpm <=
+          animationThreshold
+      ) {
+        beatAnimationFrame =
+          requestAnimationFrame(
+            animateRunner
+          );
+
+      } else {
+        runner.style.left =
+          endX +
+          "px";
+
+        beatAnimationFrame =
+          null;
+      }
+    }
+
+    beatAnimationFrame =
+      requestAnimationFrame(
+        animateRunner
+      );
+
+    beatRunnerDirection *=
+      -1;
+  }
+
+  /* =========================================================
+     RUNTIME RESET / PAGE LOAD
+     ========================================================= */
+  function resetRuntimeUI() {
+    isRunning =
+      false;
+
+    if (
+      timer
+    ) {
       clearInterval(
         timer
       );
-
 
       timer =
         null;
+    }
 
-if (
-  beatAnimationFrame
-) {
+    if (
+      beatAnimationFrame
+    ) {
+      cancelAnimationFrame(
+        beatAnimationFrame
+      );
 
-  cancelAnimationFrame(
-    beatAnimationFrame
-  );
+      beatAnimationFrame =
+        null;
+    }
 
+    currentBeat =
+      0;
 
-  beatAnimationFrame =
-    null;
+    totalBars =
+      0;
 
-}
+    totalBeats =
+      0;
 
+    const button =
+      document.getElementById(
+        "startButton"
+      );
 
-resetBeatAnimation();
-
-
-      currentBeat =
-        0;
-
-
-      totalBars =
-        0;
-
-
-      totalBeats =
-        0;
-
-
-      const button =
-        document.getElementById(
-          "startButton"
-        );
-
-
+    if (
+      button
+    ) {
       button.textContent =
         "▶";
-
 
       button.classList.remove(
         "stop-button"
       );
-
-
-      document
-        .querySelectorAll(
-          ".beat-light"
-        )
-        .forEach(
-
-          function(
-            light
-          ) {
-
-            light.classList.remove(
-              "playing"
-            );
-
-          }
-
-        );
-
-
-      updateDisplays();
-
     }
 
-
-    /* ==================================================
-       TAP TEMPO
-       ================================================== */
-
-    function tapTempo() {
-
-      const now =
-        performance.now();
-
-
-      if (
-        tapTimes.length &&
-        now -
-        tapTimes[
-          tapTimes.length -
-          1
-        ] >
-        2000
-      ) {
-
-        tapTimes =
-          [];
-
-      }
-
-
-      tapTimes.push(
-        now
+    const overlay =
+      document.getElementById(
+        "screenEdgeFlash"
       );
-
-
-      if (
-        tapTimes.length >
-        8
-      ) {
-
-        tapTimes.shift();
-
-      }
-
-
-      if (
-        tapTimes.length <
-        2
-      ) {
-
-        return;
-
-      }
-
-
-      let total =
-        0;
-
-
-      for (
-        let i = 1;
-        i < tapTimes.length;
-        i++
-      ) {
-
-        total +=
-
-          tapTimes[i] -
-
-          tapTimes[
-            i -
-            1
-          ];
-
-      }
-
-
-      const average =
-
-        total /
-
-        (
-          tapTimes.length -
-          1
-        );
-
-
-      setBPM(
-
-        Math.round(
-          60000 /
-          average
-        )
-
-      );
-
-    }
-
-/* ==================================================
-   BEAT ANIMATION
-
-   The red runner alternates:
-
-   Beat 1: Left  → Right
-   Beat 2: Right → Left
-   Beat 3: Left  → Right
-   Beat 4: Right → Left
-
-   Animation duration automatically follows BPM.
-   ================================================== */
-
-let beatRunnerDirection =
-  1;
-
-
-function resetBeatAnimation() {
-
-  if (
-    beatAnimationFrame
-  ) {
-
-    cancelAnimationFrame(
-      beatAnimationFrame
-    );
-
-
-    beatAnimationFrame =
-      null;
-
-  }
-
-
-  const runner =
-    document.getElementById(
-      "beatRunner"
-    );
-
-
-  if (
-    !runner
-  ) {
-
-    return;
-
-  }
-
-
-  beatRunnerDirection =
-    1;
-
-
-  runner.style.left =
-    "25px";
-
-}
-
-
-function startBeatMotionLeg() {
-
-  const runner =
-    document.getElementById(
-      "beatRunner"
-    );
-
-
-  const area =
-    document.getElementById(
-      "beatMotionArea"
-    );
-
-
-  if (
-    !runner ||
-    !area
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    beatAnimationFrame
-  ) {
-
-    cancelAnimationFrame(
-      beatAnimationFrame
-    );
-
-  }
-
-
-  const edge =
-    25;
-
-
-  const startX =
-
-    beatRunnerDirection === 1
-      ? edge
-      : area.clientWidth - edge;
-
-
-  const endX =
-
-    beatRunnerDirection === 1
-      ? area.clientWidth - edge
-      : edge;
-
-
-  /*
-    One complete journey corresponds
-    to one beat.
-
-    Example:
-
-    60 BPM  = 1000 ms
-    120 BPM = 500 ms
-    500 BPM = 120 ms
-  */
-
-  const duration =
-    60000 /
-    bpm;
-
-
-  const startTime =
-    performance.now();
-
-
-  function animateRunner(
-    now
-  ) {
-
-    const elapsed =
-      now -
-      startTime;
-
-
-    const progress =
-      Math.min(
-        elapsed /
-        duration,
-        1
-      );
-
-
-    /*
-      Linear movement keeps the ball
-      synchronized with the beat.
-    */
-
-    const x =
-
-      startX +
-
-      (
-        endX -
-        startX
-      ) *
-
-      progress;
-
-
-    runner.style.left =
-      x +
-      "px";
-
 
     if (
-      progress <
-      1 &&
-      isRunning
+      overlay
     ) {
+      overlay.classList.remove(
+        "active"
+      );
 
-      beatAnimationFrame =
-        requestAnimationFrame(
-          animateRunner
-        );
-
-    } else {
-
-      runner.style.left =
-        endX +
-        "px";
-
-
-      beatAnimationFrame =
-        null;
-
+      overlay.style.opacity =
+        "0";
     }
 
+    document
+      .querySelectorAll(
+        ".beat-light"
+      )
+      .forEach(
+        light =>
+          light.classList.remove(
+            "playing"
+          )
+      );
+
+    resetBeatAnimation();
+    updateDisplays();
   }
 
+  window.addEventListener(
+    "load",
+    function() {
+      loadSettings();
 
-  beatAnimationFrame =
-    requestAnimationFrame(
-      animateRunner
-    );
+      /*
+        Subscription entitlement wins over anything stored
+        from a previous browser session.
+      */
+      applySpotifyPlanDefaults();
 
-
-  /*
-    Reverse the direction for
-    the next beat.
-  */
-
-  beatRunnerDirection *=
-    -1;
-
-}
-
-
-    /* ==================================================
-       PAGE LOAD
-
-       IMPORTANT:
-
-       We load localStorage BEFORE
-       applying Premium/Free UI.
-
-       This preserves the user's
-       remembered Premium preference.
-       ================================================== */
-
-    function resetRuntimeUI() {
-
-      isRunning =
-        false;
-
-
-      if (
-        timer
-      ) {
-
-        clearInterval(
-          timer
-        );
-
-
-        timer =
-          null;
-
-      }
-
-
-      if (
-        beatAnimationFrame
-      ) {
-
-        cancelAnimationFrame(
-          beatAnimationFrame
-        );
-
-
-        beatAnimationFrame =
-          null;
-
-      }
-
-
-      currentBeat =
-        0;
-
-
-      totalBars =
-        0;
-
-
-      totalBeats =
-        0;
-
-
-      const button =
-        document.getElementById(
-          "startButton"
-        );
-
-
-      if (
-        button
-      ) {
-
-        button.textContent =
-          "▶";
-
-
-        button.classList.remove(
-          "stop-button"
-        );
-
-      }
-
-
-      const overlay =
-        document.getElementById(
-          "screenEdgeFlash"
-        );
-
-
-      if (
-        overlay
-      ) {
-
-        overlay.classList.remove(
-          "active"
-        );
-
-
-        overlay.style.opacity =
-          "0";
-
-      }
-
-
-      document
-        .querySelectorAll(
-          ".beat-light"
-        )
-        .forEach(
-          function(
-            light
-          ) {
-
-            light.classList.remove(
-              "playing"
-            );
-
-          }
-        );
-
-
-      resetBeatAnimation();
-
-
-      updateDisplays();
-
+      applySettingsToUI();
+      createBeatLights();
+      updatePremiumUI();
+      updateTempoUI();
+      resetRuntimeUI();
     }
+  );
 
+  window.addEventListener(
+    "pageshow",
+    function() {
+      applySpotifyPlanDefaults();
+      updatePremiumUI();
+      updateTempoUI();
+      resetRuntimeUI();
+    }
+  );
 
-    window.addEventListener(
-      "load",
-      function() {
-
-        loadMetronomeSettings();
-
-
-        applyMetronomeSettingsToUI();
-
-
-        loadEdgeFlashPreference();
-
-
-        updateTempoMarking();
-
-
-        createBeatLights();
-
-
-        updateSpotifyCounterPreferenceUI();
-
-
-        updateBarBeatDisplayVisibility();
-
-
-        resetRuntimeUI();
-
-      }
-    );
-
-
-    /*
-      When returning with browser Back/Forward cache,
-      restore a clean stopped runtime state while keeping
-      all saved user preferences.
-    */
-
-    window.addEventListener(
-      "pageshow",
-      function() {
-
-        loadEdgeFlashPreference();
-
-
-        updateSpotifyCounterPreferenceUI();
-
-
-        updateBarBeatDisplayVisibility();
-
-
-        resetRuntimeUI();
-
-      }
-    );
-
-
-    window.addEventListener(
-      "pagehide",
-      function() {
-
-        resetRuntimeUI();
-
-      }
-    );
-
-  </script>
-
+  window.addEventListener(
+    "pagehide",
+    function() {
+      resetRuntimeUI();
+    }
+  );
+</script>
 </body>
-
 </html>
