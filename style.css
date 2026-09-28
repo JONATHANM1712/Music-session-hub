@@ -30,20 +30,20 @@
   /* ==================================================
      COUNTER + METRONOME BACKGROUND
 
-     CHANGE THIS EVERY MAIN STYLE LIST REFRESH
+     CHANGE THIS WHEN MAIN STYLE REFRESHED
      ================================================== */
 
   --music-session-background:
     url(
-      "images/Screencap - Main clip/Aladdin 30.jpg"
+      "images/Screencap%20-%20Main%20clip/Aladdin%2030.jpg"
     );
 
 
   /* ==================================================
-     DASHBOARD BACKGROUND ONLY 
-     index.html permanently uses this image
+     DASHBOARD BACKGROUND ONLY
 
-  CHANGE THIS EVERY 3 MAIN STYLE LIST REFRESHES
+     index.html permanently uses this image
+     CHANGE THIS EVERY 3 MAIN STYLE LIST REFRESHES
      ================================================== */
 
   --dashboard-background:
@@ -450,7 +450,7 @@ button {
 
   grid-template-columns:
     repeat(
-      2,
+      3,
       minmax(0, 1fr)
     );
 
@@ -718,6 +718,210 @@ button {
   font-size: 23px;
 
   font-weight: 800;
+}
+
+
+
+/* ==================================================
+   DASHBOARD LOCATION CARD
+
+   Uses the same exclusive background image as
+   location.html.
+   ================================================== */
+
+.dashboard-location-card {
+  position: relative;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  min-width: 0;
+
+  color: white;
+
+  background:
+    rgba(17, 24, 31, 0.76);
+
+  text-decoration: none;
+}
+
+.dashboard-location-card::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -4px;
+
+  z-index: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4, 14, 19, 0.82),
+      rgba(5, 14, 20, 0.48)
+    ),
+    url(
+      "images/location-background.jpg"
+    )
+    center / cover
+    no-repeat;
+
+  filter:
+    blur(2px);
+
+  pointer-events:
+    none;
+}
+
+.dashboard-location-card::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(0, 0, 0, 0.12)
+    );
+
+  pointer-events:
+    none;
+}
+
+.dashboard-location-content {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+  min-height: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 18px;
+}
+
+.dashboard-location-content > div {
+  min-width: 0;
+}
+
+.dashboard-location-main {
+  margin-top: 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  min-width: 0;
+}
+
+.dashboard-location-icon {
+  flex: 0 0 auto;
+
+  font-size:
+    clamp(42px, 4vw, 56px);
+
+  line-height: 1;
+
+  filter:
+    drop-shadow(
+      0 5px 10px rgba(0, 0, 0, 0.30)
+    );
+}
+
+.dashboard-location-name {
+  min-width: 0;
+
+  display:
+    -webkit-box;
+
+  overflow: hidden;
+
+  -webkit-box-orient:
+    vertical;
+
+  -webkit-line-clamp:
+    2;
+
+  color: white;
+
+  font-size:
+    clamp(24px, 2.5vw, 36px);
+
+  line-height: 1.05;
+
+  font-weight: 800;
+
+  letter-spacing:
+    -0.03em;
+
+  overflow-wrap:
+    anywhere;
+
+  text-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.34);
+}
+
+.dashboard-location-status {
+  display: block;
+
+  margin-top: 12px;
+
+  color:
+    rgba(255, 255, 255, 0.84);
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  line-height: 1.35;
+
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.34);
+}
+
+.dashboard-location-arrow {
+  width: 52px;
+  height: 52px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.28);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.12);
+
+  color: white;
+
+  font-size: 23px;
+
+  font-weight: 800;
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
 }
 
 
@@ -1499,6 +1703,26 @@ button.card {
    RESPONSIVE
    ================================================== */
 
+
+@media (max-width: 1180px) {
+
+  .dashboard-glance {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .dashboard-time-card {
+    grid-column:
+      1 / -1;
+  }
+}
+
+
+
+
 @media (max-width: 1100px) {
 
   .card-grid {
@@ -1522,6 +1746,11 @@ button.card {
   .dashboard-glance {
     grid-template-columns:
       1fr;
+  }
+
+  .dashboard-time-card {
+    grid-column:
+      auto;
   }
 }
 
@@ -1567,6 +1796,14 @@ button.card {
 
   .dashboard-weather-temperature {
     font-size: 44px;
+  }
+
+  .dashboard-location-name {
+    font-size: 30px;
+  }
+
+  .dashboard-location-icon {
+    font-size: 46px;
   }
 
   .hero {
@@ -1653,6 +1890,25 @@ button.card {
   .dashboard-weather-arrow {
     width: 43px;
     height: 43px;
+  }
+
+  .dashboard-location-icon {
+    font-size: 40px;
+  }
+
+  .dashboard-location-name {
+    font-size: 26px;
+  }
+
+  .dashboard-location-status {
+    font-size: 14px;
+  }
+
+  .dashboard-location-arrow {
+    width: 43px;
+    height: 43px;
+
+    font-size: 20px;
   }
 
   .hero h1 {
