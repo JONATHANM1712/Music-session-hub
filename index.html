@@ -12,7 +12,7 @@
 
   <meta
     name="description"
-    content="Music Session dashboard with dynamic resources, live date and time, current location, weather, counter, and metronome."
+    content="Music Session dashboard with dynamic resources, live date and time, current location, weather, counter, metronome, and daily prayer."
   >
 
   <title>
@@ -23,125 +23,6 @@
     rel="stylesheet"
     href="style.css"
   >
-
-
-  <!-- LOCATION DASHBOARD INTEGRATION -->
-  <style>
-    /* Three-card live row: Time -> Location -> Weather */
-    .dashboard-glance {
-      display: grid !important;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      gap: 22px !important;
-      align-items: stretch;
-    }
-
-    .dashboard-location-card {
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
-      min-width: 0;
-      color: #fff;
-      text-decoration: none;
-      background:
-        linear-gradient(90deg, rgba(14, 21, 26, 0.82), rgba(14, 21, 26, 0.56)),
-        url("location-background.jpg") center center / cover no-repeat;
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-    }
-
-    .dashboard-location-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.16));
-      pointer-events: none;
-    }
-
-    .dashboard-location-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    .dashboard-location-content {
-      min-height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .dashboard-location-main {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 16px;
-      min-width: 0;
-    }
-
-    .dashboard-location-icon {
-      flex: 0 0 auto;
-      font-size: clamp(2rem, 3vw, 3.35rem);
-      line-height: 1;
-      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.28));
-    }
-
-    .dashboard-location-name {
-      min-width: 0;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      overflow: hidden;
-      font-size: clamp(1.35rem, 2vw, 2.15rem);
-      line-height: 1.04;
-      letter-spacing: -0.025em;
-      text-shadow: 0 3px 12px rgba(0,0,0,0.34);
-    }
-
-    .dashboard-location-status {
-      display: block;
-      margin-top: 10px;
-      color: rgba(255,255,255,0.86);
-      font-weight: 700;
-      line-height: 1.35;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.34);
-    }
-
-    .dashboard-location-arrow {
-      width: 58px;
-      height: 58px;
-      flex: 0 0 58px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.42);
-      background: rgba(13, 18, 22, 0.32);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      font-size: 1.7rem;
-      font-weight: 800;
-    }
-
-    @media (max-width: 1180px) {
-      .dashboard-glance {
-        grid-template-columns: 1fr 1fr !important;
-      }
-
-      .dashboard-time-card {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 760px) {
-      .dashboard-glance {
-        grid-template-columns: 1fr !important;
-      }
-
-      .dashboard-time-card {
-        grid-column: auto;
-      }
-    }
-  </style>
-
 </head>
 
 
@@ -206,6 +87,10 @@
 
           <a href="weather.html">
             Weather
+          </a>
+
+          <a href="daily-prayer.html">
+            Doa Harian
           </a>
 
         </nav>
@@ -419,6 +304,49 @@
 
     </section>
 
+    <!-- ==================================================
+     DAILY PRAYER
+     ================================================== -->
+
+<section class="daily-prayer-banner">
+
+  <div class="daily-prayer-banner-content">
+
+    <span
+      class="daily-prayer-banner-icon"
+      aria-hidden="true"
+    >
+      🙏
+    </span>
+
+    <div class="daily-prayer-banner-text">
+
+      <span class="daily-prayer-banner-label">
+        Daily Prayer • Doa Harian
+      </span>
+
+      <strong>
+        Take a moment for daily prayer before/after Music Sessions before continuing other activities.
+      </strong>
+
+      <p>
+        Luangkan waktu untuk doa harian sebelum/sesudah Music Session sebelum melanjutkan aktivitas.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <a
+    href="daily-prayer.html"
+    class="daily-prayer-banner-button"
+  >
+    Open Daily Prayer
+    <span aria-hidden="true">→</span>
+  </a>
+
+</section>
 
     <!-- ==================================================
          HERO
@@ -485,6 +413,7 @@
           >
             Open Weather
           </a>
+
 
         </div>
 
