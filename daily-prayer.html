@@ -1,184 +1,476 @@
+
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Doa Harian dalam Music Session Hub.">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#10141a">
+
   <title>Doa Harian | Music Session Hub</title>
+
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="daily-prayer.css">
 </head>
 
-<body id="top" class="daily-prayer-page">
+<body class="daily-prayer-page">
 
-  <main class="prayer-page">
+  <main class="prayer-deck">
 
-    <a href="index.html" class="prayer-back">
-      ← Music Session Hub
-    </a>
+    <!-- HEADER -->
 
-    <header class="prayer-header">
-      <h1>🙏 Doa Harian</h1>
-      <p>Doa harian untuk menemani setiap hari.</p>
+    <header class="prayer-deck-header">
+
+      <a
+        class="prayer-deck-back"
+        href="index.html"
+      >
+        ← Music Session Hub
+      </a>
+
+      <div class="prayer-deck-brand">
+        🙏 Doa Harian
+        <small>Daily Prayer</small>
+      </div>
+
+      <span
+        id="prayer-count"
+        aria-live="polite"
+      ></span>
+
     </header>
 
-    <section class="prayer">
-      <h2>👼 Doa Novena 3 Malaikat Agung</h2>
+    <!-- FOUR PAGE PROGRESS -->
 
-      <h3>Doa kepada St. Mikael Malaikat Agung</h3>
-      <p>
-        St. Mikael Malaikat Agung,<br>
-        pelindung kita, belalah kita dalam pertempuran,
-        lawanlah segala kejahatan dan jerat setan.
-      </p>
-      <p>
-        Dengarkanlah permohonan kami ini, ya pemimpin mulia pasukan surga,
-        datanglah untuk menolong kami pada saat kami berdoa,
-        agar kami selalu dalam perlindungan Allah.
-      </p>
-      <p class="amen">Amin.</p>
-      <p class="invocation">St. Mikael Malaikat Agung, berdoalah untuk kami.</p>
+    <nav
+      id="prayer-progress"
+      class="prayer-progress"
+      aria-label="Navigasi halaman doa"
+    ></nav>
 
-      <h3>Doa kepada St. Gabriel Malaikat Agung</h3>
-      <p>
-        St. Gabriel Malaikat Agung,<br>
-        pembawa kabar baik, berdoalah untuk kami.
-      </p>
-      <p>
-        Dampingi kami dalam doa, bimbing hati kami agar selalu
-        mendengarkan kehendak Allah, serta mohonkan bagi kami rahmat,
-        sukacita dan kesetiaan dalam iman.
-      </p>
-      <p class="amen">Amin.</p>
-      <p class="invocation">St. Gabriel Malaikat Agung, berdoalah untuk kami.</p>
+    <!-- PRAYER CONTENT -->
 
-      <h3>Doa kepada St. Rafael Malaikat Agung</h3>
-      <p>
-        St. Rafael Malaikat Agung,<br>
-        pemandu dan penyembuh, berdoalah untuk kami.
-      </p>
-      <p>
-        Dampingi kami dalam perjalanan hidup ini, bantulah kami menemukan
-        jalan yang benar, berikanlah kesehatan bagi tubuh kami, dan mohonkan
-        rahmat penyembuhan bagi kami dan orang-orang yang kami kasihi.
-      </p>
-      <p class="amen">Amin.</p>
-      <p class="invocation">St. Rafael Malaikat Agung, berdoalah untuk kami.</p>
+    <section
+      class="prayer-stage"
+      aria-label="Isi doa"
+    >
 
-      <h3>Doa Penutup Novena</h3>
-      <p>
-        Ya Allah, Bapa yang Mahakuasa, terima kasih atas penyertaan-Mu
-        dalam novena ini. Melalui doa 3 Malaikat Agung, St. Mikael,
-        St. Gabriel dan St. Rafael, perkenankanlah permohonan kami sesuai
-        dengan kehendak-Mu yang kudus. Demi Kristus, Tuhan kami.
-      </p>
-      <p class="amen">Amin.</p>
+      <!-- =====================================
+           PAGE 1 - NOVENA
+           ===================================== -->
+
+      <article
+        class="prayer-slide"
+        data-slide="0"
+        aria-label="Halaman 1"
+      >
+
+        <div class="prayer-slide-content">
+
+          <h1>
+            👼 Doa Novena 3 Malaikat Agung
+          </h1>
+
+          <div class="prayer-words">
+
+            <p>
+              St. Mikael Malaikat Agung,
+              pelindung kita, belalah kita
+              dalam pertempuran, lawanlah
+              segala kejahatan dan jerat setan.
+            </p>
+
+            <p>
+              Dengarkanlah permohonan kami ini,
+              ya pemimpin mulia pasukan surga,
+              datanglah untuk menolong kami
+              pada saat kami berdoa,
+              agar kami selalu dalam
+              perlindungan Allah.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+            <p class="invocation">
+              St. Mikael Malaikat Agung,
+              berdoalah untuk kami.
+            </p>
+
+            <p>
+              St. Gabriel Malaikat Agung,
+              pembawa kabar baik,
+              berdoalah untuk kami.
+            </p>
+
+            <p>
+              Dampingi kami dalam doa,
+              bimbing hati kami agar selalu
+              mendengarkan kehendak Allah,
+              serta mohonkan bagi kami rahmat,
+              sukacita dan kesetiaan dalam iman.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+            <p class="invocation">
+              St. Gabriel Malaikat Agung,
+              berdoalah untuk kami.
+            </p>
+
+            <p>
+              St. Rafael Malaikat Agung,
+              pemandu dan penyembuh,
+              berdoalah untuk kami.
+            </p>
+
+            <p>
+              Dampingi kami dalam perjalanan
+              hidup ini, bantulah kami menemukan
+              jalan yang benar, berikanlah
+              kesehatan bagi tubuh kami,
+              dan mohonkan rahmat penyembuhan
+              bagi kami dan orang-orang
+              yang kami kasihi.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+            <p class="invocation">
+              St. Rafael Malaikat Agung,
+              berdoalah untuk kami.
+            </p>
+
+            <p>
+              Ya Allah, Bapa yang Mahakuasa,
+              terima kasih atas penyertaan-Mu
+              dalam novena ini. Melalui doa
+              3 Malaikat Agung, St. Mikael,
+              St. Gabriel dan St. Rafael,
+              perkenankanlah permohonan kami
+              sesuai dengan kehendak-Mu
+              yang kudus. Demi Kristus,
+              Tuhan kami.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+          </div>
+
+        </div>
+
+      </article>
+
+      <!-- =====================================
+           PAGE 2 - HOLY SPIRIT
+           ===================================== -->
+
+      <article
+        class="prayer-slide"
+        data-slide="1"
+        aria-label="Halaman 2"
+        hidden
+      >
+
+        <div class="prayer-slide-content">
+
+          <h1>
+            🕊️ Doa Mohon Karunia Roh Kudus
+          </h1>
+
+          <div class="prayer-words">
+
+            <p>
+              O Tuhan Yesus Kristus,
+              sebelum naik ke Surga Engkau
+              berjanji mengirimkan Roh Kudus
+              untuk menyelesaikan pekerjaan-Mu
+              di bumi.
+            </p>
+
+            <p>
+              Berikanlah Roh Kudus yang sama
+              agar jiwaku dikuduskan dan
+              bertumbuh dalam karya-karya
+              anugerah dan kasih-Mu.
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Kebijaksanaan,
+              </strong>
+              supaya aku membenci hal-hal
+              yang sia-sia dari dunia ini
+              dan hanya menginginkan
+              hal-hal yang abadi;
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Pengertian,
+              </strong>
+              untuk mencerahkan pikiranku
+              dengan cahaya kebenaran Ilahi-Mu;
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Nasehat,
+              </strong>
+              agar aku dapat selalu memilih
+              cara yang paling pasti untuk
+              menyenangkan Engkau dan
+              mendapatkan Surga;
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Keperkasaan,
+              </strong>
+              agar aku dapat memikul salibku
+              bersama-Mu dan memiliki
+              keberanian untuk menghadapi
+              semua rintangan yang
+              menghalangi keselamatanku;
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Pengenalan,
+              </strong>
+              agar aku dapat mengenal Allah
+              dan mengenal diriku sendiri
+              dan bertumbuh dalam kekudusan;
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Kesalehan,
+              </strong>
+              agar aku boleh menemukan bahwa
+              pelayanan kepada Allah adalah
+              menyenangkan, dan
+            </p>
+
+            <p>
+              <strong>
+                Berilah aku Roh Takut Akan Allah,
+              </strong>
+              supaya aku dipenuhi dengan rasa
+              hormat penuh kasih terhadap Allah
+              dan takut untuk tidak
+              menyenangkan-Nya dengan
+              cara apapun.
+            </p>
+
+            <p>
+              Bantulah aku ya Tuhan,
+              untuk menjadi salah satu dari
+              murid-murid sejati-Mu dan
+              hidupkanlah Roh-Mu dalam
+              segala hal dalam diriku.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+            <p class="sign-cross">
+              ✝️ Dalam nama Bapa dan Putera
+              dan Roh Kudus. Amin.
+            </p>
+
+          </div>
+
+        </div>
+
+      </article>
+
+      <!-- =====================================
+           PAGE 3 - LIKE JESUS
+           ===================================== -->
+
+      <article
+        class="prayer-slide"
+        data-slide="2"
+        aria-label="Halaman 3"
+        hidden
+      >
+
+        <div class="prayer-slide-content">
+
+          <h1>
+            ✝️ Jadikanlah Seperti Engkau, Yesus
+          </h1>
+
+          <div class="prayer-words">
+
+            <p>
+              Hati Yesus yang Maha Kudus,
+              aku mengarahkan diriku pada
+              HatiMu Yang Maha Kudus.
+              Kuasailah seluruh kepribadianku:
+              Ubahlah Aku menjadi seperti Engkau.
+            </p>
+
+            <p>
+              Jadikan tanganku tanganMu,
+              kakiku kakiMu, hatiku hatiMu.
+              Ijinkanlah aku melihat dengan
+              mataMu, mendengar dengan telingaMu,
+              berkata-kata dengan bibirMu,
+              mengasihi dengan hatiMu,
+              memahami dengan pikiranMu,
+              melayani dengan kehendakMu,
+              dan mengabdikan seluruh
+              kepribadianku.
+              Jadikan aku serupa dengan Engkau.
+            </p>
+
+            <p>
+              Hati Yesus yang Maha Kudus,
+              utuslah Roh KudusMu untuk
+              mengajar aku agar aku mengasihiMu
+              dan hidup melalui Engkau,
+              dalam Engkau dan untuk Engkau.
+            </p>
+
+            <p>
+              Datanglah Roh Kudus,
+              jadikan tubuhku baitMu.
+              Datanglah dan tinggallah dalam
+              aku selamanya. Beri aku kasih
+              terdalam kepada Hati Yesus
+              Yang Maha Kudus untuk dapat
+              melayani Dia dengan segenap
+              hati, jiwa, pikiran dan kekuatanku.
+            </p>
+
+            <p>
+              Kuasai seluruh kemampuan,
+              tubuh dan jiwaku.
+              Aturlah seluruh hasratku:
+              perasaan dan emosi.
+              Kuasai kepandaian, pengertian,
+              dan kehendakku;
+              ingatan dan khayalku.
+            </p>
+
+            <p>
+              O Roh Kasih yang Kudus,
+              berilah aku seluruh kebajikan;
+              perkaya imanku, kuatkan harapanku,
+              tingkatkan keyakinanku,
+              dan kobarkan kasihku.
+            </p>
+
+            <p>
+              Berikanlah aku ketujuh karunia,
+              buah dan kebahagiaanMu sepenuhnya.
+              Trinitas Yang Maha Kudus,
+              jadikan jiwaku, baitMu yang kudus.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+            <p class="sign-cross">
+              ✝️ Dalam nama Bapa dan Putera
+              dan Roh Kudus. Amin.
+            </p>
+
+          </div>
+
+        </div>
+
+      </article>
+
+      <!-- =====================================
+           PAGE 4 - CHILDREN'S PRAYER
+           ===================================== -->
+
+      <article
+        class="prayer-slide"
+        data-slide="3"
+        aria-label="Halaman 4"
+        hidden
+      >
+
+        <div class="prayer-slide-content">
+
+          <h1>
+            🙏 Ya Tuhan, Jagalah Anak-Anakku
+          </h1>
+
+          <div class="prayer-words">
+
+            <p>
+              Tuhan yang baik,
+              aku serahkan anak-anakku
+              ke dalam tangan-Mu.
+            </p>
+
+            <p>
+              Jaga mereka dalam setiap langkahnya,
+              lindungi dari marabahaya,
+              jauhkan dari hal-hal buruk,
+              dan berkati dengan kesehatan,
+              kebahagiaan, dan keberhasilan.
+            </p>
+
+            <p>
+              Bukakan jalan terbaik untuk
+              masa depan mereka,
+              kuatkan iman dan hatinya,
+              serta jadikan mereka anak-anak
+              yang membanggakan dan
+              berkenan di hadapan-Mu.
+            </p>
+
+            <p>
+              Terima kasih Tuhan,
+              karena Engkau selalu menyertai
+              dan mengasihi mereka
+              lebih dari yang aku bisa.
+            </p>
+
+            <p class="amen">Amin.</p>
+
+          </div>
+
+        </div>
+
+      </article>
+
     </section>
 
-    <section class="prayer">
-      <h2>🕊️ Doa Mohon Karunia Roh Kudus</h2>
+    <!-- NAVIGATION FOOTER -->
 
-      <p>
-        O Tuhan Yesus Kristus,<br>
-        sebelum naik ke Surga Engkau berjanji mengirimkan Roh Kudus
-        untuk menyelesaikan pekerjaan-Mu di bumi.
-      </p>
-      <p>
-        Berikanlah Roh Kudus yang sama agar jiwaku dikuduskan dan
-        bertumbuh dalam karya-karya anugerah dan kasih-Mu.
-      </p>
-      <p>
-        <strong>Berilah aku Roh Kebijaksanaan,</strong><br>
-        supaya aku membenci hal-hal yang sia-sia dari dunia ini dan
-        hanya menginginkan hal-hal yang abadi;
-      </p>
-      <p>
-        <strong>Berilah aku Roh Pengertian,</strong><br>
-        untuk mencerahkan pikiranku dengan cahaya kebenaran Ilahi-Mu;
-      </p>
-      <p>
-        <strong>Berilah aku Roh Nasehat,</strong><br>
-        agar aku dapat selalu memilih cara yang paling pasti untuk
-        menyenangkan Engkau dan mendapatkan Surga;
-      </p>
-      <p>
-        <strong>Berilah aku Roh Keperkasaan,</strong><br>
-        agar aku dapat memikul salibku bersama-Mu dan memiliki keberanian
-        untuk menghadapi semua rintangan yang menghalangi keselamatanku;
-      </p>
-      <p>
-        <strong>Berilah aku Roh Pengenalan,</strong><br>
-        agar aku dapat mengenal Allah dan mengenal diriku sendiri dan
-        bertumbuh dalam kekudusan;
-      </p>
-      <p>
-        <strong>Berilah aku Roh Kesalehan,</strong><br>
-        agar aku boleh menemukan bahwa pelayanan kepada Allah adalah
-        menyenangkan, dan
-      </p>
-      <p>
-        <strong>Berilah aku Roh Takut Akan Allah,</strong><br>
-        supaya aku dipenuhi dengan rasa hormat penuh kasih terhadap Allah
-        dan takut untuk tidak menyenangkan-Nya dengan cara apapun.
-      </p>
-      <p>
-        Bantulah aku ya Tuhan,<br>
-        untuk menjadi salah satu dari murid-murid sejati-Mu dan hidupkanlah
-        Roh-Mu dalam segala hal dalam diriku.
-      </p>
-      <p class="amen">Amin.</p>
-      <p class="sign-cross">✝️ Dalam nama Bapa dan Putera dan Roh Kudus. Amin.</p>
-    </section>
+    <footer class="prayer-deck-footer">
 
-    <section class="prayer">
-      <h2>✝️ Jadikanlah Seperti Engkau, Yesus</h2>
+      <button
+        id="prayer-prev"
+        type="button"
+        aria-label="Halaman sebelumnya"
+      >
+        ← Sebelumnya
+      </button>
 
-      <p>
-        Hati Yesus yang Maha Kudus, aku mengarahkan diriku pada
-        HatiMu Yang Maha Kudus. Kuasailah seluruh kepribadianku:
-        Ubahlah Aku menjadi seperti Engkau.
-      </p>
-      <p>
-        Jadikan tanganku tanganMu, kakiku kakiMu, hatiku hatiMu.
-        Ijinkanlah aku melihat dengan mataMu, mendengar dengan telingaMu,
-        berkata-kata dengan bibirMu, mengasihi dengan hatiMu, memahami
-        dengan pikiranMu, melayani dengan kehendakMu, dan mengabdikan
-        seluruh kepribadianku. Jadikan aku serupa dengan Engkau.
-      </p>
-      <p>
-        Hati Yesus yang Maha Kudus, utuslah Roh KudusMu untuk mengajar
-        aku agar aku mengasihiMu dan hidup melalui Engkau, dalam Engkau
-        dan untuk Engkau.
-      </p>
-      <p>
-        Datanglah Roh Kudus, jadikan tubuhku baitMu. Datanglah dan
-        tinggallah dalam aku selamanya. Beri aku kasih terdalam kepada
-        Hati Yesus Yang Maha Kudus untuk dapat melayani Dia dengan segenap
-        hati, jiwa, pikiran dan kekuatanku.
-      </p>
-      <p>
-        Kuasai seluruh kemampuan, tubuh dan jiwaku. Aturlah seluruh
-        hasratku: perasaan dan emosi. Kuasai kepandaian, pengertian,
-        dan kehendakku; ingatan dan khayalku.
-      </p>
-      <p>
-        O Roh Kasih yang Kudus, berilah aku seluruh kebajikan; perkaya
-        imanku, kuatkan harapanku, tingkatkan keyakinanku, dan kobarkan
-        kasihku.
-      </p>
-      <p>
-        Berikanlah aku ketujuh karunia, buah dan kebahagiaanMu sepenuhnya.
-        Trinitas Yang Maha Kudus, jadikan jiwaku, baitMu yang kudus.
-      </p>
-      <p class="amen">Amin.</p>
-      <p class="sign-cross">✝️ Dalam nama Bapa dan Putera dan Roh Kudus. Amin.</p>
-    </section>
+      <span id="prayer-hint">
+        Geser atau tekan Berikutnya
+      </span>
 
-    <footer class="prayer-footer">
-      Music Session Hub • Doa Harian
+      <button
+        id="prayer-next"
+        type="button"
+      >
+        Berikutnya →
+      </button>
+
     </footer>
 
   </main>
+
+  <script src="daily-prayer.js"></script>
 
 </body>
 </html>
