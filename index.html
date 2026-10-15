@@ -440,12 +440,20 @@
     </section>
 
 
+    <!-- DASHBOARD CATEGORY TABS -->
+    <div class="dashboard-tabs" role="tablist" aria-label="Dashboard categories">
+      <button type="button" id="quick-tab" class="dashboard-tab is-active" role="tab" aria-selected="true" aria-controls="quick-access">▦ &nbsp; Quick Access</button>
+      <button type="button" id="tools-tab" class="dashboard-tab" role="tab" aria-selected="false" aria-controls="tools">♫ &nbsp; Tools</button>
+    </div>
+
     <!-- ==================================================
          QUICK ACCESS
          ================================================== -->
 
     <section
       id="quick-access"
+      role="tabpanel"
+      aria-labelledby="quick-tab"
       class="
         section
         quick-access-section
@@ -936,7 +944,7 @@
       </div>
     </section>
 
-    <section id="tools" class="section quick-access-section" aria-labelledby="tools-title">
+    <section id="tools" class="section quick-access-section tab-panel-hidden" role="tabpanel" aria-labelledby="tools-tab">
       <div class="section-heading"><div><span class="section-label">Interactive Features</span><h2 id="tools-title">Tools</h2></div><p>Open music practice tools on their dedicated pages.</p></div>
       <div class="card-grid">
         <!-- ==================================================
@@ -1236,6 +1244,49 @@
   </script>
 
   <script src="script.js"></script>
+  <script>
+    (() => {
+      const quickTab = document.getElementById('quick-tab');
+      const toolsTab = document.getElementById('tools-tab');
+      const quick = document.getElementById('quick-access');
+      const tools = document.getElementById('tools');
+      const viewer = document.getElementById('resource-viewer');
+      if (!quickTab || !toolsTab || !quick || !tools || !viewer) return;
+
+      function selectCategory(category) {
+        const isQuick = category === 'quick';
+        quick.classList.toggle('tab-panel-hidden', !isQuick);
+        viewer.classList.toggle('tab-panel-hidden', !isQuick);
+        tools.classList.toggle('tab-panel-hidden', isQuick);
+        quickTab.classList.toggle('is-active', isQuick);
+        toolsTab.classList.toggle('is-active', !isQuick);
+        quickTab.setAttribute('aria-selected', String(isQuick));
+        toolsTab.setAttribute('aria-selected', String(!isQuick));
+        quickTab.tabIndex = isQuick ? 0 : -1;
+        toolsTab.tabIndex = isQuick ? -1 : 0;
+      }
+      quickTab.addEventListener('click', () => selectCategory('quick'));
+      toolsTab.addEventListener('click', () => selectCategory('tools'));
+      document.querySelectorAll('a[href="#quick-access"], a[href="#tools"], a[href="#resource-viewer"]').forEach(link => {
+        link.addEventListener('click', () => selectCategory(link.getAttribute('href') === '#tools' ? 'tools' : 'quick'));
+      });
+      [quickTab, toolsTab].forEach((tab, i) => {
+        tab.addEventListener('keydown', event => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 :
+            (i + (event.key === 'ArrowRight' ? 1 : -1) + 2) % 2;
+          selectCategory(next === 0 ? 'quick' : 'tools');
+          [quickTab, toolsTab][next].focus();
+        });
+      });
+      selectCategory(location.hash === '#tools' ? 'tools' : 'quick');
+      window.addEventListener('hashchange', () => {
+        if (location.hash === '#tools') selectCategory('tools');
+        if (location.hash === '#quick-access' || location.hash === '#resource-viewer') selectCategory('quick');
+      });
+    })();
+  </script>
 
 </body>
 
