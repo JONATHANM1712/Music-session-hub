@@ -60,6 +60,10 @@
     url(
       "images/daily-prayer-background.jpg"
     );
+  --music-session-background-blur: 10px;
+  --music-session-background-darkness: 0.1;
+}
+
 /* ==================================================
    DAILY PRAYER DASHBOARD BOX
 
@@ -369,14 +373,6 @@
       14px;
   }
 
-}
-
-  /* ==================================================
-     SHARED BACKGROUND SETTINGS
-     ================================================== */
-
-  --music-session-background-blur: 10px;
-  --music-session-background-darkness: 0.1;
 }
 
 
@@ -2490,3 +2486,12 @@ button.card {
       0.01ms !important;
   }
 }
+
+/* Two separate daily feature cards alongside one another */
+.daily-hero-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin:28px 0; }
+.daily-hero-grid .daily-prayer-banner { margin:0; min-width:0; flex-direction:column; align-items:stretch; justify-content:space-between; }
+.daily-hero-grid .daily-prayer-banner-button { align-self:flex-start; }
+.daily-routines-banner { background:linear-gradient(135deg,rgba(22,38,58,.94),rgba(20,37,37,.88)); }
+.daily-routines-banner .daily-prayer-banner-label { color:#9bd5ff; }
+@media (max-width:900px) { .daily-hero-grid { grid-template-columns:1fr; } }
+@media (max-width:520px) { .daily-hero-grid { gap:14px; margin:20px 0; } .daily-hero-grid .daily-prayer-banner-button { align-self:stretch; } }
