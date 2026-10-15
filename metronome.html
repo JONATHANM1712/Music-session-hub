@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Metronome</title>
@@ -493,6 +496,134 @@
       }
     }
 
+    /* New timer controls use the same existing glassmorphism skin. */
+    /* Tap Tempo remains centered; the clock sits at the far-right edge. */
+    .practice-action-line {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: nowrap;
+      width: 100%;
+      min-height: 98px;
+    }
+    .practice-timer-control {
+      position: absolute;
+      right: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 3px;
+      min-width: 130px;
+      font-variant-numeric: tabular-nums;
+    }
+    /* On narrow screens keep the clock rightmost without overlap. */
+    @media (max-width: 620px) {
+      .practice-action-line { justify-content: flex-start; }
+      .practice-action-line .tap-button {
+        min-width: 0;
+        width: min(170px, calc(100% - 128px));
+        padding-inline: 8px;
+      }
+      .practice-timer-control { min-width: 120px; }
+      #practiceProgressMain { font-size: 11px; }
+    }
+    .practice-timer-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      padding: 0;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.32);
+      background: rgba(255,255,255,.14);
+      color: white;
+      cursor: pointer;
+    }
+    .practice-timer-open:hover { background: rgba(255,255,255,.24); }
+    .practice-timer-open svg { display: block; }
+    #practiceCounterPreference[hidden],
+    #practiceProgressMain[hidden] { display: none !important; }
+    #practiceProgressMain {
+      font-size: 12px;
+      line-height: 1.4;
+      color: rgba(255,255,255,.92);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    #practiceElapsedMain {
+      font-size: 20px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+    /* 9–16 Premium beats: reduce light size only when necessary.
+       The original light appearance and red runner animations are intact. */
+    .beat-lights:has(.beat-light:nth-child(9)) { gap: 5px; }
+    .beat-lights:has(.beat-light:nth-child(9)) .beat-light {
+      width: clamp(24px, 2.5vw, 35px);
+      height: clamp(24px, 2.5vw, 35px);
+      font-size: 13px;
+    }
+    @media (max-width: 680px) {
+      .beat-lights:has(.beat-light:nth-child(9)) {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 7px;
+      }
+      .beat-lights:has(.beat-light:nth-child(9)) .beat-light {
+        width: 27px;
+        height: 27px;
+        flex: 0 0 27px;
+      }
+    }
+    .practice-timer-settings {
+      margin-top: 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+      padding: 13px 14px;
+    }
+    .practice-timer-settings h3 { margin: 0 0 10px; font-size: 17px; }
+    .practice-choice {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    .practice-choice input[type="radio"],
+    .practice-choice input[type="checkbox"] { accent-color: #9ce6c9; width: 18px; height: 18px; }
+    .practice-choice input[type="number"] {
+      width: 68px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 8px;
+      background: #fff;
+      color: #222;
+      padding: 7px;
+      text-align: center;
+    }
+    .practice-choice input:disabled { opacity: .55; }
+    .practice-reset {
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,.28);
+      padding: 9px 14px;
+      background: rgba(255,255,255,.12);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    #practiceTimerStatus { margin: 9px 0 0; font-size: 12px; color: #9ce6c9; }
+    .beat-lights.many-beats { justify-content: center; flex-wrap: wrap; gap: 7px; }
+    .beat-lights.many-beats .beat-light { width: 34px; height: 34px; font-size: 12px; }
+    @media (max-width: 680px) {
+      .practice-action-line { gap: 8px; }
+      .practice-timer-open { width: 46px; height: 46px; }
+      #practiceElapsedMain { font-size: 18px; }
+      .beat-lights.many-beats .beat-light { width: 29px; height: 29px; font-size: 11px; }
+    }
   </style>
 </head>
 <body>
@@ -578,6 +709,10 @@
           <option value="1">1</option><option value="2">2</option><option value="3">3</option>
           <option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
           <option value="7">7</option><option value="8">8</option>
+          <option value="9">9</option><option value="10">10</option>
+          <option value="11">11</option><option value="12">12</option>
+          <option value="13">13</option><option value="14">14</option>
+          <option value="15">15</option><option value="16">16</option>
         </select>
       </div>
 
@@ -593,7 +728,23 @@
     </div>
 
     <div class="bottom-actions">
-      <button class="tap-button" onclick="tapTempo()">TAP TEMPO</button>
+      <div class="practice-action-line">
+        <button class="tap-button" onclick="tapTempo()">TAP TEMPO</button>
+        <div class="practice-timer-control">
+          <button class="practice-timer-open" type="button"
+                  onclick="openPracticeTimer()" aria-label="Open timer settings"
+                  title="Timer settings">
+            <svg viewBox="0 0 24 24" width="27" height="27" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 6v6l4 2"></path>
+            </svg>
+          </button>
+          <span id="practiceProgressMain" class="practice-counter-line">0 bars · 0 beats</span>
+          <span id="practiceElapsedMain" class="practice-time-line" aria-label="Elapsed time">00:00</span>
+        </div>
+      </div>
       <a href="index.html" class="back-home">← Back to Home</a>
     </div>
   </div>
@@ -708,13 +859,46 @@
         </div>
       </div>
 
+      <section id="practiceTimerSettings" class="practice-timer-settings" aria-labelledby="practiceTimerHeading">
+        <h3 id="practiceTimerHeading">Practice Timer</h3>
+        <label class="practice-choice">
+          <input type="radio" name="practiceStop" value="off" checked>
+          Off — stop manually
+        </label>
+        <label class="practice-choice">
+          <input type="radio" name="practiceStop" value="bars">
+          Stop after
+          <input id="practiceBarsLimit" type="number" min="1" max="100000" value="4" aria-label="Number of completed bars">
+          bars
+        </label>
+        <label class="practice-choice">
+          <input type="radio" name="practiceStop" value="time">
+          Stop after
+          <input id="practiceMinutes" type="number" min="0" max="240" value="0" aria-label="Minutes">
+          m
+          <input id="practiceSeconds" type="number" min="0" max="59" value="20" aria-label="Seconds">
+          s
+        </label>
+        <label class="practice-choice">
+          <input type="checkbox" id="practiceShowElapsed" checked>
+          Show elapsed time or countdown
+        </label>
+        <label class="practice-choice" id="practiceCounterPreference">
+          <input type="checkbox" id="practiceShowCounters" checked>
+          Show completed bars and total beats directly below the clock
+        </label>
+        <button type="button" class="practice-reset" onclick="resetPracticeTimer()">Reset practice timer</button>
+        <p id="practiceTimerStatus" role="status">Ready to practice.</p>
+      </section>
+
       <div class="settings-premium-note">
-        Spotify Premium entitlement is controlled only by the <strong>SPOTIFY_PREMIUM</strong> constant in this file.
+        Spotify features are controlled centrally by <strong>spotify-plan.js</strong>. Premium supports up to 16 beats per bar; Free supports up to 8.
         Tempo Percentage Buttons always remain visible. Spotify Free uses fixed 50%, 75%, 85%, 95%, and 100% presets; Spotify Premium restores the last customized values saved in this browser.
       </div>
     </div>
   </div>
 
+<script src="spotify-plan.js"></script>
 <script>
   /* =========================================================
      SPOTIFY PREMIUM ACCESS — CODE ONLY
@@ -731,7 +915,14 @@
 
      There is intentionally NO Spotify Premium switch in the UI.
      ========================================================= */
-  const SPOTIFY_PREMIUM = true;
+  const SPOTIFY_PREMIUM = window.MUSIC_SESSION_PLAN?.SPOTIFY_PREMIUM === true;
+
+  // Hide unsupported beat options under the Free configuration.
+  if (!SPOTIFY_PREMIUM) {
+    document.querySelectorAll('#beatsPerBar option').forEach(option => {
+      if (Number(option.value) > 8) option.remove();
+    });
+  }
 
   const STORAGE_KEY = "musicSessionMetronomeSettingsV7";
   const LEGACY_STORAGE_KEYS = [
@@ -1173,7 +1364,7 @@
         clamp(
           saved.beatsPerBar,
           1,
-          8
+          SPOTIFY_PREMIUM ? 16 : 8
         );
     }
 
@@ -1469,6 +1660,7 @@
 
     container.innerHTML =
       "";
+    container.classList.toggle("many-beats", beats > 8);
 
     for (
       let i = 0;
@@ -2193,6 +2385,9 @@
     }
 
     updateDisplays();
+
+    // Observe the beat without replacing original beat animation.
+    window.MetronomePracticeTimer?.onBeat();
   }
 
   /* =========================================================
@@ -2223,6 +2418,9 @@
   }
 
   function startMetronome() {
+    if (window.MetronomePracticeTimer &&
+        !window.MetronomePracticeTimer.beforeStart()) return;
+
     getAudioContext();
 
     isRunning =
@@ -2240,11 +2438,17 @@
       "stop-button"
     );
 
+    window.MetronomePracticeTimer?.onStart();
     tick();
-    scheduleTimer();
+    // The first tick may already have reached a 1-beat bar limit.
+    if (isRunning) scheduleTimer();
   }
 
   function stopMetronome() {
+    if (!isRunning) return;
+    // Preserve final duration and counters before original reset.
+    window.MetronomePracticeTimer?.onStop();
+
     isRunning =
       false;
 
@@ -2254,6 +2458,12 @@
 
     timer =
       null;
+
+    if (audioContext) {
+      const endingContext = audioContext;
+      audioContext = null;
+      endingContext.close().catch(() => {});
+    }
 
     if (
       beatAnimationFrame
@@ -2527,6 +2737,8 @@
      RUNTIME RESET / PAGE LOAD
      ========================================================= */
   function resetRuntimeUI() {
+    // Page navigation should not leave the practice clock running.
+    if (isRunning) window.MetronomePracticeTimer?.onStop();
     isRunning =
       false;
 
@@ -2644,5 +2856,6 @@
     }
   );
 </script>
+<script src="metronome-timer.js"></script>
 </body>
 </html>
