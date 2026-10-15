@@ -1,2 +1,2701 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chord Player | Music Session Hub</title><link rel="stylesheet" href="style.css"><style>main{max-width:800px;margin:8vh auto;padding:25px;color:white} .panel{background:#222b;border:1px solid #ffffff33;border-radius:22px;padding:28px}select,button{padding:13px 18px;border-radius:12px;font:inherit;margin:8px;background:#e8fff5;color:#16221c;border:0}button{cursor:pointer}h1{font-size:clamp(2rem,5vw,3.5rem)}.notes{font-size:1.5rem;margin:20px 0}</style><link rel="stylesheet" href="rubik-font.css">
-</head><body><main><a href="index.html#tools" style="color:#a8ffe1">← Back to Tools</a><h1>🎹 Chord Player</h1><div class="panel"><label>Root note <select id="root"></select></label><label>Chord type <select id="quality"><option value="major">Major</option><option value="minor">Minor</option><option value="dim">Diminished</option><option value="aug">Augmented</option><option value="7">Dominant 7th</option><option value="maj7">Major 7th</option><option value="m7">Minor 7th</option></select></label><div class="notes" id="notes"></div><button id="play">▶ Play Chord</button><button id="stop">■ Stop</button></div></main><script>const names=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];const root=document.getElementById('root'),quality=document.getElementById('quality'),notes=document.getElementById('notes');names.forEach((n,i)=>root.add(new Option(n,i)));const shapes={major:[0,4,7],minor:[0,3,7],dim:[0,3,6],aug:[0,4,8],7:[0,4,7,10],maj7:[0,4,7,11],m7:[0,3,7,10]};let ctx,voices=[];function midi(){return shapes[quality.value].map(i=>60+Number(root.value)+i)}function refresh(){notes.textContent=midi().map(n=>names[n%12]+(Math.floor(n/12)-1)).join(' · ')}root.onchange=quality.onchange=refresh;refresh();document.getElementById('play').onclick=()=>{stop();ctx??=new (window.AudioContext||window.webkitAudioContext)();ctx.resume();voices=midi().map(n=>{let o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=440*Math.pow(2,(n-69)/12);g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.11/midi().length,ctx.currentTime+.04);o.connect(g).connect(ctx.destination);o.start();return {o,g}})};function stop(){if(!ctx)return;voices.forEach(({o,g})=>{g.gain.setTargetAtTime(.0001,ctx.currentTime,.05);o.stop(ctx.currentTime+.3)});voices=[]}document.getElementById('stop').onclick=stop;window.addEventListener('pagehide',stop)</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Chord Player | Music Session Hub</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="rubik-font.css">
+
+    <style>
+        /* =========================================
+           GENERAL APPEARANCE
+           ========================================= */
+
+        :root {
+            color-scheme: dark;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #090d12;
+            color: #f5f5f7;
+            font-family: Rubik, Arial, sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .wrap {
+            max-width: 1680px;
+            margin: 14px auto;
+            padding: 0 16px 16px;
+        }
+
+        .back {
+            color: #8ce0bf;
+            text-decoration: none;
+        }
+
+        .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .head h1 {
+            margin: 10px 0;
+            font-size: clamp(28px, 4vw, 42px);
+        }
+
+        .head-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hint {
+            color: #b8aebc;
+            font-size: 13px;
+        }
+
+        .settings-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: #29252f;
+            color: #ffffff;
+            border: 1px solid #655967;
+            border-radius: 50%;
+            font-size: 25px;
+        }
+
+        .settings-icon:hover {
+            background: #3d3443;
+        }
+
+        .shell {
+            background: #171b23;
+            border: 1px solid #3b3841;
+            border-radius: 23px;
+            padding: 14px;
+            box-shadow: 0 22px 70px #0006;
+        }
+
+        .split-layout {
+            display: grid;
+            grid-template-columns:
+                minmax(350px, 0.85fr)
+                minmax(520px, 1.35fr);
+            gap: 16px;
+            height: calc(100dvh - 145px);
+            min-height: 530px;
+        }
+
+        .control-pane,
+        .arranger-pane {
+            min-width: 0;
+            min-height: 0;
+            padding: 18px;
+            border: 1px solid #45424d;
+            border-radius: 17px;
+            background: #1d2028;
+            overflow-y: auto;
+        }
+
+        .control-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 11px 14px;
+            background: #28252e;
+            color: #f6f3f8;
+            border: 1px solid #4b4752;
+            border-radius: 11px;
+        }
+
+        .btn:hover {
+            border-color: #73bd95;
+        }
+
+        .primary {
+            background: #208859;
+            border-color: #319b6b;
+        }
+
+        /* =========================================
+           METRONOME TRANSPORT
+           ========================================= */
+
+        .metronome-transport {
+            width: 100%;
+            padding: 10px 0 4px;
+        }
+
+        .transport-trio {
+            display: grid;
+            grid-template-columns:
+                minmax(95px, 1fr)
+                minmax(145px, 1.5fr)
+                minmax(95px, 1fr);
+            align-items: start;
+            gap: 12px;
+        }
+
+        .meter-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+            padding-top: 6px;
+            text-align: center;
+        }
+
+        .meter-side label {
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .meter-side select {
+            max-width: 90px;
+            padding: 3px 0;
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .meter-side option {
+            background: #25232d;
+        }
+
+        .transport-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        /* GREEN PLAY BUTTON */
+
+        .round-play {
+            width: 86px;
+            height: 86px;
+            flex: none;
+            display: grid;
+            place-items: center;
+            padding-left: 7px;
+            background: #20a44a;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            font-size: 41px;
+            box-shadow: 0 7px 20px #0004;
+            transition: transform 0.15s, background 0.15s;
+        }
+
+        .round-play:hover {
+            background: #25b453;
+            transform: scale(1.04);
+        }
+
+        .round-play.is-playing {
+            background: #ff3030;
+            padding-left: 0;
+            font-size: 30px;
+        }
+
+        /* TAP TEMPO */
+
+        .transport-center .tap {
+            width: min(250px, 100%);
+            padding: 13px 20px;
+            background: white;
+            color: #42464e;
+            border: 1px solid white;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .transport-center .hint {
+            text-align: center;
+            font-size: 11px;
+        }
+
+        /* =========================================
+           BPM AND RED BEAT ANIMATION
+           ========================================= */
+
+        .tempo-panel {
+            padding: 18px 12px;
+            background: #2a2e33;
+            border-radius: 16px;
+        }
+
+        .travel-track {
+            position: relative;
+            height: 8px;
+            margin: 5px 6px 26px;
+            background: #202429;
+            border-radius: 12px;
+        }
+
+        .travel-track span {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(
+                circle at 30% 25%,
+                #ff9a9a,
+                #ef2020 55%,
+                #8b0000
+            );
+            box-shadow: 0 0 12px #e44a4a66;
+        }
+
+        .travel-track span.hidden {
+            opacity: 0;
+        }
+
+        .tempo-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .tempo-step {
+            display: grid;
+            gap: 8px;
+        }
+
+        .tempo-step .btn {
+            min-width: 65px;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .tempo-display {
+            text-align: center;
+        }
+
+        .tempo-display input[type="number"] {
+            display: inline-block;
+            padding: 8px 28px;
+            background: #f4f4f4;
+            color: #222;
+            border-radius: 12px;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 500;
+            width: 185px;
+            max-width: 100%;
+            border: none;
+            outline-offset: 3px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+
+        .tempo-display input::-webkit-inner-spin-button,
+        .tempo-display input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .tempo-display span {
+            margin-left: 10px;
+            font-weight: 700;
+        }
+
+        .tempo-display small {
+            display: block;
+            margin-top: 8px;
+            font-weight: 700;
+        }
+
+        .tempo-slider {
+            width: 100%;
+            margin: 24px 0 8px;
+            accent-color: #1789ff;
+        }
+
+        /* =========================================
+           MAIN VOLUME
+           ========================================= */
+
+        .volume-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 14px;
+            background: #4c5055;
+            border-radius: 14px;
+        }
+
+        .volume-strip label {
+            font-weight: 700;
+        }
+
+        .volume-strip input {
+            width: min(380px, 48vw);
+            accent-color: #168aff;
+        }
+
+        .volume-strip output {
+            padding: 8px 12px;
+            background: white;
+            color: #333;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        /* =========================================
+           CHORD ARRANGEMENT
+           ========================================= */
+
+        .arranger-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .arranger-head h2 {
+            margin: 4px 0 12px;
+            font-size: 23px;
+        }
+
+        .section {
+            margin: 10px 0;
+            padding: 13px;
+            background: #211d26;
+            border: 1px solid #3b3541;
+            border-radius: 16px;
+        }
+
+        .section-top {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            width: 135px;
+            max-width: 100%;
+            padding: 11px 14px;
+            background: #28252e;
+            color: white;
+            border: 1px solid #4b4752;
+            border-radius: 11px;
+        }
+
+        .section-top select {
+            max-width: 160px;
+        }
+
+        .section-top .btn {
+            padding: 9px;
+        }
+
+        .section-count {
+            margin-left: auto;
+            color: #c6bacb;
+            font-size: 11px;
+        }
+
+        .chords {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .chord {
+            position: relative;
+            min-height: 74px;
+            padding: 12px;
+            background: #312c35;
+            color: #f8f5fb;
+            border: 1px solid #544c58;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 23px;
+            cursor: grab;
+            touch-action: pan-y;
+        }
+
+        .chord.active {
+            background: #203c31;
+            border-color: #68c995;
+        }
+
+        .chord small {
+            display: block;
+            margin-top: 6px;
+            color: #b5aeb9;
+            font-size: 10px;
+        }
+
+        .chord.dragging {
+            opacity: 0.4;
+        }
+
+        .chord.drag-over,
+        .chords.drag-over {
+            outline: 2px dashed #82e2b4;
+            outline-offset: 2px;
+        }
+
+        .add-chord {
+            min-height: 74px;
+            background: transparent;
+            color: #b9b0c1;
+            border: 1px dashed #71677a;
+            border-radius: 10px;
+            font-size: 24px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .status {
+            margin-top: 12px;
+            color: #a4dcb9;
+            font-size: 13px;
+        }
+
+        /* =========================================
+           SETTINGS AND CHORD EDITOR
+           ========================================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: #000b;
+            backdrop-filter: blur(7px);
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .dialog {
+            width: min(650px, 100%);
+            max-height: 88vh;
+            overflow: auto;
+            padding: 22px;
+            background: #30252f;
+            border: 1px solid #655661;
+            border-radius: 22px;
+        }
+
+        .dialog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .dialog h2 {
+            margin: 0 0 18px;
+        }
+
+        .setting {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px 0;
+            border-top: 1px solid #564a54;
+        }
+
+        .setting label {
+            font-weight: 600;
+        }
+
+        .setting small {
+            display: block;
+            margin-top: 5px;
+            color: #c2b7c3;
+            font-size: 12px;
+        }
+
+        .switch {
+            width: 21px;
+            height: 21px;
+            accent-color: #64c88f;
+        }
+
+        .instruments {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .instrument {
+            padding: 10px 13px;
+            background: #352d38;
+            color: white;
+            border: 1px solid #716276;
+            border-radius: 10px;
+        }
+
+        .instrument.on {
+            background: #28573f;
+            border-color: #7fcb98;
+        }
+
+        .setting input[type="number"],
+        .setting select {
+            padding: 9px;
+            background: #241d27;
+            color: white;
+            border: 1px solid #675a67;
+            border-radius: 9px;
+        }
+
+        .hide-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hide-control input[type="range"] {
+            width: 120px;
+            accent-color: #168aff;
+        }
+
+        .hide-control input[type="number"] {
+            width: 78px;
+            background: white;
+            color: #111;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        /* =========================================
+           VIRTUAL PIANO
+           ========================================= */
+
+        .editor {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .editor select {
+            width: 100%;
+            padding: 12px;
+            background: #211d26;
+            color: white;
+            border: 1px solid #635768;
+            border-radius: 10px;
+        }
+
+        .editor label {
+            color: #d8d0da;
+            font-size: 13px;
+        }
+
+        .piano {
+            position: relative;
+            display: flex;
+            height: 150px;
+            margin: 15px 0 10px;
+            user-select: none;
+        }
+
+        .white {
+            position: relative;
+            flex: 1;
+            padding-top: 112px;
+            background: linear-gradient(white, #c8c8c8);
+            color: #333;
+            border: 1px solid #aaa;
+            border-radius: 0 0 6px 6px;
+            font-size: 11px;
+        }
+
+        .white.lit {
+            background: #94d7ad;
+        }
+
+        .black {
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            width: 6.5%;
+            height: 59%;
+            background: linear-gradient(#222, #000);
+            color: white;
+            border: 1px solid #111;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .black.lit {
+            background: #318e5e;
+        }
+
+        .notes {
+            min-height: 22px;
+            color: #98e6b6;
+        }
+
+        /* =========================================
+           RESPONSIVE LAYOUT
+           ========================================= */
+
+        @media (max-width: 1100px) {
+            .split-layout {
+                grid-template-columns:
+                    minmax(280px, 0.9fr)
+                    minmax(380px, 1.1fr);
+            }
+
+            .chords {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .split-layout {
+                display: block;
+                height: auto;
+                min-height: 0;
+            }
+
+            .control-pane,
+            .arranger-pane {
+                margin-bottom: 14px;
+                overflow: visible;
+            }
+
+            .chords {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .wrap {
+                padding: 0 10px 20px;
+            }
+
+            .setting {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .transport-trio {
+                grid-template-columns:
+                    minmax(76px, 1fr)
+                    minmax(125px, 1.5fr)
+                    minmax(76px, 1fr);
+                gap: 4px;
+            }
+
+            .meter-side label {
+                font-size: 12px;
+            }
+
+            .meter-side select {
+                font-size: 29px;
+            }
+
+            .round-play {
+                width: 74px;
+                height: 74px;
+            }
+
+            .transport-center .tap {
+                padding: 10px 7px;
+                font-size: 12px;
+            }
+
+            .tempo-display input[type="number"] {
+                padding: 8px 14px;
+            }
+
+            .tempo-step .btn {
+                min-width: 54px;
+            }
+
+            .editor {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="wrap">
+
+        <!-- HEADER -->
+
+        <a class="back" href="index.html#tools">
+            ← Back to Tools
+        </a>
+
+        <div class="head">
+
+            <h1>🎹 Chord Player</h1>
+
+            <div class="head-actions">
+
+                <span class="hint">
+                    8 sections · 16 chords each · 1–8 clicks/beat
+                </span>
+
+                <button
+                    id="settings"
+                    class="settings-icon"
+                    type="button"
+                    title="Chord Player Settings"
+                    aria-label="Open Chord Player Settings"
+                >
+                    ⚙
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="shell">
+
+            <div class="split-layout">
+
+                <!-- =========================
+                     LEFT: METRONOME CONTROLS
+                     ========================= -->
+
+                <aside class="control-pane">
+
+                    <div class="metronome-transport">
+
+                        <div class="transport-trio">
+
+                            <!-- BEATS PER CHORD -->
+
+                            <div class="meter-side">
+
+                                <label for="signature">
+                                    Beats per chord
+                                </label>
+
+                                <select id="signature">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option selected>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                </select>
+
+                            </div>
+
+                            <!-- PLAY / TAP / STOP -->
+
+                            <div class="transport-center">
+
+                                <button
+                                    id="play"
+                                    class="round-play"
+                                    type="button"
+                                    aria-label="Play chord arrangement"
+                                    title="Play / Pause"
+                                >
+                                    ▶
+                                </button>
+
+                                <button
+                                    id="tapTempo"
+                                    class="btn tap"
+                                    type="button"
+                                >
+                                    TAP TEMPO
+                                </button>
+<span id="tapInfo" class="hint">
+                                    Tap 3 or more times to set BPM
+                                </span>
+
+                            </div>
+
+                            <!-- CLICKS PER BEAT -->
+
+                            <div class="meter-side">
+
+                                <label for="clicksPerBeat">
+                                    Clicks per beat
+                                </label>
+
+                                <select id="clicksPerBeat">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option selected>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BPM PANEL -->
+
+                    <div class="tempo-panel">
+
+                        <div class="travel-track">
+                            <span id="travelDot"></span>
+                        </div>
+
+                        <div class="tempo-controls">
+
+                            <div class="tempo-step">
+
+                                <button
+                                    class="btn"
+                                    data-tempo-step="-1"
+                                >
+                                    −1
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    data-tempo-step="-5"
+                                >
+                                    −5
+                                </button>
+
+                            </div>
+
+                            <div class="tempo-display">
+
+                                <input
+                                    id="tempoReadout"
+                                    type="number"
+                                    min="5"
+                                    max="500"
+                                    step="1"
+                                    value="120"
+                                    inputmode="numeric"
+                                    aria-label="Tempo in beats per minute"
+                                >
+
+                                <span>BPM</span>
+
+                                <small id="tempoName">
+                                    Allegro
+                                </small>
+
+                            </div>
+
+                            <div class="tempo-step">
+
+                                <button
+                                    class="btn"
+                                    data-tempo-step="1"
+                                >
+                                    +1
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    data-tempo-step="5"
+                                >
+                                    +5
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <input
+                            id="tempoSlider"
+                            class="tempo-slider"
+                            type="range"
+                            min="5"
+                            max="500"
+                            value="120"
+                        >
+
+                        <!-- VOLUME -->
+
+                        <div class="volume-strip">
+
+                            <label for="volumeMain">
+                                🔊 Chord Player Volume:
+                            </label>
+
+                            <input
+                                id="volumeMain"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="70"
+                            >
+
+                            <output id="volumeMainText">
+                                70%
+                            </output>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+                <!-- =========================
+                     RIGHT: CHORD ARRANGEMENT
+                     ========================= -->
+
+                <div class="arranger-pane">
+
+                    <div class="arranger-head">
+
+                        <h2>🎼 Chord Arrangement</h2>
+
+                        <span class="hint">
+                            Drag chords to reorder or move between sections
+                        </span>
+
+                    </div>
+
+                    <div id="sections"></div>
+
+                    <div class="actions">
+
+                        <button
+                            class="btn primary"
+                            id="addSection"
+                        >
+                            + Add section
+                        </button>
+
+                        <button
+                            class="btn"
+                            id="random"
+                        >
+                            🎲 Randomize chords
+                        </button>
+
+                    </div>
+
+                    <p
+                        id="status"
+                        class="status"
+                        role="status"
+                    ></p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ======================================
+         SETTINGS MODAL
+         ====================================== -->
+
+    <div
+        id="settingsModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settingsTitle"
+    >
+
+        <div class="dialog">
+
+            <div class="dialog-header">
+
+                <h2 id="settingsTitle">
+                    Chord Player Settings
+                </h2>
+
+                <button
+                    class="btn"
+                    data-close="settingsModal"
+                    aria-label="Close"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+            <!-- PGDB INSTRUMENTS -->
+
+            <div class="setting">
+
+                <div>
+                    <label>Instruments (PGDB)</label>
+                    <small>
+                        Switch each backing instrument on or off.
+                    </small>
+                </div>
+
+                <div class="instruments">
+
+                    <button
+                        class="instrument on"
+                        data-inst="piano"
+                        aria-pressed="true"
+                    >
+                        🎹 Piano
+                    </button>
+
+                    <button
+                        class="instrument on"
+                        data-inst="guitar"
+                        aria-pressed="true"
+                    >
+                        🎸 Guitar
+                    </button>
+
+                    <button
+                        class="instrument on"
+                        data-inst="bass"
+                        aria-pressed="true"
+                    >
+                        🎸 Bass
+                    </button>
+
+                    <button
+                        class="instrument on"
+                        data-inst="drums"
+                        aria-pressed="true"
+                    >
+                        🥁 Drums
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- REPEAT -->
+
+            <div class="setting">
+
+                <div>
+                    <label for="repeat">
+                        Repeat chords
+                    </label>
+
+                    <small>
+                        Loop the entire arrangement until stopped.
+                    </small>
+                </div>
+
+                <input
+                    class="switch"
+                    id="repeat"
+                    type="checkbox"
+                    checked
+                >
+
+            </div>
+
+            <!-- TRANSPOSE -->
+
+            <div class="setting">
+
+                <label for="transpose">
+                    Transpose chords (semitones)
+                </label>
+
+                <input
+                    id="transpose"
+                    type="number"
+                    min="-12"
+                    max="12"
+                    value="0"
+                >
+
+            </div>
+
+            <!-- HIDE BEAT ANIMATION -->
+
+            <div class="setting">
+
+                <div>
+                    <label for="hideAnimation">
+                        Hide beat animation
+                    </label>
+
+                    <small>
+                        The traveling red animation is hidden
+                        when the tempo is above:
+                    </small>
+                </div>
+
+                <div class="hide-control">
+
+                    <input
+                        id="hideAnimation"
+                        type="range"
+                        min="60"
+                        max="280"
+                        value="280"
+                    >
+
+                    <input
+                        id="hideAnimationValue"
+                        type="number"
+                        min="60"
+                        max="280"
+                        value="280"
+                    >
+
+                    <b>BPM</b>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ======================================
+         CHORD EDITOR MODAL
+         ====================================== -->
+
+    <div
+        id="chordModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chordTitle"
+    >
+
+        <div class="dialog">
+
+            <div class="dialog-header">
+
+                <h2 id="chordTitle">
+                    Edit chord
+                </h2>
+
+                <button
+                    class="btn"
+                    data-close="chordModal"
+                    aria-label="Close"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+            <div class="editor">
+
+                <label>
+                    Root note
+                    <select id="root"></select>
+                </label>
+
+                <label>
+                    Chord type
+
+                    <select id="quality">
+                        <option value="">Major</option>
+                        <option value="m">Minor</option>
+                        <option value="dim">Diminished</option>
+                        <option value="aug">Augmented</option>
+                        <option value="7">Dominant 7th</option>
+                        <option value="maj7">Major 7th</option>
+                        <option value="m7">Minor 7th</option>
+                        <option value="sus2">Suspended 2nd</option>
+                        <option value="sus4">Suspended 4th</option>
+                        <option value="6">Sixth</option>
+                        <option value="m7b5">Half-diminished</option>
+                    </select>
+                </label>
+
+            </div>
+
+            <p class="hint">
+                Click a piano key to choose the chord root.
+                Highlighted keys show the chord tones.
+            </p>
+
+            <div id="piano" class="piano"></div>
+
+            <p id="notes" class="notes"></p>
+
+            <button id="preview" class="btn">
+                ▶ Preview chord
+            </button>
+
+            <button id="apply" class="btn primary">
+                Apply chord
+            </button>
+
+            <button id="deleteChord" class="btn">
+                Delete chord
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
+        (() => {
+            "use strict";
+
+            /* =========================================
+               CONSTANTS AND INITIAL STATE
+               ========================================= */
+
+            const $ = id => document.getElementById(id);
+
+            const NAMES = [
+                "C", "C♯", "D", "D♯",
+                "E", "F", "F♯", "G",
+                "G♯", "A", "A♯", "B"
+            ];
+
+            const SHAPES = {
+                "": [0, 4, 7],
+                m: [0, 3, 7],
+                dim: [0, 3, 6],
+                aug: [0, 4, 8],
+                "7": [0, 4, 7, 10],
+                maj7: [0, 4, 7, 11],
+                m7: [0, 3, 7, 10],
+                sus2: [0, 2, 7],
+                sus4: [0, 5, 7],
+                "6": [0, 4, 7, 9],
+                m7b5: [0, 3, 6, 10]
+            };
+
+            let sections = [
+                {
+                    name: "Intro",
+                    repeat: 1,
+                    variation: 1,
+                    chords: [
+                        { root: 0, q: "" },
+                        { root: 7, q: "" },
+                        { root: 9, q: "m" },
+                        { root: 5, q: "" }
+                    ]
+                }
+            ];
+
+            let dragged = null;
+            let editing = null;
+
+            let ctx = null;
+            let master = null;
+
+            let timer = null;
+            let animationFrame = null;
+            let animationStart = 0;
+
+            let playing = false;
+            let step = 0;
+            let nextTime = 0;
+            let sequence = [];
+            let generation = 0;
+
+            const inst = {
+                piano: true,
+                guitar: true,
+                bass: true,
+                drums: true
+            };
+
+            const clamp = (n, min, max) =>
+                Math.max(min, Math.min(max, Number(n) || min));
+
+            const label = chord =>
+                NAMES[chord.root] + chord.q;
+
+            const transpose = () =>
+                clamp($("transpose").value, -12, 12);
+
+            const notes = chord =>
+                SHAPES[chord.q].map(
+                    interval =>
+                        60 + (
+                            (
+                                chord.root +
+                                interval +
+                                transpose() +
+                                120
+                            ) % 12
+                        )
+                );
+
+            const freq = midi =>
+                440 * Math.pow(2, (midi - 69) / 12);
+
+            function show(id, visible) {
+                $(id).classList.toggle("open", visible);
+            }
+
+            function message(text) {
+                $("status").textContent = text;
+            }
+
+            /* =========================================
+               RENDER CHORD SECTIONS
+               ========================================= */
+
+            function render() {
+                const host = $("sections");
+                host.replaceChildren();
+
+                sections.forEach((section, si) => {
+                    const box = document.createElement("section");
+                    box.className = "section";
+
+                    const top = document.createElement("div");
+                    top.className = "section-top";
+
+                    const name = document.createElement("input");
+                    name.className = "section-title";
+                    name.value = section.name;
+                    name.maxLength = 40;
+                    name.setAttribute("aria-label", "Section name");
+
+                    name.oninput = () => {
+                        section.name = name.value;
+                    };
+
+                    top.append(name);
+
+                    const reps = document.createElement("button");
+                    reps.className = "btn";
+                    reps.textContent = "×" + section.repeat;
+                    reps.title = "Change section repeats (1–8)";
+
+                    reps.onclick = () => {
+                        section.repeat = section.repeat % 8 + 1;
+                        reps.textContent = "×" + section.repeat;
+                    };
+
+                    top.append(reps);
+
+                    const variation = document.createElement("select");
+                    variation.className = "btn";
+
+                    for (let v = 1; v <= 4; v++) {
+                        variation.add(
+                            new Option("Variation " + v, v)
+                        );
+                    }
+
+                    variation.value = section.variation;
+
+                    variation.onchange = () => {
+                        section.variation = Number(variation.value);
+                    };
+
+                    top.append(variation);
+
+                    const del = document.createElement("button");
+                    del.className = "btn";
+                    del.textContent = "🗑";
+                    del.title = "Delete section";
+                    del.disabled = sections.length === 1;
+
+                    del.onclick = () => {
+                        if (sections.length > 1) {
+                            sections.splice(si, 1);
+                            render();
+                        }
+                    };
+
+                    top.append(del);
+
+                    const count = document.createElement("span");
+                    count.className = "section-count";
+                    count.textContent =
+                        section.chords.length + "/16 chords";
+
+                    top.append(count);
+                    box.append(top);
+
+                    const grid = document.createElement("div");
+                    grid.className = "chords";
+
+                    grid.addEventListener("dragover", event => {
+                        if (dragged) {
+                            event.preventDefault();
+                            grid.classList.add("drag-over");
+                        }
+                    });
+
+                    grid.addEventListener("dragleave", event => {
+                        if (!grid.contains(event.relatedTarget)) {
+                            grid.classList.remove("drag-over");
+                        }
+                    });
+
+                    grid.addEventListener("drop", event => {
+                        event.preventDefault();
+
+                        if (event.target.closest(".chord")) {
+                            return;
+                        }
+
+                        moveChord(
+                            si,
+                            sections[si].chords.length
+                        );
+                    });
+
+                    section.chords.forEach((chord, ci) => {
+                        const button = document.createElement("button");
+
+                        button.className = "chord";
+                        button.dataset.si = si;
+                        button.dataset.ci = ci;
+                        button.draggable = true;
+
+                        button.title =
+                            "Click to edit · Drag to reorder or move";
+
+                        const chordName = document.createElement("span");
+                        chordName.textContent = label(chord);
+
+                        const chordInfo = document.createElement("small");
+                        chordInfo.textContent =
+                            $("signature").value + " beats";
+
+                        button.append(chordName, chordInfo);
+
+                        button.addEventListener("dragstart", event => {
+                            dragged = { si, ci };
+
+                            event.dataTransfer.effectAllowed = "move";
+                            event.dataTransfer.setData(
+                                "text/plain",
+                                si + ":" + ci
+                            );
+
+                            button.classList.add("dragging");
+                        });
+
+                        button.addEventListener("dragend", () => {
+                            dragged = null;
+
+                            document.querySelectorAll(
+                                ".drag-over, .dragging"
+                            ).forEach(element => {
+                                element.classList.remove(
+                                    "drag-over",
+                                    "dragging"
+                                );
+                            });
+                        });
+
+                        button.addEventListener("dragover", event => {
+                            event.preventDefault();
+                            event.dataTransfer.dropEffect = "move";
+                            button.classList.add("drag-over");
+                        });
+
+                        button.addEventListener("dragleave", () => {
+                            button.classList.remove("drag-over");
+                        });
+
+                        button.addEventListener("drop", event => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            moveChord(si, ci);
+                        });
+
+                        button.onclick = () => {
+                            openEditor(si, ci);
+                        };
+
+                        grid.append(button);
+                    });
+
+                    if (section.chords.length < 16) {
+                        const add = document.createElement("button");
+
+                        add.className = "add-chord";
+                        add.textContent = "+";
+                        add.title = "Add chord";
+
+                        add.onclick = () => {
+                            const last = section.chords.at(-1) || {
+                                root: 0,
+                                q: ""
+                            };
+
+                            section.chords.push({ ...last });
+
+                            render();
+
+                            openEditor(
+                                si,
+                                section.chords.length - 1
+                            );
+                        };
+
+                        grid.append(add);
+                    }
+
+                    box.append(grid);
+                    host.append(box);
+                });
+
+                $("addSection").disabled =
+                    sections.length >= 8;
+            }
+
+            /* =========================================
+               DRAG AND DROP
+               ========================================= */
+
+            function moveChord(toSi, toCi) {
+                if (!dragged) return;
+
+                const { si, ci } = dragged;
+
+                if (
+                    !sections[si]?.chords[ci] ||
+                    !sections[toSi]
+                ) {
+                    return;
+                }
+
+                if (
+                    si !== toSi &&
+                    sections[toSi].chords.length >= 16
+                ) {
+                    message(
+                        "Destination section already has 16 chords."
+                    );
+                    return;
+                }
+
+                const [chord] =
+                    sections[si].chords.splice(ci, 1);
+
+                if (si === toSi && ci < toCi) {
+                    toCi--;
+                }
+
+                sections[toSi].chords.splice(
+                    Math.min(
+                        toCi,
+                        sections[toSi].chords.length
+                    ),
+                    0,
+                    chord
+                );
+
+                dragged = null;
+                render();
+                message("Chord moved.");
+            }
+
+            /* =========================================
+               CHORD EDITOR
+               ========================================= */
+
+            function openEditor(si, ci) {
+                editing = { si, ci };
+
+                const chord = sections[si].chords[ci];
+
+                $("root").value = chord.root;
+                $("quality").value = chord.q;
+
+                updatePiano();
+                show("chordModal", true);
+            }
+
+            function updatePiano() {
+                const chord = {
+                    root: Number($("root").value),
+                    q: $("quality").value
+                };
+
+                const pitchClasses = new Set(
+                    notes(chord).map(note => note % 12)
+                );
+
+                $("notes").textContent =
+                    "Notes: " +
+                    notes(chord)
+                        .map(note => NAMES[note % 12])
+                        .join(" · ");
+
+                $("piano")
+                    .querySelectorAll("[data-pc]")
+                    .forEach(key => {
+                        key.classList.toggle(
+                            "lit",
+                            pitchClasses.has(
+                                Number(key.dataset.pc)
+                            )
+                        );
+                    });
+            }
+
+            NAMES.forEach((name, index) => {
+                $("root").add(new Option(name, index));
+            });
+
+            const whitePcs = [0, 2, 4, 5, 7, 9, 11];
+
+            whitePcs.forEach(pc => {
+                const key = document.createElement("button");
+
+                key.className = "white";
+                key.dataset.pc = pc;
+                key.textContent = NAMES[pc];
+
+                key.onclick = () => {
+                    $("root").value = pc;
+                    updatePiano();
+                    preview();
+                };
+
+                $("piano").append(key);
+            });
+
+            [1, 3, 6, 8, 10].forEach(pc => {
+                const key = document.createElement("button");
+
+                key.className = "black";
+                key.dataset.pc = pc;
+
+                const position = {
+                    1: 1,
+                    3: 2,
+                    6: 4,
+                    8: 5,
+                    10: 6
+                }[pc];
+
+                key.style.left =
+                    `calc(${position} * (100% / 7) - 3.25%)`;
+
+                key.title = NAMES[pc];
+
+                key.onclick = () => {
+                    $("root").value = pc;
+                    updatePiano();
+                    preview();
+                };
+
+                $("piano").append(key);
+            });
+
+            $("root").onchange = updatePiano;
+            $("quality").onchange = updatePiano;
+
+            $("apply").onclick = () => {
+                if (!editing) return;
+
+                sections[editing.si].chords[editing.ci] = {
+                    root: Number($("root").value),
+                    q: $("quality").value
+                };
+
+                show("chordModal", false);
+                render();
+            };
+
+            $("deleteChord").onclick = () => {
+                if (!editing) return;
+
+                sections[editing.si].chords.splice(
+                    editing.ci,
+                    1
+                );
+
+                show("chordModal", false);
+                render();
+            };
+
+            /* =========================================
+               WEB AUDIO ENGINE
+               ========================================= */
+
+            function audio() {
+                if (!ctx) {
+                    ctx = new (
+                        window.AudioContext ||
+                        window.webkitAudioContext
+                    )();
+                }
+
+                if (ctx.state === "suspended") {
+                    ctx.resume();
+                }
+
+                if (!master) {
+                    master = ctx.createGain();
+                    master.connect(ctx.destination);
+                }
+
+                master.gain.value =
+                    Number($("volumeMain").value) / 100;
+            }
+
+            function tone(
+                midi,
+                time,
+                duration,
+                type = "triangle",
+                gain = 0.07
+            ) {
+                const oscillator = ctx.createOscillator();
+                const envelope = ctx.createGain();
+
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(
+                    freq(midi),
+                    time
+                );
+
+                envelope.gain.setValueAtTime(
+                    0.0001,
+                    time
+                );
+
+                envelope.gain.exponentialRampToValueAtTime(
+                    Math.max(0.0002, gain),
+                    time + 0.015
+                );
+
+                envelope.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    time + Math.max(0.035, duration)
+                );
+
+                oscillator.connect(envelope);
+                envelope.connect(master);
+
+                oscillator.start(time);
+                oscillator.stop(time + duration + 0.02);
+            }
+
+            function percussive(
+                time,
+                frequency,
+                duration,
+                level = 0.12,
+                shape = "triangle"
+            ) {
+                const oscillator = ctx.createOscillator();
+                const envelope = ctx.createGain();
+
+                oscillator.type = shape;
+
+                oscillator.frequency.setValueAtTime(
+                    frequency,
+                    time
+                );
+
+                oscillator.frequency.exponentialRampToValueAtTime(
+                    Math.max(55, frequency * 0.35),
+                    time + duration
+                );
+
+                envelope.gain.setValueAtTime(
+                    Math.max(0.001, level),
+                    time
+                );
+
+                envelope.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    time + duration
+                );
+
+                oscillator.connect(envelope);
+                envelope.connect(master);
+
+                oscillator.start(time);
+                oscillator.stop(time + duration + 0.01);
+            }
+
+            function kick(time) {
+                percussive(
+                    time,
+                    155,
+                    0.22,
+                    0.40,
+                    "sine"
+                );
+            }
+
+            function snare(time) {
+                percussive(
+                    time,
+                    230,
+                    0.10,
+                    0.16,
+                    "triangle"
+                );
+
+                percussive(
+                    time,
+                    890,
+                    0.055,
+                    0.06,
+                    "square"
+                );
+            }
+
+            function hat(time, soft = false) {
+                percussive(
+                    time,
+                    3500,
+                    0.025,
+                    soft ? 0.025 : 0.055,
+                    "square"
+                );
+            }
+
+            function pluck(
+                midi,
+                time,
+                duration,
+                kind = "guitar",
+                gain = 0.16
+            ) {
+                const oscillator = ctx.createOscillator();
+                const filter = ctx.createBiquadFilter();
+                const envelope = ctx.createGain();
+
+                oscillator.type =
+                    kind === "bass"
+                        ? "sawtooth"
+                        : "triangle";
+
+                oscillator.frequency.setValueAtTime(
+                    freq(midi),
+                    time
+                );
+
+                filter.type = "lowpass";
+
+                filter.frequency.setValueAtTime(
+                    kind === "bass" ? 1100 : 5200,
+                    time
+                );
+
+                filter.frequency.exponentialRampToValueAtTime(
+                    kind === "bass" ? 260 : 1450,
+                    time + Math.min(duration, 0.7)
+                );
+
+                envelope.gain.setValueAtTime(
+                    0.0001,
+                    time
+                );
+
+                envelope.gain.exponentialRampToValueAtTime(
+                    gain,
+                    time + 0.008
+                );
+
+                envelope.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    time + Math.max(0.035, duration)
+                );
+
+                oscillator.connect(filter);
+                filter.connect(envelope);
+                envelope.connect(master);
+
+                oscillator.start(time);
+                oscillator.stop(time + duration + 0.02);
+            }
+
+            /* =========================================
+               PGDB ACCOMPANIMENT
+               ========================================= */
+
+            function playChord(chord, time, duration) {
+                const pitches = notes(chord);
+
+                if (inst.piano) {
+                    pitches.forEach(note => {
+                        tone(
+                            note,
+                            time,
+                            Math.min(duration * 0.9, 1.7),
+                            "triangle",
+                            0.055
+                        );
+                    });
+                }
+
+                if (inst.guitar) {
+                    pitches.forEach((note, index) => {
+                        pluck(
+                            note - 12,
+                            time + index * 0.036,
+                            Math.min(duration * 0.8, 1.6),
+                            "guitar",
+                            0.115
+                        );
+                    });
+                }
+
+                if (inst.bass) {
+                    pluck(
+                        pitches[0] - 24,
+                        time,
+                        Math.min(duration * 0.85, 1.5),
+                        "bass",
+                        0.30
+                    );
+                }
+            }
+
+            function playSubdivisionPGDB(
+                chord,
+                time,
+                beat,
+                subdivision,
+                count,
+                beatSeconds,
+                variation
+            ) {
+                const pitches = notes(chord);
+                const slice = beatSeconds / count;
+                const fullBeat = subdivision === 0;
+                const accent = fullBeat ? 1 : 0.48;
+                const shortNote = Math.max(0.025, Math.min(slice * 0.8, 0.24));
+
+                // Every enabled instrument participates in EVERY subdivision.
+                // The first click of each full BPM beat is accented.
+
+                /* PIANO: chord stabs on each click */
+                if (inst.piano) {
+                    pitches.forEach((note, index) => {
+                        tone(
+                            note,
+                            time + index * Math.min(0.004, slice * 0.05),
+                            shortNote,
+                            "triangle",
+                            fullBeat ? 0.052 : 0.018
+                        );
+                    });
+                }
+
+                /* GUITAR: brighter, louder strummed/plucked notes */
+                if (inst.guitar) {
+                    const order = subdivision % 2 === 0
+                        ? pitches
+                        : [...pitches].reverse();
+                    order.forEach((note, index) => {
+                        pluck(
+                            note - 12,
+                            time + index * Math.min(0.009, slice * 0.10),
+                            Math.max(0.04, Math.min(slice * 1.25, 0.45)),
+                            "guitar",
+                            fullBeat ? 0.19 : 0.085
+                        );
+                    });
+                }
+
+                /* BASS: root on full beats, root/fifth pulses between */
+                if (inst.bass) {
+                    const bassNote = pitches[0] - 24 +
+                        (!fullBeat && subdivision % 2 === 0 && variation >= 2 ? 7 : 0);
+                    pluck(
+                        bassNote,
+                        time,
+                        Math.max(0.04, Math.min(slice * 1.3, 0.42)),
+                        "bass",
+                        fullBeat ? 0.23 : 0.095
+                    );
+                }
+
+                /* DRUMS: kick/snare accents, hi-hat on every click */
+                if (inst.drums) {
+                    if (fullBeat) {
+                        if (beat % 4 === 0 ||
+                            (variation >= 3 && beat % 4 === 2)) {
+                            kick(time);
+                        }
+                        if (beat % 4 === 1 || beat % 4 === 3) {
+                            snare(time);
+                        }
+                    }
+                    hat(time, !fullBeat);
+                }
+            }
+
+            function preview() {
+                audio();
+
+                playChord(
+                    {
+                        root: Number($("root").value),
+                        q: $("quality").value
+                    },
+                    ctx.currentTime + 0.02,
+                    0.9
+                );
+            }
+
+            $("preview").onclick = preview;
+
+            /* =========================================
+               PLAYBACK SEQUENCE
+               ========================================= */
+
+            function buildSequence() {
+                const result = [];
+
+                sections.forEach((section, si) => {
+                    for (
+                        let repeat = 0;
+                        repeat < section.repeat;
+                        repeat++
+                    ) {
+                        section.chords.forEach((chord, ci) => {
+                            result.push({
+                                c: chord,
+                                si,
+                                ci,
+                                variation: section.variation
+                            });
+                        });
+                    }
+                });
+
+                return result;
+            }
+
+            function clearActive() {
+                document.querySelectorAll(
+                    ".chord.active"
+                ).forEach(element => {
+                    element.classList.remove("active");
+                });
+            }
+
+            /* =========================================
+               STOP PLAYBACK
+               ========================================= */
+
+            function stop() {
+                playing = false;
+                generation++;
+
+                cancelAnimationFrame(animationFrame);
+                clearTimeout(timer);
+
+                timer = null;
+
+                clearActive();
+
+                $("play").textContent = "▶";
+                $("play").classList.remove("is-playing");
+
+                $("play").setAttribute(
+                    "aria-label",
+                    "Play chord arrangement"
+                );
+
+                message("Stopped.");
+            }
+
+            /* =========================================
+               BEAT SCHEDULER
+               ========================================= */
+
+            function tick(token) {
+                if (!playing || token !== generation) {
+                    return;
+                }
+
+                const bpm = clamp(
+                    $("tempoSlider").value,
+                    5,
+                    500
+                );
+
+                const beatSeconds = 60 / bpm;
+
+                const beats = Number(
+                    $("signature").value
+                ) || 4;
+
+                audio();
+
+                const now = ctx.currentTime;
+
+                while (
+                    nextTime < now + 0.12 &&
+                    playing
+                ) {
+                    if (
+                        step >= sequence.length * beats
+                    ) {
+                        if ($("repeat").checked) {
+                            step = 0;
+                        } else {
+                            const wait = Math.max(
+                                0,
+                                (nextTime - ctx.currentTime) *
+                                1000 + 80
+                            );
+
+                            timer = setTimeout(() => {
+                                if (token === generation) {
+                                    stop();
+                                }
+                            }, wait);
+
+                            return;
+                        }
+                    }
+
+                    const index = Math.floor(
+                        step / beats
+                    );
+
+                    const beat = step % beats;
+                    const item = sequence[index];
+
+                    const fullBeatTime = nextTime;
+
+                    const subdivisions = clamp(
+                        Number($("clicksPerBeat").value) || 4,
+                        1,
+                        8
+                    );
+
+                    /*
+                     * Each full beat lasts 60/BPM seconds.
+                     * PGDB patterns are scheduled at the
+                     * selected subdivisions.
+                     */
+
+                    for (
+                        let sub = 0;
+                        sub < subdivisions;
+                        sub++
+                    ) {
+                        playSubdivisionPGDB(
+                            item.c,
+                            fullBeatTime +
+                                sub * beatSeconds / subdivisions,
+                            beat,
+                            sub,
+                            subdivisions,
+                            beatSeconds,
+                            item.variation
+                        );
+                    }
+
+                    if (beat === 0) {
+                        // Piano, guitar and bass are now triggered
+                        // by playSubdivisionPGDB on every click.
+
+                        const element =
+                            document.querySelector(
+                                `.chord[data-si="${item.si}"]` +
+                                `[data-ci="${item.ci}"]`
+                            );
+
+                        const delay = Math.max(
+                            0,
+                            (fullBeatTime - now) * 1000
+                        );
+
+                        setTimeout(() => {
+                            if (token === generation) {
+                                clearActive();
+                                element?.classList.add("active");
+                            }
+                        }, delay);
+                    }
+
+                    nextTime += beatSeconds;
+                    step++;
+                }
+
+                timer = setTimeout(
+                    () => tick(token),
+                    30
+                );
+            }
+
+            /* =========================================
+               PLAY BUTTON
+               ========================================= */
+
+            $("play").onclick = async () => {
+                if (playing) {
+                    stop();
+                    return;
+                }
+
+                sequence = buildSequence();
+
+                if (!sequence.length) {
+                    message(
+                        "Add a chord before playing."
+                    );
+                    return;
+                }
+
+                audio();
+
+                try {
+                    await ctx.resume();
+                } catch (error) {
+                    message(
+                        "Audio could not start: " +
+                        error.message
+                    );
+                    return;
+                }
+
+                playing = true;
+                generation++;
+                step = 0;
+
+                nextTime = ctx.currentTime + 0.12;
+
+                $("play").textContent = "■";
+                $("play").classList.add("is-playing");
+
+                $("play").setAttribute(
+                    "aria-label",
+                    "Stop chord arrangement"
+                );
+
+                message(
+                    "Playing PGDB accompaniment."
+                );
+
+                animationStart = performance.now();
+
+                animateDot();
+                tick(generation);
+            };
+
+            /* =========================================
+               SETTINGS
+               ========================================= */
+
+            $("settings").onclick = () => {
+                show("settingsModal", true);
+            };
+
+            document.querySelectorAll(
+                "[data-close]"
+            ).forEach(button => {
+                button.onclick = () => {
+                    show(
+                        button.dataset.close,
+                        false
+                    );
+                };
+            });
+
+            document.querySelectorAll(
+                ".modal"
+            ).forEach(modal => {
+                modal.addEventListener(
+                    "click",
+                    event => {
+                        if (event.target === modal) {
+                            show(modal.id, false);
+                        }
+                    }
+                );
+            });
+
+            document.addEventListener(
+                "keydown",
+                event => {
+                    if (event.key === "Escape") {
+                        document.querySelectorAll(
+                            ".modal"
+                        ).forEach(modal => {
+                            show(modal.id, false);
+                        });
+                    }
+                }
+            );
+
+            /* =========================================
+               PGDB INSTRUMENT SWITCHES
+               ========================================= */
+
+            document.querySelectorAll(
+                "[data-inst]"
+            ).forEach(button => {
+                button.onclick = () => {
+                    const name = button.dataset.inst;
+
+                    inst[name] = !inst[name];
+
+                    button.classList.toggle(
+                        "on",
+                        inst[name]
+                    );
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        String(inst[name])
+                    );
+                };
+            });
+
+            /* =========================================
+               VOLUME
+               ========================================= */
+
+            function setVolume(value) {
+                value = clamp(value, 0, 100);
+
+                $("volumeMain").value = value;
+                $("volumeMainText").textContent =
+                    value + "%";
+
+                if (master) {
+                    master.gain.value = value / 100;
+                }
+            }
+
+            $("volumeMain").oninput = event => {
+                setVolume(event.target.value);
+            };
+
+            setVolume(70);
+
+            /* =========================================
+               TEMPO CONTROLS
+               ========================================= */
+
+            function tempoName(bpm) {
+                if (bpm < 40) return "Grave";
+                if (bpm < 60) return "Largo";
+                if (bpm < 76) return "Adagio";
+                if (bpm < 108) return "Andante";
+                if (bpm < 120) return "Moderato";
+                if (bpm < 168) return "Allegro";
+                if (bpm < 200) return "Presto";
+
+                return "Prestissimo";
+            }
+
+            function setTempo(value) {
+                value = clamp(
+                    Math.round(value),
+                    5,
+                    500
+                );
+
+                $("tempoSlider").value = value;
+                $("tempoReadout").value = value;
+                $("tempoName").textContent =
+                    tempoName(value);
+            }
+
+            $("tempoSlider").oninput = event => {
+                setTempo(event.target.value);
+            };
+
+            /* =========================================
+               DIRECT BPM ENTRY — NO APPLY BUTTON
+               Enter, Tab, or clicking elsewhere commits
+               the typed BPM (5–500).
+               ========================================= */
+
+            const tempoInput = $("tempoReadout");
+
+            function commitTypedTempo() {
+                const raw = tempoInput.value.trim();
+                const number = Number(raw);
+
+                if (raw === "" || !Number.isFinite(number)) {
+                    // Restore the last valid tempo.
+                    tempoInput.value = $("tempoSlider").value;
+                    return;
+                }
+
+                // setTempo also synchronizes the slider and tempo name.
+                setTempo(Math.max(5, Math.min(500, Math.round(number))));
+            }
+
+            // Clicking outside or pressing Tab triggers blur.
+            tempoInput.addEventListener("blur", commitTypedTempo);
+
+            tempoInput.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    tempoInput.blur();
+                }
+            });
+
+            document.querySelectorAll(
+                "[data-tempo-step]"
+            ).forEach(button => {
+                button.onclick = () => {
+                    setTempo(
+                        Number($("tempoSlider").value) +
+                        Number(button.dataset.tempoStep)
+                    );
+                };
+            });
+
+            setTempo(120);
+
+            $("signature").onchange = () => {
+                render();
+            };
+
+            /* =========================================
+               RED BEAT ANIMATION THRESHOLD
+               ========================================= */
+
+            function setHideThreshold(value) {
+                value = clamp(
+                    Math.round(value),
+                    60,
+                    280
+                );
+
+                $("hideAnimation").value = value;
+                $("hideAnimationValue").value = value;
+            }
+
+            $("hideAnimation").oninput = event => {
+                setHideThreshold(event.target.value);
+            };
+
+            $("hideAnimationValue").oninput = event => {
+                setHideThreshold(event.target.value);
+            };
+
+            function animateDot() {
+                const dot = $("travelDot");
+
+                dot.classList.toggle(
+                    "hidden",
+                    !playing ||
+                    Number($("tempoSlider").value) >
+                    Number($("hideAnimation").value)
+                );
+
+                if (!playing) {
+                    return;
+                }
+
+                const beatMs =
+                    60000 / clamp(
+                        $("tempoSlider").value,
+                        5,
+                        500
+                    );
+
+                const cycle = beatMs * 2;
+
+                const position =
+                    (
+                        (performance.now() - animationStart) %
+                        cycle
+                    ) / cycle;
+
+                dot.style.left =
+                    (
+                        position <= 0.5
+                            ? position * 200
+                            : (1 - position) * 200
+                    ) + "%";
+
+                animationFrame =
+                    requestAnimationFrame(animateDot);
+            }
+
+            /* =========================================
+               TAP TEMPO
+               ========================================= */
+
+            let taps = [];
+
+            $("tapTempo").onclick = () => {
+                const now = performance.now();
+
+                taps = taps.filter(
+                    time => now - time < 3500
+                );
+
+                taps.push(now);
+
+                if (taps.length >= 3) {
+                    const intervals = taps
+                        .slice(1)
+                        .map(
+                            (time, index) =>
+                                time - taps[index]
+                        );
+
+                    const average =
+                        intervals.reduce(
+                            (a, b) => a + b,
+                            0
+                        ) / intervals.length;
+
+                    setTempo(
+                        Math.round(60000 / average)
+                    );
+
+                    $("tapInfo").textContent =
+                        $("tempoSlider").value +
+                        " BPM from taps";
+                } else {
+                    $("tapInfo").textContent =
+                        "Keep tapping…";
+                }
+            };
+
+            /* =========================================
+               SECTION MANAGEMENT
+               ========================================= */
+
+            $("addSection").onclick = () => {
+                if (sections.length >= 8) {
+                    return;
+                }
+
+                sections.push({
+                    name: "Section " + (sections.length + 1),
+                    repeat: 1,
+                    variation: (sections.length % 4) + 1,
+                    chords: [
+                        { root: 0, q: "" },
+                        { root: 5, q: "" },
+                        { root: 7, q: "" },
+                        { root: 0, q: "" }
+                    ]
+                });
+
+                render();
+            };
+
+            $("random").onclick = () => {
+                const roots = [
+                    0, 2, 4, 5, 7, 9, 11
+                ];
+
+                const qualities = [
+                    "", "m", "7", "maj7", "m7"
+                ];
+
+                sections.forEach(section => {
+                    section.chords = section.chords.map(
+                        () => ({
+                            root: roots[
+                                Math.floor(
+                                    Math.random() *
+                                    roots.length
+                                )
+                            ],
+                            q: qualities[
+                                Math.floor(
+                                    Math.random() *
+                                    qualities.length
+                                )
+                            ]
+                        })
+                    );
+                });
+
+                render();
+                message("Chords randomized.");
+            };
+
+            /* =========================================
+               CLEANUP AND INITIALIZATION
+               ========================================= */
+
+            window.addEventListener(
+                "pagehide",
+                () => {
+                    stop();
+                    ctx?.close();
+                }
+            );
+
+            render();
+
+            message(
+                "Ready. Click a chord to edit it " +
+                "with the virtual piano."
+            );
+
+        })();
+    </script>
+
+</body>
+</html>
