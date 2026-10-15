@@ -716,12 +716,10 @@
          BACK HOME
          ================================================== -->
 
-    <a
-      href="index.html"
-      class="back-home"
-    >
-      ← Back to Home
-    </a>
+    <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:20px;margin-top:16px">
+      <a href="index.html" class="back-home">← Back to Home</a>
+      <a href="refresh-list.html" class="back-home">🔄 Refresh list →</a>
+    </div>
 
   </div>
 
@@ -1118,6 +1116,32 @@ updateCounter();
       }
     );
 
+  </script>
+
+
+  <!-- Main Style synchronization for Refresh List (also works with local files). -->
+  <script>
+    (() => {
+      function sendMainStyles(target) {
+        const colors = ["red","orange","yellow","green","blue","violet","pink","brown","tan","cyan"];
+        const left = [], right = [];
+        document.querySelectorAll(".style-table tr").forEach(row => {
+          const cells = row.querySelectorAll("td");
+          if (cells.length !== 4) return;
+          [cells[0], cells[2]].forEach((cell, index) => {
+            const color = colors.find(c => cell.classList.contains(c));
+            if (color) (index === 0 ? left : right).push({name:cell.textContent.trim(), color});
+          });
+        });
+        target.postMessage({type:"music-session-main-styles", left, right}, "*");
+      }
+      window.addEventListener("message", event => {
+        if (event.data?.type !== "request-music-session-main-styles") return;
+        if (event.source !== window.parent || window.parent === window) return;
+        sendMainStyles(event.source);
+      });
+      if (window.parent !== window) sendMainStyles(window.parent);
+    })();
   </script>
 
 </body>
