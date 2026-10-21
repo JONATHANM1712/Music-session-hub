@@ -1,69 +1,199 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Music Session Counter</title>
 
+  <!-- ORIGINAL SHARED STYLESHEET: DO NOT MODIFY -->
   <link rel="stylesheet" href="style.css">
 
   <style>
+    /* ==================================================
+       MUSIC SESSION COUNTER
+
+       ORIGINAL APPEARANCE RESTORED
+
+       - Original transparent glass box
+       - Original shared background
+       - Original colored Main Style table
+       - Original 100-square appearance
+       - Solid white input and black text
+       - Solid light-gray Qty and black text
+
+       ADDED FEATURES:
+       - Compact Spotify countdown timer
+       - Blinking input cursor
+       - Responsive timer controls
+
+       All counter logic remains in counter.js.
+       ================================================== */
+
+
+    /* ==================================================
+       BASIC PAGE SETUP
+       ================================================== */
+
     * {
       box-sizing: border-box;
     }
 
     html,
+    body,
+    button,
+    input,
+    select,
+    textarea,
+    table {
+      font-family: Rubik, Arial, sans-serif;
+    }
+
     body {
       margin: 0;
-      min-height: 100%;
+
+      min-height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+
+      padding: 16px 0;
+
+      color: white;
+
+      /*
+       IMPORTANT:
+
+       Do not set a new background here.
+
+       The existing style.css already provides
+       the Music Session background image,
+       blur and overlay.
+      */
     }
 
-    body {
-      background: #101418;
-      color: #ffffff;
-      font-family: "Rubik", Arial, sans-serif;
-      padding: 12px;
-    }
 
-    .counter-container {
-      width: min(100%, 1210px);
-      margin: 0 auto;
-      padding: 16px 22px 13px;
-      background: #2b2e31;
-      border: 1px solid #555b60;
-      border-radius: 26px;
+    /* ==================================================
+       ORIGINAL MAIN GLASS CARD
+
+       This is the original .box styling.
+       Not an opaque replacement.
+       ================================================== */
+
+    .box {
+      width: 1100px;
+      max-width: 96%;
+
+      padding: 20px;
+
+      border-radius: 25px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.25
+        );
+
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
       text-align: center;
+
+      box-shadow:
+        0 0 30px
+        rgba(
+          0,
+          0,
+          0,
+          0.4
+        );
     }
+
+
+    /* ==================================================
+       TITLE
+       ================================================== */
 
     h1 {
-      margin: 0 0 5px;
-      font-size: clamp(25px, 3vw, 36px);
+      margin: 0 0 6px;
+
+      font-size: 34px;
+
+      color: white;
+
       font-weight: 800;
     }
 
     .subtitle {
       margin-bottom: 12px;
-      font-size: clamp(13px, 1.5vw, 19px);
-      font-weight: 700;
-      color: #ededed;
+
+      opacity: 0.9;
+
+      font-size: 18px;
+      font-weight: bold;
+
+      color: white;
     }
 
-    /* ========================================
-       COMPACT COUNTDOWN TIMER
-       ======================================== */
+
+    /* ==================================================
+       NEW FEATURE: COMPACT COUNTDOWN TIMER
+
+       Free:
+         90:00
+         #b3b3b3
+
+       Premium:
+         120:00
+         #1ed760
+
+       Premium + Platinum:
+         150:00
+         #f3ff46
+
+       Background color is set by counter.js.
+       ================================================== */
 
     .session-timer {
       display: flex;
+
       align-items: center;
       justify-content: space-between;
+
       gap: 12px;
-      min-height: 49px;
-      padding: 6px 12px;
-      margin-bottom: 12px;
+
+      min-height: 50px;
+
+      margin-bottom: 14px;
+
+      padding: 7px 12px;
+
+      border-radius: 12px;
+
       background: #b3b3b3;
       color: #000000;
-      border-radius: 11px;
+
+      border:
+        1px solid
+        rgba(0, 0, 0, 0.15);
     }
 
     .session-timer * {
@@ -72,55 +202,93 @@
 
     .session-timer-info {
       display: flex;
+
       flex-direction: column;
+
       align-items: flex-start;
-      gap: 2px;
+
+      gap: 3px;
+
       min-width: 0;
+
       text-align: left;
     }
 
     .session-timer-label {
       font-size: 12px;
+
       font-weight: 800;
+
+      line-height: 1.2;
     }
 
     .session-timer-status {
       font-size: 10px;
+
       font-weight: 600;
-      opacity: 0.75;
+
+      opacity: 0.8;
+
+      line-height: 1.2;
     }
 
     .session-timer-right {
       display: flex;
+
       align-items: center;
+
       justify-content: flex-end;
+
       gap: 14px;
+
       flex-shrink: 0;
     }
 
     .session-timer-clock {
-      font-size: clamp(24px, 3vw, 32px);
+      font-size: 32px;
+
       font-weight: 800;
+
       font-variant-numeric: tabular-nums;
+
+      line-height: 1;
+
       white-space: nowrap;
     }
 
     .session-timer-actions {
       display: flex;
+
+      align-items: center;
+
       gap: 6px;
-      justify-content: flex-end;
     }
 
     .session-timer-actions button {
+      min-height: 36px;
+
       padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      border-radius: 7px;
-      font: inherit;
+
+      border:
+        1px solid
+        rgba(0, 0, 0, 0.20);
+
+      border-radius: 8px;
+
+      background:
+        rgba(255, 255, 255, 0.85);
+
+      color: #000000;
+
+      font-family: inherit;
+
       font-size: 12px;
+
       font-weight: 800;
-      cursor: pointer;
+
       white-space: nowrap;
+
+      cursor: pointer;
     }
 
     .session-timer-actions button:hover {
@@ -128,291 +296,517 @@
     }
 
     .session-timer-actions button:focus-visible {
-      outline: 3px solid #000000;
+      outline: 2px solid #000000;
+
       outline-offset: 2px;
     }
 
-    /* ========================================
-       100 COLORED SQUARES
-       ======================================== */
+
+    /* ==================================================
+       ORIGINAL 100-SQUARE GRID
+       ================================================== */
 
     .square-grid {
       display: grid;
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: 8px 9px;
-      margin-bottom: 12px;
+
+      grid-template-columns:
+        repeat(10, minmax(0, 1fr));
+
+      gap: 8px;
+
+      margin-bottom: 14px;
+
       cursor: text;
     }
 
     .square-group {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 2px;
+
+      grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+      gap: 0;
+
       padding: 3px;
-      height: 39px;
-      background: #34383c;
-      border: 1px solid #85898c;
-      border-radius: 11px;
+
       min-width: 0;
+
+      border-radius: 10px;
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.3
+        );
     }
 
     .square {
+      height: 30px;
+
       min-width: 0;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      border-radius: 2px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.14
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.35
+        );
+
+      box-shadow:
+        inset 0 0 8px
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
     }
 
-    /* ========================================
-       MAIN STYLE DIGIT INPUT
-       ======================================== */
-
-    .input-helper {
-      min-height: 61px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      margin-bottom: 12px;
-      background: #ffffff;
-      color: #777777;
-      border-radius: 16px;
-      font-size: clamp(17px, 2vw, 24px);
-      overflow-wrap: anywhere;
-      cursor: text;
+    .square:first-child {
+      border-radius: 7px 0 0 7px;
     }
+
+    .square:last-child {
+      border-radius: 0 7px 7px 0;
+    }
+
+
+    /* ==================================================
+       ORIGINAL HIDDEN INPUT
+       ================================================== */
 
     .hidden-input {
       position: absolute;
+
       width: 1px;
       height: 1px;
+
       opacity: 0;
+
       pointer-events: none;
     }
 
-    
-/* Visible cursor for the Music Session Counter */
 
-.input-helper {
-  position: relative;
-  white-space: pre-wrap;
-  user-select: none;
-  -webkit-user-select: none;
-}
+    /* ==================================================
+       ORIGINAL INPUT DISPLAY
 
-.input-helper.is-focused::after {
-  content: "";
-  display: inline-block;
-  width: 2px;
-  height: 1.1em;
-  margin-left: 3px;
-  background: #222222;
-  vertical-align: -0.17em;
-  animation: counter-caret-blink 1s steps(1) infinite;
-}
+       OPAQUE WHITE
+       BLACK TEXT
 
-@keyframes counter-caret-blink {
-  0%, 49% {
-    opacity: 1;
-  }
+       Outer .box remains transparent.
+       ================================================== */
 
-  50%, 100% {
-    opacity: 0;
-  }
-}
+    .input-helper {
+      position: relative;
+
+      min-height: 60px;
+
+      margin-bottom: 14px;
+
+      padding: 14px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 15px;
+
+      background: #ffffff;
+
+      color: #000000;
+
+      font-size: 22px;
+
+      cursor: text;
+
+      user-select: none;
+      -webkit-user-select: none;
+
+      word-break: break-word;
+
+      white-space: pre-wrap;
+    }
 
 
-    /* ========================================
-       MAIN STYLE TABLE
-       ======================================== */
+    /* ==================================================
+       BLINKING INPUT CURSOR
+
+       Controlled by counter.js using
+       the "is-focused" class.
+       ================================================== */
+
+    .input-helper.is-focused::after {
+      content: "";
+
+      width: 2px;
+      height: 26px;
+
+      margin-left: 3px;
+
+      display: inline-block;
+
+      flex-shrink: 0;
+
+      background: #000000;
+
+      animation:
+        blinkCursor
+        0.8s
+        steps(1)
+        infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%,
+      49% {
+        opacity: 1;
+      }
+
+      50%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+
+    /* ==================================================
+       ORIGINAL MAIN STYLE TABLE
+       ================================================== */
 
     .style-table {
       width: 100%;
-      border-collapse: collapse;
+
       table-layout: fixed;
-      border-radius: 14px;
+
+      border-collapse: separate;
+      border-spacing: 0;
+
       overflow: hidden;
+
+      border-radius: 15px;
     }
 
     .style-table th,
     .style-table td {
-      padding: 11px 8px;
-      border: 1px solid #f4f4f4;
+      padding: 10px;
+
+      border-right:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+
+      border-bottom:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+
+      font-size: 18px;
+      font-weight: bold;
+
       text-align: center;
-      font-weight: 800;
-      font-size: clamp(12px, 1.4vw, 19px);
+      vertical-align: middle;
     }
 
-    .style-table th {
-      background: #080808;
-      color: #ffffff;
+    .style-table th:first-child,
+    .style-table td:first-child {
+      border-left:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+    }
+
+    .style-table tr:first-child th {
+      border-top:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
+    }
+
+
+    /* ==================================================
+       ORIGINAL TABLE COLUMN WIDTHS
+
+       42% STYLE
+        8% QTY
+       42% STYLE
+        8% QTY
+       ================================================== */
+
+    .style-table th:nth-child(1),
+    .style-table td:nth-child(1),
+    .style-table th:nth-child(3),
+    .style-table td:nth-child(3) {
+      width: 42%;
     }
 
     .style-table th:nth-child(2),
-    .style-table th:nth-child(4),
     .style-table td:nth-child(2),
+    .style-table th:nth-child(4),
     .style-table td:nth-child(4) {
       width: 8%;
     }
 
-    .style-table .qty {
-      background: #e5e5e5;
-      color: #000000;
-      font-size: clamp(16px, 2vw, 25px);
+
+    /* ==================================================
+       ORIGINAL TABLE HEADER
+       ================================================== */
+
+    .style-table th {
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.78
+        );
+
+      color: white;
     }
 
+
+    /* ==================================================
+       QUANTITY CELLS
+
+       OPAQUE LIGHT BACKGROUND
+       BLACK NUMBERS
+       ================================================== */
+
+    .style-table .qty {
+      background: #e5e5e5;
+
+      color: #000000;
+
+      font-size: 24px;
+
+      font-weight: bold;
+    }
+
+
+    /* ==================================================
+       ORIGINAL MAIN STYLE COLORS
+
+       The 10 original colors are preserved.
+       ================================================== */
+
     .red {
-      background: #ff0909;
-      color: #ffffff;
+      background: red;
+
+      color: white;
     }
 
     .orange {
-      background: #ffa500;
-      color: #000000;
+      background: orange;
+
+      color: black;
     }
 
     .yellow {
-      background: #ffff00;
-      color: #000000;
+      background: yellow;
+
+      color: black;
     }
 
     .green {
-      background: #29cc2e;
-      color: #000000;
+      background: limegreen;
+
+      color: black;
     }
 
     .blue {
-      background: #0909ff;
-      color: #ffffff;
+      background: blue;
+
+      color: white;
     }
 
     .violet {
       background: #8000ff;
-      color: #ffffff;
+
+      color: white;
     }
 
     .pink {
-      background: #ffc0cb;
-      color: #000000;
+      background: pink;
+
+      color: black;
     }
 
     .brown {
-      background: #a52a2a;
-      color: #ffffff;
+      background: brown;
+
+      color: white;
     }
 
     .tan {
-      background: #d2b48c;
-      color: #000000;
+      background: tan;
+
+      color: black;
     }
 
     .cyan {
-      background: #00f5f5;
-      color: #000000;
+      background: cyan;
+
+      color: black;
     }
 
-    /* ========================================
-       CLEAR COUNTER
-       ======================================== */
+
+    /* ==================================================
+       ORIGINAL CLEAR BUTTON
+       ================================================== */
 
     .buttons {
-      margin-top: 12px;
+      margin-top: 16px;
     }
 
-    .clear-button {
-      padding: 11px 30px;
-      background: #ff3030;
-      color: #ffffff;
+    .buttons button {
+      padding: 12px 32px;
+
       border: none;
-      border-radius: 13px;
-      font: inherit;
-      font-size: 21px;
-      font-weight: 800;
+
+      border-radius: 12px;
+
+      background: #ff3030;
+
+      color: white;
+
+      font-size: 22px;
+
+      font-weight: bold;
+
       cursor: pointer;
     }
 
-    .clear-button:hover {
-      background: #e51d1d;
+    .buttons button:hover {
+      background: #cc0000;
     }
 
-    /* ========================================
-       FOOTER NAVIGATION
-       ======================================== */
+
+    /* ==================================================
+       ORIGINAL BACK HOME
+       ================================================== */
 
     .footer-links {
       display: flex;
+
       justify-content: center;
+
       flex-wrap: wrap;
+
       gap: 20px;
-      margin-top: 14px;
+
+      margin-top: 16px;
     }
 
     .back-home {
-      color: #ffffff;
-      font-weight: 800;
+      display: inline-block;
+
+      color: white;
+
       text-decoration: none;
+
+      font-weight: bold;
     }
 
     .back-home:hover {
       text-decoration: underline;
     }
 
-    /* ========================================
-       RESPONSIVE LAYOUT
-       ======================================== */
 
-    @media (max-width: 700px) {
-      body {
-        padding: 8px;
+    /* ==================================================
+       RESPONSIVE LAYOUT
+       ================================================== */
+
+    @media (max-width: 800px) {
+      .box {
+        padding: 14px;
       }
 
-      .counter-container {
-        padding: 14px 10px;
-        border-radius: 17px;
+      h1 {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        font-size: 14px;
       }
 
       .square-grid {
         gap: 4px;
       }
 
-      .square-group {
-        height: 30px;
-        padding: 2px;
-        gap: 1px;
-        border-radius: 6px;
+      .square {
+        height: 22px;
+      }
+
+      .input-helper {
+        font-size: 17px;
+      }
+
+      .input-helper.is-focused::after {
+        height: 22px;
+      }
+
+      .style-table th,
+      .style-table td {
+        padding: 7px;
+
+        font-size: 13px;
+      }
+
+      .style-table .qty {
+        font-size: 18px;
       }
 
       .session-timer {
-        gap: 8px;
-        padding: 7px;
+        padding: 7px 9px;
       }
 
-      .session-timer-label {
-        font-size: 10px;
-      }
-
-      .session-timer-status {
-        font-size: 9px;
+      .session-timer-clock {
+        font-size: 27px;
       }
 
       .session-timer-right {
-        gap: 7px;
-      }
-
-      .session-timer-actions button {
-        padding: 7px;
-        font-size: 11px;
-      }
-
-      .style-table td,
-      .style-table th {
-        padding: 9px 3px;
-        font-size: 11px;
-        overflow-wrap: anywhere;
+        gap: 8px;
       }
     }
 
-    @media (max-width: 420px) {
+    @media (max-width: 520px) {
       .session-timer {
         flex-wrap: wrap;
       }
@@ -423,25 +817,55 @@
 
       .session-timer-right {
         width: 100%;
+
         justify-content: space-between;
+      }
+
+      .session-timer-actions button {
+        padding: 7px 9px;
+      }
+
+      .style-table th,
+      .style-table td {
+        padding: 6px 2px;
+
+        font-size: 11px;
+
+        overflow-wrap: anywhere;
+      }
+
+      .style-table .qty {
+        font-size: 16px;
       }
     }
   </style>
+
+  <!-- ORIGINAL RUBIK FONT -->
+  <link rel="stylesheet" href="rubik-font.css">
+
 </head>
+
 
 <body>
 
-  <main class="counter-container">
+  <!-- ==================================================
+       ORIGINAL MAIN GLASS CARD
+       ================================================== -->
 
-    <h1>Music Session Counter</h1>
+  <div class="box">
+
+    <h1>
+      Music Session Counter
+    </h1>
 
     <div class="subtitle">
       Let's arrange everything through the journey with the music session.
     </div>
 
-    <!-- ========================================
-         COMPACT COUNTDOWN TIMER
-         ======================================== -->
+
+    <!-- ==================================================
+         NEW: COMPACT COUNTDOWN TIMER
+         ================================================== -->
 
     <section
       id="sessionTimer"
@@ -467,6 +891,7 @@
         </span>
 
       </div>
+
 
       <div class="session-timer-right">
 
@@ -500,9 +925,10 @@
 
     </section>
 
-    <!-- ========================================
-         100 COLORED SQUARES
-         ======================================== -->
+
+    <!-- ==================================================
+         ORIGINAL 100-SQUARE COUNTER DISPLAY
+         ================================================== -->
 
     <div
       id="squareGrid"
@@ -510,9 +936,10 @@
       onclick="focusInput()"
     ></div>
 
-    <!-- ========================================
-         DIGIT INPUT
-         ======================================== -->
+
+    <!-- ==================================================
+         ORIGINAL MAIN STYLE DIGIT INPUT
+         ================================================== -->
 
     <div
       id="inputDisplay"
@@ -529,114 +956,67 @@
       inputmode="numeric"
       autocomplete="off"
       maxlength="100"
+      autofocus
       oninput="updateCounter()"
       aria-label="Music style digits"
     >
 
-    <!-- ========================================
+
+    <!-- ==================================================
          MAIN STYLE LIST
 
-         Edit the style names below when your
-         Main Style list changes.
+         Latest Main Style names retained.
 
-         The digit IDs and colors remain fixed.
-         ======================================== -->
+         IMPORTANT:
+         Keep count0-count9 IDs unchanged.
 
-    <table class="style-table">
+         JavaScript uses these IDs for counting.
+         ================================================== -->
 
-      <tr>
-        <th></th>
-        <th>Qty</th>
-        <th></th>
-        <th>Qty</th>
-      </tr>
+<table class="style-table">
+  <tr><th></th><th>Qty</th><th></th><th>Qty</th></tr>
+  <tr><td class="red">BoyBandPop</td><td class="qty" id="count1">0</td><td class="violet">JustR&B</td><td class="qty" id="count6">0</td></tr>
+  <tr><td class="orange">GrungeRock</td><td class="qty" id="count2">0</td><td class="pink">BritPopDiva</td><td class="qty" id="count7">0</td></tr>
+  <tr><td class="yellow">80sPianoBallad</td><td class="qty" id="count3">0</td><td class="brown">EpicDivaBallad</td><td class="qty" id="count8">0</td></tr>
+  <tr><td class="green">VocalPopBallad</td><td class="qty" id="count4">0</td><td class="tan">CanadianRock</td><td class="qty" id="count9">0</td></tr>
+  <tr><td class="blue">90sUltimateBallad</td><td class="qty" id="count5">0</td><td class="cyan">70sUK DiscoPop</td><td class="qty" id="count0">0</td></tr>
+</table>
 
-      <tr>
-        <td class="red">BoyBandPop</td>
-        <td class="qty" id="count1">0</td>
+<!-- ORIGINAL CLEAR BUTTON -->
+<div class="buttons"><button type="button" onclick="resetCounter()">🗑️ Clear</button></div>
 
-        <td class="violet">JustR&amp;B</td>
-        <td class="qty" id="count6">0</td>
-      </tr>
+<!-- ORIGINAL NAVIGATION -->
+<div class="footer-links">
+  <a href="index.html" class="back-home">← Back to Home</a>
+  <a href="refresh-list.html" class="back-home">🔄 Refresh list →</a>
+</div>
+</div>
 
-      <tr>
-        <td class="orange">GrungeRock</td>
-        <td class="qty" id="count2">0</td>
 
-        <td class="pink">BritPopDiva</td>
-        <td class="qty" id="count7">0</td>
-      </tr>
+  <!-- ==================================================
+       SPOTIFY CONFIGURATION
 
-      <tr>
-        <td class="yellow">80sPianoBallad</td>
-        <td class="qty" id="count3">0</td>
+       Keep existing Free/Premium/Platinum logic.
+       ================================================== -->
 
-        <td class="brown">EpicDivaBallad</td>
-        <td class="qty" id="count8">0</td>
-      </tr>
-
-      <tr>
-        <td class="green">VocalPopBallad</td>
-        <td class="qty" id="count4">0</td>
-
-        <td class="tan">CanadianRock</td>
-        <td class="qty" id="count9">0</td>
-      </tr>
-
-      <tr>
-        <td class="blue">90sUltimateBallad</td>
-        <td class="qty" id="count5">0</td>
-
-        <td class="cyan">70sUK DiscoPop</td>
-        <td class="qty" id="count0">0</td>
-      </tr>
-
-    </table>
-
-    <!-- ========================================
-         CLEAR COUNTER
-         ======================================== -->
-
-    <div class="buttons">
-
-      <button
-        type="button"
-        class="clear-button"
-        onclick="resetCounter()"
-      >
-        🗑️ Clear
-      </button>
-
-    </div>
-
-    <!-- ========================================
-         NAVIGATION
-         ======================================== -->
-
-    <div class="footer-links">
-
-      <a
-        href="index.html"
-        class="back-home"
-      >
-        ← Back to Home
-      </a>
-
-      <a
-        href="refresh-list.html"
-        class="back-home"
-      >
-        🔄 Refresh list →
-      </a>
-
-    </div>
-
-  </main>
-
-  <!-- Spotify configuration must load first. -->
   <script src="spotify-plan.js"></script>
 
-  <!-- Counter-only JavaScript. -->
+
+  <!-- ==================================================
+       EXISTING COUNTER ENGINE
+
+       Includes:
+       - Counter input and quantities
+       - Local storage
+       - 100-square coloring
+       - Countdown timer
+       - Blinking cursor
+       - Ctrl+A protection
+       - Main Style synchronization
+
+       Do not replace with dashboard script.js.
+       ================================================== -->
+
   <script src="counter.js"></script>
 
 </body>

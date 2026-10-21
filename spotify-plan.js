@@ -11,7 +11,7 @@ window.MUSIC_SESSION_PLAN = Object.freeze({
 
   // false = Spotify Free
   // true  = Spotify Premium
-  SPOTIFY_PREMIUM: true,
+  SPOTIFY_PREMIUM: false,
 
   // false = General Premium
   // true  = Premium + Platinum
