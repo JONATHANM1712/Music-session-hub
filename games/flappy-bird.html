@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Flappy Bird | Music Session Hub</title>
+
+  <!-- Shared Fonts and Styles -->
+  <link rel="stylesheet" href="../rubik-font.css">
+  <link rel="stylesheet" href="../style.css">
+
+  <!-- Game Styles -->
+  <link rel="stylesheet" href="flappy-bird.css">
+
+  <style>
+    /* ==================================================
+       FLAPPY BIRD - PREMIUM BACKGROUND
+       ================================================== */
+
+    body.music-game-page.premium-access {
+      position: relative;
+      isolation: isolate;
+      background: #17202b !important;
+    }
+
+    /* Premium wallpaper with blur */
+    body.music-game-page.premium-access::before {
+      content: "";
+      display: block !important;
+
+      position: fixed;
+      inset: -20px;
+
+      background-image:
+        url("assets/flappy-bird-background.jpg");
+
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+
+      filter: blur(5px);
+
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ==================================================
+       SPOTIFY FREE - DARK RED BACKGROUND
+       ================================================== */
+
+    body.music-game-page.free-access {
+      background: #5c0000 !important;
+    }
+
+    body.music-game-page.free-access::before {
+      display: none !important;
+    }
+
+    /* Disable shared secondary wallpaper overlays */
+    body.music-game-page::after {
+      display: none !important;
+    }
+
+    /* ==================================================
+       KEEP HIDDEN CONTENT HIDDEN
+       ================================================== */
+
+    #game-content[hidden],
+    #premium-required[hidden] {
+      display: none !important;
+    }
+  </style>
+
+  <!-- Spotify Plan -->
+  <script src="../spotify-plan.js"></script>
+
+  <!-- Premium Access Gate -->
+  <script src="premium-gate.js" defer></script>
+
+</head>
+
+<body class="music-game-page">
+
+  <!-- ==================================================
+       PREMIUM GAME CONTENT
+       ================================================== -->
+
+  <main id="game-content" hidden>
+
+    <!-- Header -->
+    <header class="game-header">
+
+      <a href="../index.html#games">
+        ← Back to Games
+      </a>
+
+      <h1>Flappy Bird</h1>
+
+    </header>
+
+    <!-- ==================================================
+         RESPONSIVE GAME LAYOUT
+         ================================================== -->
+
+    <div class="game-layout">
+
+      <!-- ==================================================
+           GAME CANVAS
+           ================================================== -->
+
+      <section class="game">
+
+        <canvas
+          id="game"
+          width="288"
+          height="512"
+          aria-label="Flappy Bird game"
+        ></canvas>
+
+        <!-- Game Overlay -->
+        <div class="overlay" id="overlay">
+
+          <h2 id="status">
+            Flappy Bird
+          </h2>
+
+          <p id="hint">
+            Press Space, click, or tap to flap
+          </p>
+
+          <button
+            id="start"
+            type="button"
+          >
+            Play
+          </button>
+
+        </div>
+
+      </section>
+
+      <!-- ==================================================
+           GAME SETTINGS PANEL
+           ================================================== -->
+
+      <aside class="settings-panel">
+
+        <h2>Game Settings</h2>
+
+        <!-- Score and Best -->
+        <section class="score-panel">
+
+          <div>
+            <span>Score</span>
+            <strong id="score">0</strong>
+          </div>
+
+          <div>
+            <span>Best</span>
+            <strong id="best">0</strong>
+          </div>
+
+        </section>
+
+        <!-- Settings -->
+        <div class="toolbar">
+
+          <!-- Background -->
+          <label class="setting-field">
+
+            <span>Background</span>
+
+            <select id="theme">
+              <option value="day">Day</option>
+              <option value="night">Night</option>
+            </select>
+
+          </label>
+
+          <!-- Sound -->
+          <label class="setting-checkbox">
+
+            <input
+              type="checkbox"
+              id="sound"
+              checked
+            >
+
+            <span>Sound Enabled</span>
+
+          </label>
+
+          <!-- Volume -->
+          <label class="setting-field">
+
+            <span>Volume</span>
+
+            <input
+              type="range"
+              id="volume"
+              min="0"
+              max="100"
+              value="65"
+            >
+
+          </label>
+
+          <!-- Restart -->
+          <button
+            id="restart"
+            class="restart-button"
+            type="button"
+          >
+            Restart
+          </button>
+
+        </div>
+
+        <!-- Instructions -->
+        <p class="note">
+          Tap, click, or press Space to fly.
+          Avoid pipes and the ground.
+        </p>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- ==================================================
+       SPOTIFY FREE RESTRICTION
+       ================================================== -->
+
+  <section
+    id="premium-required"
+    class="premium-required"
+    role="alert"
+    hidden
+  >
+
+    <h1>
+      Spotify Premium Required
+    </h1>
+
+    <p>
+      You must have Spotify Premium to access this.
+    </p>
+
+    <a href="../index.html#games">
+      ← Back to Games
+    </a>
+
+  </section>
+
+  <!-- ==================================================
+       GAME SCRIPT LOADER
+       ================================================== -->
+
+  <script
+    id="game-script-path"
+    type="application/json"
+  >"flappy-bird.js"</script>
+
+</body>
+
+</html>
