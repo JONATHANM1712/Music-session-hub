@@ -24,6 +24,31 @@
     href="style.css"
   >
 <link rel="stylesheet" href="rubik-font.css">
+
+<style>
+/* Spotify Free: Locked Games tab */
+#games-tab.games-locked {
+    background: #555555 !important;
+    background-image: none !important;
+    border-color: #777777 !important;
+    color: #cccccc !important;
+    opacity: 0.75;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+#games-tab.games-locked:hover {
+    background: #555555 !important;
+    transform: none !important;
+}
+
+#games-tab .premium-required-label {
+    display: block;
+    font-size: 12px;
+    margin-top: 3px;
+    color: #eeeeee;
+}
+</style>
 </head>
 
 
@@ -81,6 +106,13 @@
           <a href="#tools">
             Tools
           </a>
+
+<a
+  href="#games"
+  id="games-nav-link"
+>
+  Games
+</a>
 
           <a href="#resource-viewer">
             Resource Viewer
@@ -440,11 +472,50 @@
     </section>
 
 
-    <!-- DASHBOARD CATEGORY TABS -->
-    <div class="dashboard-tabs" role="tablist" aria-label="Dashboard categories">
-      <button type="button" id="quick-tab" class="dashboard-tab is-active" role="tab" aria-selected="true" aria-controls="quick-access">▦ &nbsp; Quick Access</button>
-      <button type="button" id="tools-tab" class="dashboard-tab" role="tab" aria-selected="false" aria-controls="tools">♫ &nbsp; Tools</button>
-    </div>
+
+<!-- ==================================================
+     DASHBOARD CATEGORY TABS
+     ================================================== -->
+
+<div
+  class="dashboard-tabs"
+  role="tablist"
+  aria-label="Dashboard categories"
+>
+  <button
+    type="button"
+    id="quick-tab"
+    class="dashboard-tab is-active"
+    role="tab"
+    aria-selected="true"
+    aria-controls="quick-access"
+  >
+    ▦ &nbsp; Quick Access
+  </button>
+
+  <button
+    type="button"
+    id="tools-tab"
+    class="dashboard-tab"
+    role="tab"
+    aria-selected="false"
+    aria-controls="tools"
+  >
+    ♫ &nbsp; Tools
+  </button>
+
+  <button
+    type="button"
+    id="games-tab"
+    class="dashboard-tab"
+    role="tab"
+    aria-selected="false"
+    aria-controls="games"
+  >
+    🎮 &nbsp; Games
+  </button>
+</div>
+
 
     <!-- ==================================================
          QUICK ACCESS
@@ -1010,6 +1081,90 @@
     </section>
 
 
+<!-- ==================================================
+     GAMES
+     ================================================== -->
+
+<section
+  id="games"
+  class="section quick-access-section tab-panel-hidden"
+  role="tabpanel"
+  aria-labelledby="games-tab"
+>
+  <div class="section-heading">
+    <div>
+      <span class="section-label">
+        Interactive Entertainment
+      </span>
+
+      <h2 id="games-title">
+        Games
+      </h2>
+    </div>
+
+    <p>
+      Enjoy interactive browser games in Music Session Hub.
+      Spotify Premium is required to play.
+    </p>
+  </div>
+
+  <div class="card-grid">
+
+    <!-- FLAPPY BIRD -->
+    <a
+      href="games/flappy-bird.html"
+      class="card metronome-card"
+    >
+      <span class="icon" aria-hidden="true">
+        🐤
+      </span>
+
+      <span class="card-content">
+        <span class="card-title">
+          Flappy Bird
+        </span>
+
+        <span class="card-description">
+          Fly between pipes, avoid obstacles,
+          and beat your highest score.
+        </span>
+      </span>
+
+      <span class="card-arrow" aria-hidden="true">
+        →
+      </span>
+    </a>
+
+    <!-- FLAPPY DUNK -->
+    <a
+      href="games/flappy-dunk.html"
+      class="card metronome-card"
+    >
+      <span class="icon" aria-hidden="true">
+        🏀
+      </span>
+
+      <span class="card-content">
+        <span class="card-title">
+          Flappy Dunk
+        </span>
+
+        <span class="card-description">
+          Score consecutive swishes for unlimited
+          +2, +3, +4, +5 and higher bonuses.
+        </span>
+      </span>
+
+      <span class="card-arrow" aria-hidden="true">
+        →
+      </span>
+    </a>
+
+  </div>
+</section>
+
+
+
     <!-- ==================================================
          RESOURCE VIEWER
          ================================================== -->
@@ -1254,51 +1409,316 @@
     })();
   </script>
 
-  <script src="script.js"></script>
-  <script>
-    (() => {
-      const quickTab = document.getElementById('quick-tab');
-      const toolsTab = document.getElementById('tools-tab');
-      const quick = document.getElementById('quick-access');
-      const tools = document.getElementById('tools');
-      const viewer = document.getElementById('resource-viewer');
-      if (!quickTab || !toolsTab || !quick || !tools || !viewer) return;
 
-      function selectCategory(category) {
-        const isQuick = category === 'quick';
-        quick.classList.toggle('tab-panel-hidden', !isQuick);
-        viewer.classList.toggle('tab-panel-hidden', !isQuick);
-        tools.classList.toggle('tab-panel-hidden', isQuick);
-        quickTab.classList.toggle('is-active', isQuick);
-        toolsTab.classList.toggle('is-active', !isQuick);
-        quickTab.setAttribute('aria-selected', String(isQuick));
-        toolsTab.setAttribute('aria-selected', String(!isQuick));
-        quickTab.tabIndex = isQuick ? 0 : -1;
-        toolsTab.tabIndex = isQuick ? -1 : 0;
+<script src="spotify-plan.js"></script>
+<script src="script.js"></script>
+
+<script>
+  (() => {
+    /* ==================================================
+       MUSIC SESSION HUB
+       DASHBOARD CATEGORY TABS
+
+       Quick Access | Tools | Games
+       ================================================== */
+
+    const quickTab = document.getElementById("quick-tab");
+    const toolsTab = document.getElementById("tools-tab");
+    const gamesTab = document.getElementById("games-tab");
+const gamesNavLink = document.getElementById("games-nav-link");
+
+const isPremium =
+    window.MUSIC_SESSION_PLAN?.SPOTIFY_PREMIUM === true;
+
+if (gamesNavLink) {
+    gamesNavLink.hidden = !isPremium;
+}    
+
+    const quick = document.getElementById("quick-access");
+    const tools = document.getElementById("tools");
+    const games = document.getElementById("games");
+
+    const viewer = document.getElementById("resource-viewer");
+
+    /* ==================================================
+       VERIFY REQUIRED ELEMENTS
+       ================================================== */
+
+    if (
+      !quickTab ||
+      !toolsTab ||
+      !gamesTab ||
+      !quick ||
+      !tools ||
+      !games ||
+      !viewer
+    ) {
+      return;
+    }
+
+    /* ==================================================
+       CATEGORY CONFIGURATION
+       ================================================== */
+
+    const categories = [
+      {
+        name: "quick",
+        tab: quickTab,
+        panel: quick
+      },
+      {
+        name: "tools",
+        tab: toolsTab,
+        panel: tools
+      },
+      {
+        name: "games",
+        tab: gamesTab,
+        panel: games
       }
-      quickTab.addEventListener('click', () => selectCategory('quick'));
-      toolsTab.addEventListener('click', () => selectCategory('tools'));
-      document.querySelectorAll('a[href="#quick-access"], a[href="#tools"], a[href="#resource-viewer"]').forEach(link => {
-        link.addEventListener('click', () => selectCategory(link.getAttribute('href') === '#tools' ? 'tools' : 'quick'));
+    ];
+
+    /* ==================================================
+       SELECT DASHBOARD CATEGORY
+       ================================================== */
+
+    function selectCategory(category) {
+     
+const isPremium =
+    window.MUSIC_SESSION_PLAN?.SPOTIFY_PREMIUM === true;
+
+if (category === "games" && !isPremium) {
+    category = "tools";
+}      
+
+      const selected = categories.some(
+        (item) => item.name === category
+      );
+
+      if (!selected) {
+        category = "quick";
+      }
+
+      categories.forEach((item) => {
+
+        const isActive = item.name === category;
+
+        /* Show or hide the category panel */
+
+        item.panel.classList.toggle(
+          "tab-panel-hidden",
+          !isActive
+        );
+
+        /* Update selected tab appearance */
+
+        item.tab.classList.toggle(
+          "is-active",
+          isActive
+        );
+
+        /* Accessibility attributes */
+
+        item.tab.setAttribute(
+          "aria-selected",
+          String(isActive)
+        );
+
+        item.tab.tabIndex = isActive ? 0 : -1;
+
       });
-      [quickTab, toolsTab].forEach((tab, i) => {
-        tab.addEventListener('keydown', event => {
-          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-          event.preventDefault();
-          const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 :
-            (i + (event.key === 'ArrowRight' ? 1 : -1) + 2) % 2;
-          selectCategory(next === 0 ? 'quick' : 'tools');
-          [quickTab, toolsTab][next].focus();
-        });
+
+      /* ==================================================
+         GOOGLE DOCS RESOURCE VIEWER
+
+         Visible only in Quick Access.
+         ================================================== */
+
+      viewer.classList.toggle(
+        "tab-panel-hidden",
+        category !== "quick"
+      );
+
+    }
+
+    /* ==================================================
+       TAB CLICK EVENTS
+       ================================================== */
+
+    quickTab.addEventListener("click", () => {
+      selectCategory("quick");
+    });
+
+    toolsTab.addEventListener("click", () => {
+      selectCategory("tools");
+    });
+
+    gamesTab.addEventListener("click", () => {
+      selectCategory("games");
+    });
+
+    /* ==================================================
+       TOP NAVIGATION LINKS
+       ================================================== */
+
+    document.querySelectorAll(
+      'a[href="#quick-access"], ' +
+      'a[href="#tools"], ' +
+      'a[href="#games"], ' +
+      'a[href="#resource-viewer"]'
+    ).forEach((link) => {
+
+      link.addEventListener("click", () => {
+
+        const target = link.getAttribute("href");
+
+        if (target === "#tools") {
+
+          selectCategory("tools");
+
+        } else if (target === "#games") {
+
+          selectCategory("games");
+
+        } else {
+
+          selectCategory("quick");
+
+        }
+
       });
-      selectCategory(location.hash === '#tools' ? 'tools' : 'quick');
-      window.addEventListener('hashchange', () => {
-        if (location.hash === '#tools') selectCategory('tools');
-        if (location.hash === '#quick-access' || location.hash === '#resource-viewer') selectCategory('quick');
+
+    });
+
+    /* ==================================================
+       KEYBOARD NAVIGATION
+
+       Arrow Left / Right
+       Home / End
+       ================================================== */
+
+    categories.forEach((item, index) => {
+
+      item.tab.addEventListener("keydown", (event) => {
+
+        const allowedKeys = [
+          "ArrowLeft",
+          "ArrowRight",
+          "Home",
+          "End"
+        ];
+
+        if (!allowedKeys.includes(event.key)) {
+          return;
+        }
+
+        event.preventDefault();
+
+        let nextIndex;
+
+        if (event.key === "Home") {
+
+          nextIndex = 0;
+
+        } else if (event.key === "End") {
+
+          nextIndex = categories.length - 1;
+
+        } else {
+
+          const direction =
+            event.key === "ArrowRight" ? 1 : -1;
+
+          nextIndex =
+            (
+              index +
+              direction +
+              categories.length
+            ) % categories.length;
+
+        }
+
+        const nextCategory = categories[nextIndex];
+
+        selectCategory(nextCategory.name);
+
+        nextCategory.tab.focus();
+
       });
-    })();
-  </script>
+
+    });
+
+    /* ==================================================
+       INITIAL CATEGORY FROM URL
+
+       #quick-access
+       #tools
+       #games
+       #resource-viewer
+       ================================================== */
+
+    function selectCategoryFromHash() {
+
+      const hash = window.location.hash;
+
+      if (hash === "#tools") {
+
+        selectCategory("tools");
+
+      } else if (hash === "#games") {
+
+        selectCategory("games");
+
+      } else {
+
+        selectCategory("quick");
+
+      }
+
+    }
+
+    /* ==================================================
+       INITIALIZE DASHBOARD
+       ================================================== */
+
+    selectCategoryFromHash();
+
+    /* ==================================================
+       HANDLE URL HASH CHANGES
+       ================================================== */
+
+    window.addEventListener(
+      "hashchange",
+      selectCategoryFromHash
+    );
+
+  })();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const gamesTab = document.getElementById("games-tab");
+    if (!gamesTab) return;
+
+    const isPremium =
+        window.MUSIC_SESSION_PLAN?.SPOTIFY_PREMIUM === true;
+
+    if (!isPremium) {
+        gamesTab.classList.add("games-locked");
+        gamesTab.disabled = true;
+        gamesTab.setAttribute("aria-disabled", "true");
+
+        gamesTab.innerHTML = `
+            🎮 &nbsp; Games
+            <span class="premium-required-label">
+                🔒 Premium Required
+            </span>
+        `;
+    }
+});
+</script>
 
 </body>
 
 </html>
+
