@@ -1,5 +1,21 @@
-/* Central feature configuration for Music Session Hub.
-   This is a local website switch, not Spotify subscription verification. */
+
+/* ==================================================
+   MUSIC SESSION HUB
+   CENTRAL SPOTIFY PLAN CONFIGURATION
+
+   These switches control website features.
+   They do not verify Spotify subscriptions.
+   ================================================== */
+
 window.MUSIC_SESSION_PLAN = Object.freeze({
-  SPOTIFY_PREMIUM: false // Set false to use Spotify Free limits.
+
+  // false = Spotify Free
+  // true  = Spotify Premium
+  SPOTIFY_PREMIUM: true,
+
+  // false = General Premium
+  // true  = Premium + Platinum
+  // Only active when SPOTIFY_PREMIUM is true.
+  PLATINUM: false
+
 });

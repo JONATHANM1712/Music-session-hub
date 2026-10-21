@@ -1,610 +1,508 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music Session Counter</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+  <link rel="stylesheet" href="style.css">
 
   <style>
-
-    /* ==================================================
-       BASIC PAGE SETUP
-       ================================================== */
-
     * {
       box-sizing: border-box;
     }
 
     html,
-    body,
-    button,
-    input,
-    select,
-    textarea,
-    table {
-      font-family: Rubik, Arial, sans-serif;
+    body {
+      margin: 0;
+      min-height: 100%;
     }
 
     body {
-      margin: 0;
-
-      min-height: 100vh;
-
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-
-      padding: 16px 0;
-
-      color: white;
+      background: #101418;
+      color: #ffffff;
+      font-family: "Rubik", Arial, sans-serif;
+      padding: 12px;
     }
 
-
-    /* ==================================================
-       MAIN GLASS CARD
-       ================================================== */
-
-    .box {
-      width: 1100px;
-      max-width: 96%;
-
-      padding: 20px;
-
-      border-radius: 25px;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.12
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.25
-        );
-
-      backdrop-filter:
-        blur(10px);
-
-      -webkit-backdrop-filter:
-        blur(10px);
-
+    .counter-container {
+      width: min(100%, 1210px);
+      margin: 0 auto;
+      padding: 16px 22px 13px;
+      background: #2b2e31;
+      border: 1px solid #555b60;
+      border-radius: 26px;
       text-align: center;
-
-      box-shadow:
-        0 0 30px
-        rgba(
-          0,
-          0,
-          0,
-          0.4
-        );
     }
-
-
-    /* ==================================================
-       TITLE
-       ================================================== */
 
     h1 {
-      margin: 0 0 6px;
-
-      font-size: 34px;
+      margin: 0 0 5px;
+      font-size: clamp(25px, 3vw, 36px);
+      font-weight: 800;
     }
 
     .subtitle {
-      margin-bottom: 15px;
-
-      opacity: 0.9;
-
-      font-size: 18px;
-      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: clamp(13px, 1.5vw, 19px);
+      font-weight: 700;
+      color: #ededed;
     }
 
+    /* ========================================
+       COMPACT COUNTDOWN TIMER
+       ======================================== */
 
-    /* ==================================================
-       100-SQUARE GRID
-       ================================================== */
+    .session-timer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 49px;
+      padding: 6px 12px;
+      margin-bottom: 12px;
+      background: #b3b3b3;
+      color: #000000;
+      border-radius: 11px;
+    }
+
+    .session-timer * {
+      color: #000000;
+    }
+
+    .session-timer-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .session-timer-label {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .session-timer-status {
+      font-size: 10px;
+      font-weight: 600;
+      opacity: 0.75;
+    }
+
+    .session-timer-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .session-timer-clock {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .session-timer-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .session-timer-actions button {
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 7px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .session-timer-actions button:hover {
+      background: #ffffff;
+    }
+
+    .session-timer-actions button:focus-visible {
+      outline: 3px solid #000000;
+      outline-offset: 2px;
+    }
+
+    /* ========================================
+       100 COLORED SQUARES
+       ======================================== */
 
     .square-grid {
       display: grid;
-
-      grid-template-columns:
-        repeat(
-          10,
-          1fr
-        );
-
-      gap: 8px;
-
-      margin-bottom: 14px;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 8px 9px;
+      margin-bottom: 12px;
+      cursor: text;
     }
 
     .square-group {
       display: grid;
-
-      grid-template-columns:
-        repeat(
-          5,
-          1fr
-        );
-
-      gap: 0;
-
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 2px;
       padding: 3px;
-
-      border-radius: 10px;
-
-      background:
-        rgba(
-          0,
-          0,
-          0,
-          0.25
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.3
-        );
+      height: 39px;
+      background: #34383c;
+      border: 1px solid #85898c;
+      border-radius: 11px;
+      min-width: 0;
     }
 
     .square {
-      height: 30px;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.14
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.35
-        );
-
-      box-shadow:
-        inset
-        0 0 8px
-        rgba(
-          0,
-          0,
-          0,
-          0.25
-        );
+      min-width: 0;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 2px;
     }
 
-    .square:first-child {
-      border-radius:
-        7px 0 0 7px;
+    /* ========================================
+       MAIN STYLE DIGIT INPUT
+       ======================================== */
+
+    .input-helper {
+      min-height: 61px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 12px;
+      background: #ffffff;
+      color: #777777;
+      border-radius: 16px;
+      font-size: clamp(17px, 2vw, 24px);
+      overflow-wrap: anywhere;
+      cursor: text;
     }
-
-    .square:last-child {
-      border-radius:
-        0 7px 7px 0;
-    }
-
-
-    /* ==================================================
-       HIDDEN INPUT
-       ================================================== */
 
     .hidden-input {
       position: absolute;
-
+      width: 1px;
+      height: 1px;
       opacity: 0;
-
       pointer-events: none;
     }
 
+    
+/* Visible cursor for the Music Session Counter */
 
-    /* ==================================================
-       INPUT DISPLAY
-       ================================================== */
+.input-helper {
+  position: relative;
+  white-space: pre-wrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
 
-    .input-helper {
-      min-height: 60px;
+.input-helper.is-focused::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 3px;
+  background: #222222;
+  vertical-align: -0.17em;
+  animation: counter-caret-blink 1s steps(1) infinite;
+}
 
-      margin-bottom: 14px;
+@keyframes counter-caret-blink {
+  0%, 49% {
+    opacity: 1;
+  }
 
-      padding: 14px;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 15px;
-
-      background: white;
-
-      color: #777;
-
-      font-size: 22px;
-
-      cursor: text;
-
-      user-select: none;
-
-      word-break: break-word;
-    }
-
-    .input-helper::after {
-      content: "";
-
-      width: 2px;
-      height: 26px;
-
-      margin-left: 3px;
-
-      display: inline-block;
-
-      flex-shrink: 0;
-
-      background: #777;
-
-      animation:
-        blinkCursor
-        0.8s
-        infinite;
-    }
-
-    @keyframes blinkCursor {
-
-      0%,
-      50% {
-        opacity: 1;
-      }
-
-      51%,
-      100% {
-        opacity: 0;
-      }
-    }
+  50%, 100% {
+    opacity: 0;
+  }
+}
 
 
-    /* ==================================================
+    /* ========================================
        MAIN STYLE TABLE
-       ================================================== */
+       ======================================== */
 
     .style-table {
       width: 100%;
-
+      border-collapse: collapse;
       table-layout: fixed;
-
-      border-collapse: separate;
-      border-spacing: 0;
-
+      border-radius: 14px;
       overflow: hidden;
-
-      border-radius: 15px;
     }
 
     .style-table th,
     .style-table td {
-      padding: 10px;
-
-      border-right:
-        2px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.85
-        );
-
-      border-bottom:
-        2px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.85
-        );
-
-      font-size: 18px;
-      font-weight: bold;
-
+      padding: 11px 8px;
+      border: 1px solid #f4f4f4;
       text-align: center;
-      vertical-align: middle;
+      font-weight: 800;
+      font-size: clamp(12px, 1.4vw, 19px);
     }
 
-    .style-table th:first-child,
-    .style-table td:first-child {
-      border-left:
-        2px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.85
-        );
-    }
-
-    .style-table tr:first-child th {
-      border-top:
-        2px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.85
-        );
-    }
-
-
-    /* ==================================================
-       FIXED COLUMN WIDTHS
-
-       42%  STYLE
-        8%  QTY
-       42%  STYLE
-        8%  QTY
-
-       This keeps both sides perfectly aligned.
-       ================================================== */
-
-    .style-table th:nth-child(1),
-    .style-table td:nth-child(1),
-    .style-table th:nth-child(3),
-    .style-table td:nth-child(3) {
-      width: 42%;
+    .style-table th {
+      background: #080808;
+      color: #ffffff;
     }
 
     .style-table th:nth-child(2),
-    .style-table td:nth-child(2),
     .style-table th:nth-child(4),
+    .style-table td:nth-child(2),
     .style-table td:nth-child(4) {
       width: 8%;
     }
 
-
-    /* ==================================================
-       TABLE HEADER
-       ================================================== */
-
-    .style-table th {
-      background:
-        rgba(
-          0,
-          0,
-          0,
-          0.78
-        );
-
-      color: white;
-    }
-
-
-    /* ==================================================
-       QUANTITY CELLS
-       ================================================== */
-
     .style-table .qty {
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.9
-        );
-
-      color: black;
-
-      font-size: 24px;
+      background: #e5e5e5;
+      color: #000000;
+      font-size: clamp(16px, 2vw, 25px);
     }
-
-
-    /* ==================================================
-       MAIN STYLE COLORS
-       ================================================== */
 
     .red {
-      background: red;
-
-      color: white;
+      background: #ff0909;
+      color: #ffffff;
     }
 
     .orange {
-      background: orange;
-
-      color: black;
+      background: #ffa500;
+      color: #000000;
     }
 
     .yellow {
-      background: yellow;
-
-      color: black;
+      background: #ffff00;
+      color: #000000;
     }
 
     .green {
-      background: limegreen;
-
-      color: black;
+      background: #29cc2e;
+      color: #000000;
     }
 
     .blue {
-      background: blue;
-
-      color: white;
+      background: #0909ff;
+      color: #ffffff;
     }
 
     .violet {
       background: #8000ff;
-
-      color: white;
+      color: #ffffff;
     }
 
     .pink {
-      background: pink;
-
-      color: black;
+      background: #ffc0cb;
+      color: #000000;
     }
 
     .brown {
-      background: brown;
-
-      color: white;
+      background: #a52a2a;
+      color: #ffffff;
     }
 
     .tan {
-      background: tan;
-
-      color: black;
+      background: #d2b48c;
+      color: #000000;
     }
 
     .cyan {
-      background: cyan;
-
-      color: black;
+      background: #00f5f5;
+      color: #000000;
     }
 
-
-    /* ==================================================
-       CLEAR BUTTON
-       ================================================== */
+    /* ========================================
+       CLEAR COUNTER
+       ======================================== */
 
     .buttons {
-      margin-top: 16px;
+      margin-top: 12px;
     }
 
-    .buttons button {
-      padding: 12px 32px;
-
-      border: none;
-
-      border-radius: 12px;
-
+    .clear-button {
+      padding: 11px 30px;
       background: #ff3030;
-
-      color: white;
-
-      font-size: 22px;
-      font-weight: bold;
-
+      color: #ffffff;
+      border: none;
+      border-radius: 13px;
+      font: inherit;
+      font-size: 21px;
+      font-weight: 800;
       cursor: pointer;
     }
 
-    .buttons button:hover {
-      background: #cc0000;
+    .clear-button:hover {
+      background: #e51d1d;
     }
 
+    /* ========================================
+       FOOTER NAVIGATION
+       ======================================== */
 
-    /* ==================================================
-       BACK HOME
-       ================================================== */
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 14px;
+    }
 
     .back-home {
-      display: inline-block;
-
-      margin-top: 16px;
-
-      color: white;
-
+      color: #ffffff;
+      font-weight: 800;
       text-decoration: none;
-
-      font-weight: bold;
     }
 
+    .back-home:hover {
+      text-decoration: underline;
+    }
 
-    /* ==================================================
-       RESPONSIVE
-       ================================================== */
+    /* ========================================
+       RESPONSIVE LAYOUT
+       ======================================== */
 
-    @media (
-      max-width: 800px
-    ) {
-
-      .box {
-        padding: 14px;
+    @media (max-width: 700px) {
+      body {
+        padding: 8px;
       }
 
-      h1 {
-        font-size: 26px;
-      }
-
-      .subtitle {
-        font-size: 14px;
+      .counter-container {
+        padding: 14px 10px;
+        border-radius: 17px;
       }
 
       .square-grid {
         gap: 4px;
       }
 
-      .square {
-        height: 22px;
+      .square-group {
+        height: 30px;
+        padding: 2px;
+        gap: 1px;
+        border-radius: 6px;
       }
 
-      .input-helper {
-        font-size: 17px;
-      }
-
-      .input-helper::after {
-        height: 22px;
-      }
-
-      .style-table th,
-      .style-table td {
+      .session-timer {
+        gap: 8px;
         padding: 7px;
-
-        font-size: 13px;
       }
 
-      .style-table .qty {
-        font-size: 18px;
+      .session-timer-label {
+        font-size: 10px;
+      }
+
+      .session-timer-status {
+        font-size: 9px;
+      }
+
+      .session-timer-right {
+        gap: 7px;
+      }
+
+      .session-timer-actions button {
+        padding: 7px;
+        font-size: 11px;
+      }
+
+      .style-table td,
+      .style-table th {
+        padding: 9px 3px;
+        font-size: 11px;
+        overflow-wrap: anywhere;
       }
     }
 
+    @media (max-width: 420px) {
+      .session-timer {
+        flex-wrap: wrap;
+      }
+
+      .session-timer-info {
+        flex-basis: 100%;
+      }
+
+      .session-timer-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
   </style>
-
-<link rel="stylesheet" href="rubik-font.css">
 </head>
-
 
 <body>
 
-  <div class="box">
+  <main class="counter-container">
 
-    <h1>
-      Music Session Counter
-    </h1>
+    <h1>Music Session Counter</h1>
 
     <div class="subtitle">
       Let's arrange everything through the journey with the music session.
     </div>
 
+    <!-- ========================================
+         COMPACT COUNTDOWN TIMER
+         ======================================== -->
 
-    <!-- ==================================================
-         100-SQUARE COUNTER DISPLAY
-         ================================================== -->
+    <section
+      id="sessionTimer"
+      class="session-timer"
+      aria-label="Music session countdown timer"
+    >
+
+      <div class="session-timer-info">
+
+        <span
+          id="sessionTimerPlan"
+          class="session-timer-label"
+        >
+          Spotify Free
+        </span>
+
+        <span
+          id="sessionTimerStatus"
+          class="session-timer-status"
+          aria-live="polite"
+        >
+          Ready · Enter a style to start
+        </span>
+
+      </div>
+
+      <div class="session-timer-right">
+
+        <div
+          id="sessionTimerClock"
+          class="session-timer-clock"
+          role="timer"
+        >
+          90:00
+        </div>
+
+        <div class="session-timer-actions">
+
+          <button
+            type="button"
+            id="sessionTimerToggle"
+          >
+            ▶ Run
+          </button>
+
+          <button
+            type="button"
+            id="sessionTimerReset"
+          >
+            ↺ Reset
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================
+         100 COLORED SQUARES
+         ======================================== -->
 
     <div
       id="squareGrid"
@@ -612,10 +510,9 @@
       onclick="focusInput()"
     ></div>
 
-
-    <!-- ==================================================
-         NUMBER INPUT DISPLAY
-         ================================================== -->
+    <!-- ========================================
+         DIGIT INPUT
+         ======================================== -->
 
     <div
       id="inputDisplay"
@@ -628,24 +525,24 @@
     <input
       id="inputData"
       class="hidden-input"
+      type="text"
       inputmode="numeric"
       autocomplete="off"
-      autofocus
+      maxlength="100"
       oninput="updateCounter()"
+      aria-label="Music style digits"
     >
 
-
-    <!-- ==================================================
+    <!-- ========================================
          MAIN STYLE LIST
 
-         EDIT THE STYLE NAMES HERE WHEN THE MAIN STYLE LIST REFRESHES.
+         Edit the style names below when your
+         Main Style list changes.
 
-         IMPORTANT:
-         Keep count0-count9 IDs unchanged.
-         JavaScript uses these IDs for counting.
-         ================================================== -->
+         The digit IDs and colors remain fixed.
+         ======================================== -->
 
-      <table class="style-table">
+    <table class="style-table">
 
       <tr>
         <th></th>
@@ -658,7 +555,7 @@
         <td class="red">BoyBandPop</td>
         <td class="qty" id="count1">0</td>
 
-        <td class="violet">JustR&B</td>
+        <td class="violet">JustR&amp;B</td>
         <td class="qty" id="count6">0</td>
       </tr>
 
@@ -696,14 +593,15 @@
 
     </table>
 
-    <!-- ==================================================
-         CLEAR BUTTON
-         ================================================== -->
+    <!-- ========================================
+         CLEAR COUNTER
+         ======================================== -->
 
     <div class="buttons">
 
       <button
         type="button"
+        class="clear-button"
         onclick="resetCounter()"
       >
         🗑️ Clear
@@ -711,439 +609,35 @@
 
     </div>
 
+    <!-- ========================================
+         NAVIGATION
+         ======================================== -->
 
-    <!-- ==================================================
-         BACK HOME
-         ================================================== -->
+    <div class="footer-links">
 
-    <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:20px;margin-top:16px">
-      <a href="index.html" class="back-home">← Back to Home</a>
-      <a href="refresh-list.html" class="back-home">🔄 Refresh list →</a>
+      <a
+        href="index.html"
+        class="back-home"
+      >
+        ← Back to Home
+      </a>
+
+      <a
+        href="refresh-list.html"
+        class="back-home"
+      >
+        🔄 Refresh list →
+      </a>
+
     </div>
 
-  </div>
+  </main>
 
+  <!-- Spotify configuration must load first. -->
+  <script src="spotify-plan.js"></script>
 
-  <script>
-
-    /* ==================================================
-       COUNTER STATE
-       ================================================== */
-/* ==================================================
-       SAVED SITE DATA
-
-       The counter is stored in this browser's localStorage
-       for the GitHub Pages site and restored automatically.
-       ================================================== */
-
-    const COUNTER_STORAGE_KEY =
-      "musicSessionHub.counter.input.v1";
-
-
-    /* ==================================================
-       DIGIT COLORS
-       ================================================== */
-
-    const digitColors = {
-
-      "1": "red",
-      "2": "orange",
-      "3": "yellow",
-      "4": "limegreen",
-      "5": "blue",
-
-      "6": "#8000ff",
-      "7": "pink",
-      "8": "brown",
-      "9": "tan",
-      "0": "cyan"
-
-    };
-
-
-    /* ==================================================
-       FOCUS HIDDEN INPUT
-       ================================================== */
-
-    function focusInput() {
-
-      document
-        .getElementById(
-          "inputData"
-        )
-        .focus();
-
-    }
-
-
-    /* ==================================================
-       CREATE 100 SQUARES
-       20 groups × 5 squares
-       ================================================== */
-
-    function createGrid() {
-
-      const grid =
-        document.getElementById(
-          "squareGrid"
-        );
-
-      grid.innerHTML = "";
-
-
-      for (
-        let group = 0;
-        group < 20;
-        group++
-      ) {
-
-        const squareGroup =
-          document.createElement(
-            "div"
-          );
-
-        squareGroup.className =
-          "square-group";
-
-
-        for (
-          let i = 0;
-          i < 5;
-          i++
-        ) {
-
-          const square =
-            document.createElement(
-              "div"
-            );
-
-          const index =
-            group * 5 + i;
-
-          square.className =
-            "square";
-
-          square.id =
-            "sq" + index;
-
-          squareGroup.appendChild(
-            square
-          );
-
-        }
-
-
-        grid.appendChild(
-          squareGroup
-        );
-
-      }
-
-    }
-
-
-    /* ==================================================
-       UPDATE COUNTER
-       ================================================== */
-
-    function updateCounter() {
-
-      const input =
-        document.getElementById(
-          "inputData"
-        );
-
-      const inputDisplay =
-        document.getElementById(
-          "inputDisplay"
-        );
-
-
-      /* Keep numbers only */
-
-      let rawText =
-        input.value.replace(
-          /[^0-9]/g,
-          ""
-        );
-
-
-      /* Maximum 100 entries */
-
-      rawText =
-        rawText.substring(
-          0,
-          100
-        );
-
-      input.value =
-        rawText;
-
-
-      /* Display groups of five */
-
-      const formattedText =
-        rawText.match(
-          /.{1,5}/g
-        )?.join(
-          " "
-        ) || "";
-
-
-      inputDisplay.textContent =
-        formattedText ||
-        "Example: 11111 22222 23333 33333";
-
-
-      /* Reset all digit totals */
-
-      const counts = {
-
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-
-      };
-
-
-      /* Count digits */
-
-      for (
-        const char of rawText
-      ) {
-
-        counts[char]++;
-
-      }
-
-
-      /* Reset all squares */
-
-      for (
-        let i = 0;
-        i < 100;
-        i++
-      ) {
-
-        const square =
-          document.getElementById(
-            "sq" + i
-          );
-
-
-        if (
-          square
-        ) {
-
-          square.style.background =
-            "rgba(255,255,255,0.14)";
-
-        }
-
-      }
-
-
-      /* Color used squares */
-
-      for (
-        let i = 0;
-        i < rawText.length;
-        i++
-      ) {
-
-        const digit =
-          rawText[i];
-
-        const square =
-          document.getElementById(
-            "sq" + i
-          );
-
-
-        if (
-          square
-        ) {
-
-          square.style.background =
-            digitColors[
-              digit
-            ];
-
-        }
-
-      }
-
-
-      /* Update table quantities */
-
-      Object
-        .keys(
-          counts
-        )
-        .forEach(
-          digit => {
-
-            document
-              .getElementById(
-                "count" + digit
-              )
-              .textContent =
-                counts[
-                  digit
-                ];
-
-          }
-        );
-try {
-
-        localStorage.setItem(
-          COUNTER_STORAGE_KEY,
-          rawText
-        );
-
-      } catch (error) {
-
-        console.warn(
-          "Counter data could not be saved.",
-          error
-        );
-
-      }
-
-
-    }
-
-
-    /* ==================================================
-       CLEAR WITHOUT CONFIRMATION
-       ================================================== */
-
-    function clearCounterWithoutConfirm() {
-
-      document
-        .getElementById(
-          "inputData"
-        )
-        .value = "";
-updateCounter();
-
-    }
-
-
-    /* ==================================================
-       CLEAR BUTTON
-       ================================================== */
-
-    function resetCounter() {
-
-      const confirmDelete =
-        confirm(
-          "Are you sure you want to clear the results?"
-        );
-
-
-      if (
-        confirmDelete
-      ) {
-
-        clearCounterWithoutConfirm();
-
-        focusInput();
-
-      }
-
-    }
-
-
-    /* ==================================================
-       NO BEFOREUNLOAD WARNING
-
-       Counter data is saved automatically to localStorage.
-       The page can reload, close, or navigate away without
-       showing the browser "Changes you made may not be saved" dialog.
-       ================================================== */
-
-
-    /* ==================================================
-       STARTUP
-       ================================================== */
-
-    window.addEventListener(
-      "load",
-      () => {
-
-        createGrid();
-
-
-        try {
-
-          const savedCounter =
-            localStorage.getItem(
-              COUNTER_STORAGE_KEY
-            );
-
-
-          if (savedCounter !== null) {
-
-            document.getElementById(
-              "inputData"
-            ).value =
-              savedCounter;
-
-          }
-
-        } catch (error) {
-
-          console.warn(
-            "Counter data could not be restored.",
-            error
-          );
-
-        }
-
-
-        updateCounter();
-
-        focusInput();
-
-      }
-    );
-
-  </script>
-
-
-  <!-- Main Style synchronization for Refresh List (also works with local files). -->
-  <script>
-    (() => {
-      function sendMainStyles(target) {
-        const colors = ["red","orange","yellow","green","blue","violet","pink","brown","tan","cyan"];
-        const left = [], right = [];
-        document.querySelectorAll(".style-table tr").forEach(row => {
-          const cells = row.querySelectorAll("td");
-          if (cells.length !== 4) return;
-          [cells[0], cells[2]].forEach((cell, index) => {
-            const color = colors.find(c => cell.classList.contains(c));
-            if (color) (index === 0 ? left : right).push({name:cell.textContent.trim(), color});
-          });
-        });
-        target.postMessage({type:"music-session-main-styles", left, right}, "*");
-      }
-      window.addEventListener("message", event => {
-        if (event.data?.type !== "request-music-session-main-styles") return;
-        if (event.source !== window.parent || window.parent === window) return;
-        sendMainStyles(event.source);
-      });
-      if (window.parent !== window) sendMainStyles(window.parent);
-    })();
-  </script>
+  <!-- Counter-only JavaScript. -->
+  <script src="counter.js"></script>
 
 </body>
-
 </html>
