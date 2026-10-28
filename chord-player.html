@@ -29,7 +29,7 @@
 
         body {
             margin: 0;
-            background: #090d12;
+            /* The shared style.css supplies the wallpaper (same as Metronome). */
             color: #f5f5f7;
             font-family: Rubik, Arial, sans-serif;
         }
@@ -90,9 +90,9 @@
             height: 48px;
             display: grid;
             place-items: center;
-            background: #29252f;
+            background: rgba(0,0,0,.20);
             color: #ffffff;
-            border: 1px solid #655967;
+            border: 1px solid rgba(255,255,255,.35);
             border-radius: 50%;
             font-size: 25px;
         }
@@ -102,11 +102,13 @@
         }
 
         .shell {
-            background: #171b23;
-            border: 1px solid #3b3841;
-            border-radius: 23px;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 25px;
             padding: 14px;
-            box-shadow: 0 22px 70px #0006;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0,0,0,.4);
         }
 
         .split-layout {
@@ -124,9 +126,11 @@
             min-width: 0;
             min-height: 0;
             padding: 18px;
-            border: 1px solid #45424d;
+            border: 1px solid rgba(255,255,255,.24);
             border-radius: 17px;
-            background: #1d2028;
+            background: rgba(24,27,39,.34);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             overflow-y: auto;
         }
 
@@ -138,9 +142,9 @@
 
         .btn {
             padding: 11px 14px;
-            background: #28252e;
+            background: rgba(0,0,0,.28);
             color: #f6f3f8;
-            border: 1px solid #4b4752;
+            border: 1px solid rgba(255,255,255,.27);
             border-radius: 11px;
         }
 
@@ -261,7 +265,8 @@
 
         .tempo-panel {
             padding: 18px 12px;
-            background: #2a2e33;
+            background: rgba(255,255,255,.10);
+            border: 1px solid rgba(255,255,255,.17);
             border-radius: 16px;
         }
 
@@ -368,7 +373,7 @@
             flex-wrap: wrap;
             gap: 20px;
             padding: 14px;
-            background: #4c5055;
+            background: rgba(255,255,255,.16);
             border-radius: 14px;
         }
 
@@ -409,8 +414,8 @@
         .section {
             margin: 10px 0;
             padding: 13px;
-            background: #211d26;
-            border: 1px solid #3b3541;
+            background: rgba(18,20,30,.35);
+            border: 1px solid rgba(255,255,255,.20);
             border-radius: 16px;
         }
 
@@ -456,9 +461,9 @@
             position: relative;
             min-height: 74px;
             padding: 12px;
-            background: #312c35;
+            background: rgba(19,18,25,.48);
             color: #f8f5fb;
-            border: 1px solid #544c58;
+            border: 1px solid rgba(255,255,255,.24);
             border-radius: 10px;
             text-align: left;
             font-size: 23px;
@@ -535,8 +540,8 @@
             max-height: 88vh;
             overflow: auto;
             padding: 22px;
-            background: #30252f;
-            border: 1px solid #655661;
+            background: rgba(45,34,42,.96);
+            border: 1px solid rgba(255,255,255,.28);
             border-radius: 22px;
         }
 
@@ -773,6 +778,24 @@
             .editor {
                 grid-template-columns: 1fr;
             }
+        }
+        /* Genre selector replaces Intro / ×1 / Variation 1 only. */
+        .musical-style-select {
+            width: min(330px, 100%);
+            min-height: 43px;
+            padding: 9px 13px;
+            background: rgba(0,0,0,.30);
+            color: white;
+            border: 1px solid rgba(255,255,255,.30);
+            border-radius: 11px;
+            font-weight: 650;
+        }
+        .musical-style-select option { color: white; background: #302735; }
+        .section-style-label { font-size: 13px; font-weight: 700; color: #f5f5f7; }
+        .section-count { margin-left: auto; }
+        @media(max-width: 500px) {
+            .musical-style-select { max-width: 100%; }
+            .section-style-label { width: 100%; }
         }
     </style>
 </head>
@@ -1297,6 +1320,8 @@
 
     </div>
 
+    <!-- GeneralUser GS sample playback: WebAudioFont engine, loaded from its official project. -->
+    <script src="https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js"></script>
     <script>
         (() => {
             "use strict";
@@ -1329,9 +1354,7 @@
 
             let sections = [
                 {
-                    name: "Intro",
-                    repeat: 1,
-                    variation: 1,
+                    style: "Pop",
                     chords: [
                         { root: 0, q: "" },
                         { root: 7, q: "" },
@@ -1364,8 +1387,10 @@
                 drums: true
             };
 
-            const clamp = (n, min, max) =>
-                Math.max(min, Math.min(max, Number(n) || min));
+            const clamp = (n, min, max) => {
+                const value = Number(n);
+                return Math.max(min, Math.min(max, Number.isFinite(value) ? value : min));
+            };
 
             const label = chord =>
                 NAMES[chord.root] + chord.q;
@@ -1412,46 +1437,26 @@
                     const top = document.createElement("div");
                     top.className = "section-top";
 
-                    const name = document.createElement("input");
-                    name.className = "section-title";
-                    name.value = section.name;
-                    name.maxLength = 40;
-                    name.setAttribute("aria-label", "Section name");
+                    const styleLabel = document.createElement("label");
+                    styleLabel.className = "section-style-label";
+                    styleLabel.textContent = "Musical Style";
+                    styleLabel.htmlFor = "musicalStyle" + si;
+                    top.append(styleLabel);
 
-                    name.oninput = () => {
-                        section.name = name.value;
+                    const styleSelect = document.createElement("select");
+                    styleSelect.className = "musical-style-select";
+                    styleSelect.id = "musicalStyle" + si;
+                    styleSelect.setAttribute("aria-label", "Musical style for section " + (si + 1));
+                    MUSICAL_STYLES.forEach(style => {
+                        styleSelect.add(new Option(style, style));
+                    });
+                    styleSelect.value = section.style || "Pop";
+                    styleSelect.onchange = () => {
+                        section.style = styleSelect.value;
+                        if (playing) stop();
+                        message(section.style + " accompaniment selected.");
                     };
-
-                    top.append(name);
-
-                    const reps = document.createElement("button");
-                    reps.className = "btn";
-                    reps.textContent = "×" + section.repeat;
-                    reps.title = "Change section repeats (1–8)";
-
-                    reps.onclick = () => {
-                        section.repeat = section.repeat % 8 + 1;
-                        reps.textContent = "×" + section.repeat;
-                    };
-
-                    top.append(reps);
-
-                    const variation = document.createElement("select");
-                    variation.className = "btn";
-
-                    for (let v = 1; v <= 4; v++) {
-                        variation.add(
-                            new Option("Variation " + v, v)
-                        );
-                    }
-
-                    variation.value = section.variation;
-
-                    variation.onchange = () => {
-                        section.variation = Number(variation.value);
-                    };
-
-                    top.append(variation);
+                    top.append(styleSelect);
 
                     const del = document.createElement("button");
                     del.className = "btn";
@@ -1776,329 +1781,344 @@
             };
 
             /* =========================================
-               WEB AUDIO ENGINE
+               GENERALUSER GS: SAMPLED AUDIO ENGINE
+               WebAudioFont schedules real instrument samples at
+               AudioContext times. No basic triangle/square timbres.
+               Melodic presets: GeneralUser GS.
+               Percussion: FluidR3 GM sampled drum kit.
                ========================================= */
+
+            const MUSICAL_STYLES = [
+                "Pop", "Rock", "Jazz", "Blues", "R&B / Soul",
+                "Funk", "Country", "Reggae", "Latin", "Electronic / Dance"
+            ];
+
+            const SOUND_ROOT = "https://surikov.github.io/webaudiofontdata/sound/";
+            const PRESETS = {
+                piano: "0000_GeneralUserGS_sf2_file",
+                epiano: "0040_GeneralUserGS_sf2_file",
+                clav: "0070_GeneralUserGS_sf2_file",
+                acousticGuitar: "0250_GeneralUserGS_sf2_file",
+                nylonGuitar: "0240_GeneralUserGS_sf2_file",
+                jazzGuitar: "0260_GeneralUserGS_sf2_file",
+                cleanGuitar: "0270_GeneralUserGS_sf2_file",
+                mutedGuitar: "0280_GeneralUserGS_sf2_file",
+                rockGuitar: "0290_GeneralUserGS_sf2_file",
+                uprightBass: "0320_GeneralUserGS_sf2_file",
+                fingerBass: "0330_GeneralUserGS_sf2_file",
+                slapBass: "0360_GeneralUserGS_sf2_file",
+                synthBass: "0380_GeneralUserGS_sf2_file"
+            };
+
+            // MIDI drum key => real FluidR3 drum instrument sample.
+            // GeneralUserGS melodic instruments are combined with FluidR3 drums
+            // because this particular WebAudioFont catalog lacks a GS drum bank.
+            const DRUM_KEYS = [36, 38, 39, 42, 46, 49, 51, 54, 56, 60, 61, 63, 64, 75];
+            const AUDIO_TIMEOUT_MS = 20000;
+            const loadedSounds = new Map();
+            const loadingSounds = new Map();
+            let player = null;
+            let isLoadingAudio = false;
+
+            const STYLES = {
+                "Pop": {piano:"piano", guitar:"cleanGuitar", bass:"fingerBass", drums:[36,38,42,46]},
+                "Rock": {piano:"piano", guitar:"rockGuitar", bass:"fingerBass", drums:[36,38,42,46,49]},
+                "Jazz": {piano:"piano", guitar:"jazzGuitar", bass:"uprightBass", drums:[36,38,42,51]},
+                "Blues": {piano:"piano", guitar:"cleanGuitar", bass:"fingerBass", drums:[36,38,42,46]},
+                "R&B / Soul": {piano:"epiano", guitar:"cleanGuitar", bass:"fingerBass", drums:[36,38,39,42,46]},
+                "Funk": {piano:"clav", guitar:"mutedGuitar", bass:"slapBass", drums:[36,38,42,46]},
+                "Country": {piano:"piano", guitar:"acousticGuitar", bass:"fingerBass", drums:[36,38,42,46]},
+                "Reggae": {piano:"epiano", guitar:"mutedGuitar", bass:"fingerBass", drums:[36,38,42,46]},
+                "Latin": {piano:"piano", guitar:"nylonGuitar", bass:"fingerBass", drums:[36,38,42,60,61,63,64,75]},
+                "Electronic / Dance": {piano:"epiano", guitar:"cleanGuitar", bass:"synthBass", drums:[36,38,39,42,46]}
+            };
 
             function audio() {
-                if (!ctx) {
-                    ctx = new (
-                        window.AudioContext ||
-                        window.webkitAudioContext
-                    )();
+                if (typeof WebAudioFontPlayer !== "function") {
+                    throw new Error("WebAudioFont could not load. Check the network connection.");
                 }
-
-                if (ctx.state === "suspended") {
-                    ctx.resume();
-                }
-
-                if (!master) {
+                if (!ctx || ctx.state === "closed") {
+                    ctx = new (window.AudioContext || window.webkitAudioContext)();
                     master = ctx.createGain();
                     master.connect(ctx.destination);
+                    player = new WebAudioFontPlayer();
+                    loadedSounds.clear();
+                    loadingSounds.clear();
                 }
-
-                master.gain.value =
-                    Number($("volumeMain").value) / 100;
+                master.gain.value = Number($("volumeMain").value) / 100;
             }
 
-            function tone(
-                midi,
-                time,
-                duration,
-                type = "triangle",
-                gain = 0.07
-            ) {
-                const oscillator = ctx.createOscillator();
-                const envelope = ctx.createGain();
-
-                oscillator.type = type;
-                oscillator.frequency.setValueAtTime(
-                    freq(midi),
-                    time
-                );
-
-                envelope.gain.setValueAtTime(
-                    0.0001,
-                    time
-                );
-
-                envelope.gain.exponentialRampToValueAtTime(
-                    Math.max(0.0002, gain),
-                    time + 0.015
-                );
-
-                envelope.gain.exponentialRampToValueAtTime(
-                    0.0001,
-                    time + Math.max(0.035, duration)
-                );
-
-                oscillator.connect(envelope);
-                envelope.connect(master);
-
-                oscillator.start(time);
-                oscillator.stop(time + duration + 0.02);
-            }
-
-            function percussive(
-                time,
-                frequency,
-                duration,
-                level = 0.12,
-                shape = "triangle"
-            ) {
-                const oscillator = ctx.createOscillator();
-                const envelope = ctx.createGain();
-
-                oscillator.type = shape;
-
-                oscillator.frequency.setValueAtTime(
-                    frequency,
-                    time
-                );
-
-                oscillator.frequency.exponentialRampToValueAtTime(
-                    Math.max(55, frequency * 0.35),
-                    time + duration
-                );
-
-                envelope.gain.setValueAtTime(
-                    Math.max(0.001, level),
-                    time
-                );
-
-                envelope.gain.exponentialRampToValueAtTime(
-                    0.0001,
-                    time + duration
-                );
-
-                oscillator.connect(envelope);
-                envelope.connect(master);
-
-                oscillator.start(time);
-                oscillator.stop(time + duration + 0.01);
-            }
-
-            function kick(time) {
-                percussive(
-                    time,
-                    155,
-                    0.22,
-                    0.40,
-                    "sine"
-                );
-            }
-
-            function snare(time) {
-                percussive(
-                    time,
-                    230,
-                    0.10,
-                    0.16,
-                    "triangle"
-                );
-
-                percussive(
-                    time,
-                    890,
-                    0.055,
-                    0.06,
-                    "square"
-                );
-            }
-
-            function hat(time, soft = false) {
-                percussive(
-                    time,
-                    3500,
-                    0.025,
-                    soft ? 0.025 : 0.055,
-                    "square"
-                );
-            }
-
-            function pluck(
-                midi,
-                time,
-                duration,
-                kind = "guitar",
-                gain = 0.16
-            ) {
-                const oscillator = ctx.createOscillator();
-                const filter = ctx.createBiquadFilter();
-                const envelope = ctx.createGain();
-
-                oscillator.type =
-                    kind === "bass"
-                        ? "sawtooth"
-                        : "triangle";
-
-                oscillator.frequency.setValueAtTime(
-                    freq(midi),
-                    time
-                );
-
-                filter.type = "lowpass";
-
-                filter.frequency.setValueAtTime(
-                    kind === "bass" ? 1100 : 5200,
-                    time
-                );
-
-                filter.frequency.exponentialRampToValueAtTime(
-                    kind === "bass" ? 260 : 1450,
-                    time + Math.min(duration, 0.7)
-                );
-
-                envelope.gain.setValueAtTime(
-                    0.0001,
-                    time
-                );
-
-                envelope.gain.exponentialRampToValueAtTime(
-                    gain,
-                    time + 0.008
-                );
-
-                envelope.gain.exponentialRampToValueAtTime(
-                    0.0001,
-                    time + Math.max(0.035, duration)
-                );
-
-                oscillator.connect(filter);
-                filter.connect(envelope);
-                envelope.connect(master);
-
-                oscillator.start(time);
-                oscillator.stop(time + duration + 0.02);
-            }
-
-            /* =========================================
-               PGDB ACCOMPANIMENT
-               ========================================= */
-
-            function playChord(chord, time, duration) {
-                const pitches = notes(chord);
-
-                if (inst.piano) {
-                    pitches.forEach(note => {
-                        tone(
-                            note,
-                            time,
-                            Math.min(duration * 0.9, 1.7),
-                            "triangle",
-                            0.055
-                        );
-                    });
+            function soundDescription(key) {
+                if (key.startsWith("drum:")) {
+                    const n = Number(key.split(":")[1]);
+                    return {
+                        variable: "_drum_" + n + "_0_FluidR3_GM_sf2_file",
+                        file: "128" + n + "_0_FluidR3_GM_sf2_file.js",
+                        pitch: n
+                    };
                 }
-
-                if (inst.guitar) {
-                    pitches.forEach((note, index) => {
-                        pluck(
-                            note - 12,
-                            time + index * 0.036,
-                            Math.min(duration * 0.8, 1.6),
-                            "guitar",
-                            0.115
-                        );
-                    });
-                }
-
-                if (inst.bass) {
-                    pluck(
-                        pitches[0] - 24,
-                        time,
-                        Math.min(duration * 0.85, 1.5),
-                        "bass",
-                        0.30
-                    );
-                }
+                const filename = PRESETS[key];
+                if (!filename) throw new Error("Unknown instrument " + key);
+                return {variable:"_tone_" + filename, file:filename + ".js"};
             }
 
-            function playSubdivisionPGDB(
-                chord,
-                time,
-                beat,
-                subdivision,
-                count,
-                beatSeconds,
-                variation
-            ) {
-                const pitches = notes(chord);
-                const slice = beatSeconds / count;
-                const fullBeat = subdivision === 0;
-                const accent = fullBeat ? 1 : 0.48;
-                const shortNote = Math.max(0.025, Math.min(slice * 0.8, 0.24));
-
-                // Every enabled instrument participates in EVERY subdivision.
-                // The first click of each full BPM beat is accented.
-
-                /* PIANO: chord stabs on each click */
-                if (inst.piano) {
-                    pitches.forEach((note, index) => {
-                        tone(
-                            note,
-                            time + index * Math.min(0.004, slice * 0.05),
-                            shortNote,
-                            "triangle",
-                            fullBeat ? 0.052 : 0.018
-                        );
-                    });
-                }
-
-                /* GUITAR: brighter, louder strummed/plucked notes */
-                if (inst.guitar) {
-                    const order = subdivision % 2 === 0
-                        ? pitches
-                        : [...pitches].reverse();
-                    order.forEach((note, index) => {
-                        pluck(
-                            note - 12,
-                            time + index * Math.min(0.009, slice * 0.10),
-                            Math.max(0.04, Math.min(slice * 1.25, 0.45)),
-                            "guitar",
-                            fullBeat ? 0.19 : 0.085
-                        );
-                    });
-                }
-
-                /* BASS: root on full beats, root/fifth pulses between */
-                if (inst.bass) {
-                    const bassNote = pitches[0] - 24 +
-                        (!fullBeat && subdivision % 2 === 0 && variation >= 2 ? 7 : 0);
-                    pluck(
-                        bassNote,
-                        time,
-                        Math.max(0.04, Math.min(slice * 1.3, 0.42)),
-                        "bass",
-                        fullBeat ? 0.23 : 0.095
-                    );
-                }
-
-                /* DRUMS: kick/snare accents, hi-hat on every click */
-                if (inst.drums) {
-                    if (fullBeat) {
-                        if (beat % 4 === 0 ||
-                            (variation >= 3 && beat % 4 === 2)) {
-                            kick(time);
-                        }
-                        if (beat % 4 === 1 || beat % 4 === 3) {
-                            snare(time);
-                        }
+            function ensureSound(key) {
+                if (loadedSounds.has(key)) return Promise.resolve(loadedSounds.get(key));
+                if (loadingSounds.has(key)) return loadingSounds.get(key);
+                const info = soundDescription(key);
+                // Loader uses <script> elements and WebAudio decoding; everything
+                // is loaded before the transport is started to avoid silent beats.
+                let timeout;
+                const promise = new Promise((resolve, reject) => {
+                    timeout = setTimeout(() => reject(new Error("Timed out loading " + key)), AUDIO_TIMEOUT_MS);
+                    try {
+                        player.loader.startLoad(ctx, SOUND_ROOT + info.file, info.variable);
+                        player.loader.waitLoad(() => {
+                            const preset = window[info.variable];
+                            if (preset) {
+                                loadedSounds.set(key, preset);
+                                resolve(preset);
+                            } else {
+                                reject(new Error("Missing sampled sound: " + key));
+                            }
+                        });
+                    } catch (error) {
+                        reject(error);
                     }
-                    hat(time, !fullBeat);
+                }).finally(() => {
+                    clearTimeout(timeout);
+                    loadingSounds.delete(key);
+                });
+                loadingSounds.set(key, promise);
+                return promise;
+            }
+
+            async function prepareSounds() {
+                audio();
+                const keys = new Set();
+                for (const section of sections) {
+                    if (!section.chords.length) continue;
+                    const style = STYLES[section.style] || STYLES.Pop;
+                    if (inst.piano) keys.add(style.piano);
+                    if (inst.guitar) keys.add(style.guitar);
+                    if (inst.bass) keys.add(style.bass);
+                    if (inst.drums) style.drums.forEach(key => keys.add("drum:" + key));
+                }
+                await Promise.all([...keys].map(ensureSound));
+            }
+
+            function sample(key, pitch, time, length, gain) {
+                if (!player || !ctx || !master || !(gain > 0)) return;
+                const preset = loadedSounds.get(key);
+                if (!preset) return;
+                try {
+                    player.queueWaveTable(
+                        ctx, master, preset,
+                        Math.max(time, ctx.currentTime),
+                        Math.max(0, Math.min(127, Math.round(pitch))),
+                        Math.max(0.035, length),
+                        Math.max(0.001, Math.min(0.9, gain))
+                    );
+                } catch (error) {
+                    console.warn("Could not schedule sample", key, error);
                 }
             }
 
-            function preview() {
-                audio();
+            function drum(pitch, time, volume = 0.26) {
+                sample("drum:" + pitch, pitch, time, 0.22, volume);
+            }
 
-                playChord(
-                    {
-                        root: Number($("root").value),
-                        q: $("quality").value
-                    },
-                    ctx.currentTime + 0.02,
-                    0.9
-                );
+            function scheduleStrum(pitches, key, time, len, level, up = false) {
+                const picked = up ? [...pitches].reverse() : pitches;
+                picked.forEach((note, index) => {
+                    sample(key, note - 12, time + index * 0.022, len, level);
+                });
+            }
+
+            function playChord(chord, time, duration, styleName = "Pop") {
+                const config = STYLES[styleName] || STYLES.Pop;
+                const pitches = notes(chord);
+                if (inst.piano) pitches.forEach((note, index) =>
+                    sample(config.piano, note, time + index * 0.008, duration, 0.19));
+                if (inst.guitar) scheduleStrum(pitches, config.guitar, time, duration, 0.22);
+                if (inst.bass) sample(config.bass, pitches[0] - 24, time, duration, 0.28);
+            }
+
+            function playSubdivisionPGDB(chord, time, beat, subdivision, count, beatSeconds, styleName) {
+                const config = STYLES[styleName] || STYLES.Pop;
+                const pitches = notes(chord);
+                const full = subdivision === 0;
+                const halfway = count > 1 && subdivision === Math.floor(count / 2);
+                const last = count > 1 && subdivision === count - 1;
+                const swing = count >= 3 && subdivision === Math.floor(count * 2 / 3);
+                const beat4 = beat % 4;
+                const short = Math.min(0.8, Math.max(0.065, beatSeconds * 0.83));
+                const staccato = Math.min(short, Math.max(0.055, beatSeconds / count * 1.1));
+
+                // Musical styles are actual rhythm arrangements: different
+                // accent placement, articulation and instrument patches.
+                let chordHit = false, guitarHit = false, bassHit = false;
+                let kickHit = false, snareHit = false, hatHit = false;
+                let guitarUp = false, bassFifth = false;
+                let hatOpen = false, clap = false, ride = false;
+
+                switch (styleName) {
+                    case "Rock":
+                        chordHit = full && (beat4 === 0 || beat4 === 2);
+                        guitarHit = full || halfway;
+                        guitarUp = halfway;
+                        bassHit = full || halfway;
+                        kickHit = full && (beat4 === 0 || beat4 === 2);
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || halfway;
+                        hatOpen = last && beat4 === 3;
+                        break;
+                    case "Jazz":
+                        chordHit = (full && (beat4 === 1 || beat4 === 3)) || (swing && beat4 === 2);
+                        guitarHit = full && (beat4 === 1 || beat4 === 3);
+                        bassHit = full;
+                        bassFifth = beat4 === 1 || beat4 === 3;
+                        kickHit = full && (beat4 === 0 || beat4 === 2);
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || swing;
+                        ride = true;
+                        break;
+                    case "Blues":
+                        chordHit = full && beat4 % 2 === 0;
+                        guitarHit = full || swing;
+                        guitarUp = swing;
+                        bassHit = full || swing;
+                        bassFifth = !full;
+                        kickHit = full && beat4 % 2 === 0;
+                        snareHit = full && beat4 % 2 === 1;
+                        hatHit = full || swing;
+                        break;
+                    case "R&B / Soul":
+                        chordHit = (full && beat4 === 0) || (halfway && (beat4 === 1 || beat4 === 3));
+                        guitarHit = halfway && beat4 % 2 === 1;
+                        guitarUp = true;
+                        bassHit = full && beat4 !== 3 || (last && beat4 === 3);
+                        bassFifth = beat4 === 2;
+                        kickHit = full && (beat4 === 0 || beat4 === 2);
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || halfway;
+                        clap = snareHit;
+                        break;
+                    case "Funk":
+                        chordHit = full && beat4 % 2 === 1 || (last && beat4 === 2);
+                        guitarHit = halfway || last && beat4 % 2 === 1;
+                        guitarUp = halfway;
+                        bassHit = full || halfway && beat4 !== 3 || last && beat4 === 3;
+                        bassFifth = beat4 === 2;
+                        kickHit = full && (beat4 === 0 || beat4 === 2) || last && beat4 === 3;
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || halfway;
+                        break;
+                    case "Country":
+                        chordHit = full && (beat4 === 1 || beat4 === 3);
+                        guitarHit = full || halfway;
+                        guitarUp = halfway;
+                        bassHit = full;
+                        bassFifth = beat4 === 1 || beat4 === 3;
+                        kickHit = full && (beat4 === 0 || beat4 === 2);
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || halfway;
+                        break;
+                    case "Reggae":
+                        chordHit = halfway;
+                        guitarHit = halfway;
+                        guitarUp = true;
+                        bassHit = (full && (beat4 === 0 || beat4 === 2)) || (last && beat4 === 3);
+                        kickHit = full && beat4 === 2;
+                        snareHit = full && beat4 === 2;
+                        hatHit = halfway;
+                        break;
+                    case "Latin":
+                        chordHit = full && (beat4 === 0 || beat4 === 2) || halfway && beat4 === 3;
+                        guitarHit = halfway || full && beat4 % 2 === 0;
+                        guitarUp = halfway;
+                        bassHit = full && beat4 !== 0 || last && beat4 === 3;
+                        bassFifth = beat4 === 1;
+                        kickHit = full && (beat4 === 0 || beat4 === 2);
+                        snareHit = full && beat4 === 3;
+                        hatHit = full || halfway;
+                        break;
+                    case "Electronic / Dance":
+                        chordHit = full && (beat4 === 0 || beat4 === 2);
+                        guitarHit = halfway && beat4 % 2 === 1;
+                        bassHit = full || halfway;
+                        kickHit = full; // four on the floor
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || halfway;
+                        clap = snareHit;
+                        hatOpen = halfway;
+                        break;
+                    case "Pop":
+                    default:
+                        chordHit = full && beat4 % 2 === 0;
+                        guitarHit = full || halfway;
+                        guitarUp = halfway;
+                        bassHit = full;
+                        bassFifth = beat4 === 2;
+                        kickHit = full && (beat4 === 0 || beat4 === 2);
+                        snareHit = full && (beat4 === 1 || beat4 === 3);
+                        hatHit = full || halfway;
+                }
+
+                if (inst.piano && chordHit) {
+                    pitches.forEach((note, index) =>
+                        sample(config.piano, note, time + index * 0.006, short, 0.20));
+                }
+                if (inst.guitar && guitarHit) {
+                    scheduleStrum(pitches, config.guitar, time,
+                        guitarUp ? staccato : short,
+                        styleName === "Rock" ? 0.30 : 0.26, guitarUp);
+                }
+                if (inst.bass && bassHit) {
+                    sample(config.bass, pitches[0] - 24 + (bassFifth ? 7 : 0),
+                        time, Math.min(short, beatSeconds * 0.78), 0.34);
+                }
+                if (inst.drums) {
+                    if (kickHit) drum(36, time, 0.35);
+                    if (snareHit) drum(38, time, styleName === "Jazz" ? 0.17 : 0.29);
+                    if (clap) drum(39, time, 0.19);
+                    if (hatHit) drum(ride ? 51 : 42, time, full ? 0.20 : 0.11);
+                    // Keep the existing 1–8 clicks-per-beat setting audible:
+                    // every subdivision is a real recorded hi-hat, with
+                    // the main style groove accented above it.
+                    if (!hatHit) drum(42, time, 0.055);
+                    if (hatOpen && config.drums.includes(46)) drum(46, time, 0.13);
+                    if (styleName === "Rock" && beat4 === 3 && last) drum(49, time, 0.18);
+                    if (styleName === "Latin") {
+                        if (full && config.drums.includes(64)) drum(64, time, 0.18);
+                        if (halfway) drum(63, time, 0.16);
+                        if (last) drum(75, time, 0.15);
+                        if (full && beat4 % 2 === 0) drum(60, time, 0.12);
+                        if (halfway && beat4 % 2 === 1) drum(61, time, 0.12);
+                    }
+                }
+            }
+
+            async function preview() {
+                if (isLoadingAudio) return;
+                isLoadingAudio = true;
+                try {
+                    audio();
+                    await ctx.resume();
+                    const section = editing ? sections[editing.si] : sections[0];
+                    const config = STYLES[section?.style] || STYLES.Pop;
+                    const keys = [inst.piano && config.piano,
+                        inst.guitar && config.guitar, inst.bass && config.bass].filter(Boolean);
+                    message("Loading chord preview samples…");
+                    await Promise.all(keys.map(ensureSound));
+                    playChord({root:Number($("root").value), q:$("quality").value},
+                        ctx.currentTime + 0.06, 0.9, section?.style);
+                    message("Chord preview (GeneralUser GS).");
+                } catch (error) {
+                    message("Sound could not load: " + error.message);
+                } finally {
+                    isLoadingAudio = false;
+                }
             }
 
             $("preview").onclick = preview;
@@ -2109,24 +2129,11 @@
 
             function buildSequence() {
                 const result = [];
-
                 sections.forEach((section, si) => {
-                    for (
-                        let repeat = 0;
-                        repeat < section.repeat;
-                        repeat++
-                    ) {
-                        section.chords.forEach((chord, ci) => {
-                            result.push({
-                                c: chord,
-                                si,
-                                ci,
-                                variation: section.variation
-                            });
-                        });
-                    }
+                    section.chords.forEach((chord, ci) => {
+                        result.push({c: chord, si, ci, style: section.style || "Pop"});
+                    });
                 });
-
                 return result;
             }
 
@@ -2152,6 +2159,9 @@
                 timer = null;
 
                 clearActive();
+                if (player && ctx && ctx.state !== "closed") {
+                    player.cancelQueue(ctx);
+                }
 
                 $("play").textContent = "▶";
                 $("play").classList.remove("is-playing");
@@ -2249,7 +2259,7 @@
                             sub,
                             subdivisions,
                             beatSeconds,
-                            item.variation
+                            item.style
                         );
                     }
 
@@ -2295,50 +2305,38 @@
                     stop();
                     return;
                 }
-
+                if (isLoadingAudio) return;
                 sequence = buildSequence();
-
                 if (!sequence.length) {
-                    message(
-                        "Add a chord before playing."
-                    );
+                    message("Add a chord before playing.");
                     return;
                 }
-
-                audio();
-
+                isLoadingAudio = true;
+                $("play").disabled = true;
+                message("Loading sampled GeneralUser GS instruments and drum kit…");
                 try {
+                    audio();
+                    // Unlock audio immediately while the click is still a user gesture.
                     await ctx.resume();
+                    await prepareSounds();
+                    playing = true;
+                    generation++;
+                    step = 0;
+                    nextTime = ctx.currentTime + 0.12;
+                    $("play").textContent = "■";
+                    $("play").classList.add("is-playing");
+                    $("play").setAttribute("aria-label", "Stop chord arrangement");
+                    message("Playing " + (sections[0]?.style || "Pop") + " · GeneralUser GS sound samples.");
+                    animationStart = performance.now();
+                    animateDot();
+                    tick(generation);
                 } catch (error) {
-                    message(
-                        "Audio could not start: " +
-                        error.message
-                    );
-                    return;
+                    console.error("Sample playback failed:", error);
+                    message("Could not load sound samples: " + error.message + ". Check your internet connection.");
+                } finally {
+                    isLoadingAudio = false;
+                    $("play").disabled = false;
                 }
-
-                playing = true;
-                generation++;
-                step = 0;
-
-                nextTime = ctx.currentTime + 0.12;
-
-                $("play").textContent = "■";
-                $("play").classList.add("is-playing");
-
-                $("play").setAttribute(
-                    "aria-label",
-                    "Stop chord arrangement"
-                );
-
-                message(
-                    "Playing PGDB accompaniment."
-                );
-
-                animationStart = performance.now();
-
-                animateDot();
-                tick(generation);
             };
 
             /* =========================================
@@ -2629,9 +2627,7 @@
                 }
 
                 sections.push({
-                    name: "Section " + (sections.length + 1),
-                    repeat: 1,
-                    variation: (sections.length % 4) + 1,
+                    style: sections[sections.length - 1]?.style || "Pop",
                     chords: [
                         { root: 0, q: "" },
                         { root: 5, q: "" },
@@ -2684,6 +2680,9 @@
                 () => {
                     stop();
                     ctx?.close();
+                    ctx = null;
+                    master = null;
+                    player = null;
                 }
             );
 
