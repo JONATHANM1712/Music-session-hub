@@ -1234,6 +1234,15 @@
 
             </div>
 
+            <!-- RESET SAVED CHORD PLAYER DATA -->
+            <div class="setting">
+                <div>
+                    <label for="resetChordPlayer">Reset Chord Player</label>
+                    <small>Restore default chords and settings and replace saved browser data.</small>
+                </div>
+                <button id="resetChordPlayer" class="btn" type="button">Reset to Defaults</button>
+            </div>
+
         </div>
 
     </div>
@@ -2672,6 +2681,152 @@
             };
 
             /* =========================================
+               LOCAL BROWSER STORAGE
+               Saved per browser and site origin.
+               ========================================= */
+
+            const STORAGE_KEY = "music-session-hub.chord-player.v1";
+            const SAVED_CONTROL_IDS = [
+                "signature", "clicksPerBeat", "repeat",
+                "transpose", "hideAnimation"
+            ];
+
+            function saveChordPlayer() {
+                try {
+                    const controls = {};
+                    SAVED_CONTROL_IDS.forEach(id => {
+                        const element = $(id);
+                        controls[id] = element.type === "checkbox"
+                            ? element.checked : element.value;
+                    });
+                    const data = {
+                        version: 1,
+                        sections: sections.map(section => ({
+                            style: section.style,
+                            chords: section.chords.map(chord => ({
+                                root: chord.root,
+                                q: chord.q
+                            }))
+                        })),
+                        instruments: { ...inst },
+                        bpm: Number($("tempoSlider").value),
+                        volume: Number($("volumeMain").value),
+                        controls
+                    };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                } catch (error) {
+                    console.warn("Chord Player: browser storage unavailable", error);
+                }
+            }
+
+            function restoreChordPlayer() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return;
+                    const data = JSON.parse(raw);
+                    if (!data || data.version !== 1) return;
+
+                    if (Array.isArray(data.sections)) {
+                        const valid = data.sections.slice(0, 8).map(section => ({
+                            style: MUSICAL_STYLES.includes(section.style) ? section.style : "Pop",
+                            chords: Array.isArray(section.chords)
+                                ? section.chords.slice(0, 64).filter(chord =>
+                                    chord && Number.isInteger(chord.root) &&
+                                    chord.root >= 0 && chord.root <= 11 &&
+                                    Object.prototype.hasOwnProperty.call(SHAPES, chord.q)
+                                ).map(chord => ({ root: chord.root, q: chord.q }))
+                                : []
+                        })).filter(section => section.chords.length);
+                        if (valid.length) sections = valid;
+                    }
+
+                    if (data.instruments && typeof data.instruments === "object") {
+                        document.querySelectorAll("[data-inst]").forEach(button => {
+                            const name = button.dataset.inst;
+                            if (typeof data.instruments[name] === "boolean") {
+                                inst[name] = data.instruments[name];
+                                button.classList.toggle("on", inst[name]);
+                                button.setAttribute("aria-pressed", String(inst[name]));
+                            }
+                        });
+                    }
+
+                    if (Number.isFinite(data.bpm)) setTempo(data.bpm);
+                    if (Number.isFinite(data.volume)) setVolume(data.volume);
+
+                    if (data.controls && typeof data.controls === "object") {
+                        SAVED_CONTROL_IDS.forEach(id => {
+                            const element = $(id);
+                            const saved = data.controls[id];
+                            if (saved === undefined || saved === null) return;
+                            if (element.type === "checkbox") {
+                                if (typeof saved === "boolean") element.checked = saved;
+                            } else if (id === "hideAnimation") {
+                                setHideThreshold(saved);
+                            } else if (Array.from(element.options || []).length) {
+                                if (Array.from(element.options).some(option => option.value === String(saved))) {
+                                    element.value = String(saved);
+                                }
+                            } else if (element.type === "number") {
+                                element.value = clamp(saved, Number(element.min), Number(element.max));
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.warn("Chord Player: could not restore saved settings", error);
+                }
+            }
+
+            // Reset the entire Chord Player, including the stored arrangement.
+            $("resetChordPlayer").addEventListener("click", () => {
+                if (!window.confirm(
+                    "Reset all Chord Player settings and chords to defaults? This will replace the saved data in this browser."
+                )) return;
+
+                stop();
+                sections = [{
+                    style: "Pop",
+                    chords: [
+                        { root: 0, q: "" },
+                        { root: 7, q: "" },
+                        { root: 9, q: "m" },
+                        { root: 5, q: "" }
+                    ]
+                }];
+                editing = null;
+                dragged = null;
+                Object.keys(inst).forEach(name => { inst[name] = true; });
+                document.querySelectorAll("[data-inst]").forEach(button => {
+                    button.classList.add("on");
+                    button.setAttribute("aria-pressed", "true");
+                });
+                $("signature").value = "4";
+                $("clicksPerBeat").value = "4";
+                $("repeat").checked = true;
+                $("transpose").value = "0";
+                setHideThreshold(280);
+                setTempo(120);
+                setVolume(70);
+                render();
+                show("settingsModal", false);
+                try { localStorage.removeItem(STORAGE_KEY); } catch (error) {
+                    console.warn("Chord Player: could not clear browser storage", error);
+                }
+                // Store the reset defaults so subsequent reloads remain consistent.
+                saveChordPlayer();
+                message("Chord Player reset to defaults.");
+            });
+
+            // Capture changes after existing control handlers have updated the state.
+            // A queued save also captures chord edits, reordering and randomization.
+            const queueSaveChordPlayer = () => queueMicrotask(saveChordPlayer);
+            document.addEventListener("input", queueSaveChordPlayer);
+            document.addEventListener("change", queueSaveChordPlayer);
+            document.addEventListener("click", queueSaveChordPlayer);
+            document.addEventListener("drop", queueSaveChordPlayer);
+            window.addEventListener("pagehide", saveChordPlayer);
+
+            /* =========================================
                CLEANUP AND INITIALIZATION
                ========================================= */
 
@@ -2686,6 +2841,7 @@
                 }
             );
 
+            restoreChordPlayer();
             render();
 
             message(
