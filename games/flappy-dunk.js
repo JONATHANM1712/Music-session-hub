@@ -1,992 +1,421 @@
-
 (() => {
   "use strict";
 
-  /* ==================================================
-     FLAPPY DUNK
-     PROGRESSIVE DIFFICULTY
-     ================================================== */
-
-  const canvas = document.querySelector("#game");
-  const ctx = canvas.getContext("2d");
+  // Flappy Dunk — progressive moving/tilted hoops, Swish combos, x5+ fire.
+  // Space/Up bounce DURING play, never start/restart from an overlay.
   const $ = (selector) => document.querySelector(selector);
-
-  const W = 360;
-  const H = 600;
-
-  const root = "assets/flappy-dunk/";
-
-  /* ==================================================
-     SPEED CONFIGURATION
-     ================================================== */
-
-  const BASE_SPEED = 1.65;
-  const SPEED_INCREMENT = 0.025;
-  const MAX_SPEED = 3.65;
-
-  let hoopsPassed = 0;
-
-  function getSpeed() {
-    return Math.min(
-      BASE_SPEED + hoopsPassed * SPEED_INCREMENT,
-      MAX_SPEED
-    );
-  }
-
-  /* ==================================================
-     LOAD TEXTURES
-     ================================================== */
-
-  const textures = {};
-
-  const texturePaths = {
-    basketball: "balls/normal.png",
-    soccer: "balls/football.png",
-    tennis: "balls/tennis.png",
-    wing: "balls/wing.png",
-    hoopFront: "hoops/hoopFront.png",
-    hoopBack: "hoops/hoopBack.png",
-    background: "backgrounds/background.png"
-  };
-
-  for (const [key, path] of Object.entries(texturePaths)) {
-    const image = new Image();
-
-    image.src = root + path;
-
-    textures[key] = image;
-  }
-
-  /* ==================================================
-     LOAD AUDIO
-     ================================================== */
-
-  const clips = {};
-
-  for (const name of [
-    "flap",
-    "pass",
-    "bounce",
-    "crash"
-  ]) {
-    const audio = new Audio(
-      root + "audio/" + name + ".ogg"
-    );
-
-    audio.preload = "auto";
-
-    clips[name] = audio;
-  }
-
-  function sound(name) {
-    if (!$("#sound").checked) {
-      return;
-    }
-
-    try {
-      const audio = clips[name].cloneNode();
-
-      audio.volume =
-        Number($("#volume").value) / 100;
-
-      audio.play().catch(() => {});
-    } catch (error) {
-      // Continue gameplay if audio is unavailable.
-    }
-  }
-
-  /* ==================================================
-     GAME STATE
-     ================================================== */
-
-  let streak = 0;
-  let comboFlash = 0;
-  let comboText = "";
-  let lastSavedFrame = 0;
-
-  let state = "ready";
-
-  let ball = {
-    x: 90,
-    y: 250,
-    vy: 0
-  };
-
-  let hoops = [];
-
-  let score = 0;
-  let best = 0;
-  let frame = 0;
-  let last = 0;
-  let acc = 0;
-
-  /* ==================================================
-     LOCAL STORAGE
-     ================================================== */
+  const canvas = $("#game");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = 360, H = 600, R = 16, STEP = 1000 / 60, TAU = Math.PI * 2;
+  const ROOT = "assets/flappy-dunk/";
+  const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+  const random = (a, b) => a + Math.random() * (b - a);
 
   function get(key, fallback) {
-    try {
-      return (
-        localStorage.getItem("msh.dunk." + key) ??
-        fallback
-      );
-    } catch (error) {
-      return fallback;
-    }
+    try { return localStorage.getItem("msh.dunk." + key) ?? fallback; }
+    catch (_) { return fallback; }
   }
-
   function set(key, value) {
-    try {
-      localStorage.setItem(
-        "msh.dunk." + key,
-        String(value)
-      );
-    } catch (error) {
-      // Continue gameplay if storage is unavailable.
-    }
+    try { localStorage.setItem("msh.dunk." + key, String(value)); }
+    catch (_) { /* Site data may be disabled. */ }
   }
 
-  best = Number(get("best", "0")) || 0;
+  const images = {};
+  for (const [key, path] of Object.entries({
+    basketball: "balls/normal.png", soccer: "balls/football.png",
+    tennis: "balls/tennis.png", wing: "balls/wing.png",
+    front: "hoops/hoopFront.png", back: "hoops/hoopBack.png"
+  })) {
+    images[key] = new Image();
+    images[key].src = ROOT + path;
+  }
+  function img(key, x, y, w, h) {
+    const image = images[key];
+    if (!image || !image.complete || !image.naturalWidth) return false;
+    ctx.drawImage(image, x, y, w, h);
+    return true;
+  }
+  const clips = {};
+  for (const name of ["flap", "pass", "bounce", "crash", "x2", "x3", "x4",
+    "BuildUp_Explosion_07", "newBestScore"]) {
+    clips[name] = new Audio(ROOT + "audio/" + name + ".ogg");
+    clips[name].preload = "auto";
+  }
+  function sound(name) {
+    if (!$("#sound").checked || !clips[name]) return;
+    try {
+      const audio = clips[name].cloneNode(true);
+      audio.volume = clamp(Number($("#volume").value) / 100, 0, 1);
+      audio.play().catch(() => {});
+    } catch (_) { /* Continue without audio. */ }
+  }
 
+  for (const id of ["ball", "background", "volume"]) {
+    const el = $("#" + id);
+    const value = get(id, el.value);
+    if (id === "volume" || Array.from(el.options).some(option => option.value === value)) {
+      el.value = value;
+    }
+    el.addEventListener(id === "volume" ? "input" : "change", () => set(id, el.value));
+  }
+  $("#sound").checked = get("sound", "true") === "true";
+  $("#sound").addEventListener("change", event => set("sound", event.target.checked));
+  let best = Math.max(0, Number(get("best", "0")) || 0);
+  const recentSaved = get("recent", "");
+  let recent = recentSaved === "" ? null : Math.max(0, Number(recentSaved) || 0);
   $("#best").textContent = best;
 
-  for (const id of [
-    "ball",
-    "background",
-    "volume"
-  ]) {
-    $("#" + id).value = get(
-      id,
-      $("#" + id).value
-    );
+  // Insert Recent between Score and Best; preserve existing HTML and CSS files.
+  const scorePanel = $(".score-panel");
+  const recentCard = document.createElement("div");
+  recentCard.innerHTML = '<span>Recent</span><strong id="recent">—</strong>';
+  scorePanel.insertBefore(recentCard, $("#best").parentElement);
+  scorePanel.style.gridTemplateColumns = "repeat(3, minmax(0, 1fr))";
+  scorePanel.style.gap = "8px";
+  for (const card of scorePanel.children) {
+    card.style.minWidth = "0";
+    card.style.padding = "12px 9px";
   }
+  $("#recent").textContent = recent === null ? "—" : recent;
 
-  $("#sound").checked =
-    get("sound", "true") === "true";
-
-  /* ==================================================
-     GAME MESSAGES
-     ================================================== */
+  let state = "ready", ball, hoops, score, passed, streak, meters;
+  let frame = 0, last = 0, accumulator = 0, lastSaved = 0;
+  let flash = 0, flashText = "", particles = [], newBestPlayed = false;
 
   function show(title, hint, button) {
     $("#status").textContent = title;
     $("#hint").textContent = hint;
     $("#start").textContent = button;
-
     $("#overlay").hidden = false;
   }
-
-  /* ==================================================
-     RESET GAME
-     ================================================== */
-
   function reset() {
     state = "ready";
-
-    ball = {
-      x: 90,
-      y: 245,
-      vy: 0
-    };
-
+    ball = { x: 90, y: 245, vy: 0 };
     hoops = [];
-
-    score = 0;
-    streak = 0;
-    hoopsPassed = 0;
-
-    comboFlash = 0;
-    comboText = "";
-
-    frame = 0;
-    acc = 0;
-    lastSavedFrame = 0;
-
-    set("run", "");
-
+    score = passed = streak = meters = 0;
+    frame = lastSaved = accumulator = 0;
+    flash = 0; flashText = ""; particles = []; newBestPlayed = false;
     $("#score").textContent = "0";
-
-    show(
-      "Flappy Dunk",
-      "Tap, click, or press Space to bounce through hoops",
-      "Play"
-    );
+    set("run", "");
+    show("Flappy Dunk", "Select Play to start the game.", "Play");
   }
 
-  /* ==================================================
-     CREATE HOOP
-     ================================================== */
-
-  function makeHoop(x, y) {
-    return {
-      x,
-      y,
-      passed: false,
-      failed: false,
-      touched: false
-    };
+  // Distance remains private to the difficulty engine; no on-screen stages/meters.
+  function difficulty() { return Math.max(passed * 0.85, meters / 17); }
+  function speed() { return Math.min(3.35, 1.65 + difficulty() * 0.022); }
+  function makeHoop(x, y, index) {
+    const d = Math.max(index, difficulty());
+    let type = "static";
+    if (index >= 7 && Math.random() < clamp(0.16 + (d - 7) * 0.009, 0.16, 0.5)) {
+      type = Math.random() < 0.72 ? "vertical" : "lateral";
+    }
+    const tiltMax = d < 14 ? 0 : d < 26 ? 0.16 : d < 44 ? 0.35 : 0.48;
+    const angle = tiltMax && Math.random() < clamp((d - 10) / 60, 0.15, 0.72)
+      ? random(-tiltMax, tiltMax) : 0;
+    const width = d < 30 ? 42 : Math.max(35, 42 - (d - 30) * 0.13);
+    return { x, y, baseX: x, baseY: y, type, angle, width,
+      amp: type === "static" ? 0 : type === "vertical" ? random(20, 35) : random(17, 28),
+      phase: random(0, TAU), freq: random(0.018, 0.031) + Math.min(d / 8000, 0.008),
+      passed: false, touched: false, oldX: x, oldY: y };
   }
-
-  /* ==================================================
-     START / BOUNCE
-     ================================================== */
-
-  function start() {
+  function startFromButton() {
     if (state === "paused") {
       state = "playing";
       $("#overlay").hidden = true;
       return;
     }
-
-    if (state === "over") {
-      reset();
-    }
-
-    if (state === "ready") {
-      state = "playing";
-
-      $("#overlay").hidden = true;
-
-      hoops = [
-        makeHoop(265, 315),
-        makeHoop(510, 270)
-      ];
-    }
-
+    if (state === "over") reset();
+    if (state !== "ready") return;
+    state = "playing";
+    $("#overlay").hidden = true;
+    hoops = [makeHoop(265, 315, 0), makeHoop(510, 275, 1)];
+    bounce();
+  }
+  function bounce() {
+    if (state !== "playing") return;
     ball.vy = -5.3;
-
     sound("flap");
   }
-
-  /* ==================================================
-     GAME OVER
-     ================================================== */
-
   function over() {
-    if (state !== "playing") {
-      return;
-    }
-
+    if (state !== "playing") return;
     state = "over";
-
-    sound("crash");
-
-    if (score > best) {
-      best = score;
-
-      set("best", best);
-
-      $("#best").textContent = best;
-    }
-
+    recent = score; // Only completed games update Recent.
+    set("recent", recent);
+    $("#recent").textContent = recent;
     set("run", "");
-
-    show(
-      "Game Over",
-      `Score ${score} · Best ${best}`,
-      "Try Again"
-    );
+    sound("crash");
+    show("Game Over", `Score ${score} · Best ${best}`, "Try Again");
   }
 
-  /* ==================================================
-     UPDATE GAME PHYSICS
-     ================================================== */
+  function puff(x, y, count, fiery = false) {
+    for (let i = 0; i < count; i++) {
+      const life = random(16, 33);
+      particles.push({ x, y, vx: random(-2.8, 2.8), vy: random(-3.3, 1.2),
+        life, max: life, size: random(2, fiery ? 8 : 5),
+        color: fiery ? ["#ff471b", "#ffae15", "#ffe95f"][i % 3]
+          : ["#ffffff", "#ffe56a", "#ffb470"][i % 3] });
+    }
+    if (particles.length > 180) particles.splice(0, particles.length - 180);
+  }
+  function updateParticles() {
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.07; p.life--;
+    }
+    particles = particles.filter(p => p.life > 0);
+  }
+  function local(x, y, hoop) {
+    const dx = x - hoop.x, dy = y - hoop.y;
+    const c = Math.cos(hoop.angle), s = Math.sin(hoop.angle);
+    return { x: dx * c + dy * s, y: -dx * s + dy * c };
+  }
+  function passedHoop(hoop, clean) {
+    hoop.passed = true;
+    passed++;
+    if (clean) {
+      streak++;
+      const multiplier = streak + 1;
+      score += multiplier;
+      flashText = `SWISH x${multiplier}!`;
+      flash = 65;
+      sound(multiplier === 2 ? "x2" : multiplier === 3 ? "x3" : "x4");
+      if (multiplier >= 5) {
+        if (multiplier === 5) sound("BuildUp_Explosion_07");
+        puff(hoop.x, hoop.y, 22, true);
+      } else puff(hoop.x, hoop.y, 11);
+    } else {
+      streak = 0; score++; flashText = "+1"; flash = 30;
+      puff(hoop.x, hoop.y, 6); sound("pass");
+    }
+    $("#score").textContent = score;
+    if (score > best) {
+      best = score;
+      set("best", best);
+      $("#best").textContent = best;
+      if (!newBestPlayed && score > 5) {
+        sound("newBestScore"); newBestPlayed = true;
+      }
+    }
+  }
 
   function tick() {
     frame++;
-
-    ball.vy = Math.min(
-      ball.vy + 0.23,
-      7.5
-    );
-
-    const previousY = ball.y;
-
+    const oldY = ball.y;
+    ball.vy = Math.min(ball.vy + 0.23, 7.5);
     ball.y += ball.vy;
-
-    if (comboFlash > 0) {
-      comboFlash--;
-    }
-
-    /* ==================================================
-       PROGRESSIVE SPEED
-
-       Based on hoops successfully passed,
-       NOT the total score.
-
-       0 hoops  = 1.65
-       20 hoops = 2.15
-       40 hoops = 2.65
-       60 hoops = 3.15
-       74 hoops = 3.50
-       ================================================== */
-
-    const speed = getSpeed();
-
+    if (flash > 0) flash--;
+    updateParticles();
+    const movementSpeed = speed();
+    meters += movementSpeed / 7.5;
     for (const hoop of hoops) {
-
-      /* Move hoop */
-
-      hoop.x -= speed;
-
-      /* ==================================================
-         RIM CONTACT DETECTION
-         ================================================== */
-
-      if (
-        !hoop.passed &&
-        Math.abs(ball.x - hoop.x) < 55 &&
-        Math.abs(ball.y - hoop.y) < 24
-      ) {
-        const rimDistance = Math.abs(
-          Math.abs(ball.x - hoop.x) - 41
-        );
-
-        if (
-          rimDistance < 17 &&
-          Math.abs(ball.y - hoop.y) < 17
-        ) {
+      hoop.oldX = hoop.x; hoop.oldY = hoop.y;
+      hoop.baseX -= movementSpeed;
+      const oscillation = Math.sin(frame * hoop.freq + hoop.phase) * hoop.amp;
+      hoop.x = hoop.baseX + (hoop.type === "lateral" ? oscillation : 0);
+      hoop.y = hoop.baseY + (hoop.type === "vertical" ? oscillation : 0);
+      if (hoop.passed) continue;
+      const previous = local(ball.x, oldY, { ...hoop, x: hoop.oldX, y: hoop.oldY });
+      const current = local(ball.x, ball.y, hoop);
+      const relativeDown = current.y - previous.y;
+      const edge = hoop.width - 5;
+      if (Math.abs(current.y) < R + 5 &&
+          Math.abs(Math.abs(current.x) - hoop.width) < R + 5) {
+        if (!hoop.touched && Math.abs(current.x) < hoop.width + R + 5) sound("bounce");
+        hoop.touched = true;
+      }
+      if (previous.y <= 0 && current.y >= 0 && relativeDown > 0) {
+        const ratio = clamp(-previous.y / (relativeDown || 1), 0, 1);
+        const crossingX = previous.x + (current.x - previous.x) * ratio;
+        if (Math.abs(crossingX) <= edge) {
+          const clean = !hoop.touched &&
+            Math.abs(crossingX) <= Math.max(8, hoop.width - R - 4);
+          passedHoop(hoop, clean);
+        } else if (Math.abs(crossingX) < hoop.width + R) {
           hoop.touched = true;
         }
       }
-
-      /* ==================================================
-         PASS THROUGH HOOP
-         ================================================== */
-
-      if (
-        !hoop.passed &&
-        ball.vy > 0 &&
-        previousY <= hoop.y &&
-        ball.y >= hoop.y
-      ) {
-
-        if (Math.abs(ball.x - hoop.x) < 34) {
-
-          hoop.passed = true;
-
-          /* Count successful hoops separately */
-
-          hoopsPassed++;
-
-          /* Determine clean swish */
-
-          const clean =
-            !hoop.touched &&
-            Math.abs(ball.x - hoop.x) <= 22;
-
-          if (clean) {
-
-            /* Unlimited swish scoring */
-
-            streak++;
-
-            const points = streak + 1;
-
-            score += points;
-
-            comboText =
-              "SWISH! +" + points;
-
-            comboFlash = 65;
-
-          } else {
-
-            /* Rim contact resets swish streak */
-
-            streak = 0;
-
-            score++;
-
-            comboText = "+1";
-
-            comboFlash = 35;
-          }
-
-          $("#score").textContent = score;
-
-          sound("pass");
-
-          if (score > best) {
-            best = score;
-
-            set("best", best);
-
-            $("#best").textContent = best;
-          }
-
-        } else if (
-          hoop.x > ball.x - 38 &&
-          hoop.x < ball.x + 38
-        ) {
-
-          hoop.failed = true;
-
-          over();
-        }
-      }
-
-      /* Missed hoop */
-
-      if (
-        !hoop.passed &&
-        hoop.x + 40 < ball.x - 16
-      ) {
+      if (!hoop.passed && hoop.baseX + hoop.amp + hoop.width + R < ball.x) {
         over();
+        return;
       }
     }
-
-    /* ==================================================
-       REMOVE OFFSCREEN HOOPS
-       ================================================== */
-
-    hoops = hoops.filter(
-      (hoop) => hoop.x > -65
-    );
-
-    /* ==================================================
-       GENERATE NEW HOOPS
-       ================================================== */
-
-    if (
-      hoops.length &&
-      hoops[hoops.length - 1].x < W - 145
-    ) {
-      const previousHoop =
-        hoops[hoops.length - 1];
-
-      hoops.push(
-        makeHoop(
-          previousHoop.x + 245,
-          175 + Math.random() * 220
-        )
-      );
+    hoops = hoops.filter(hoop => hoop.baseX > -100);
+    if (hoops.length && hoops[hoops.length - 1].baseX < W - 135) {
+      const previous = hoops[hoops.length - 1];
+      const gap = clamp(252 - difficulty() * 0.35, 214, 252);
+      const y = clamp(previous.baseY + random(-95, 95), 205, 385);
+      hoops.push(makeHoop(previous.baseX + gap, y, passed + hoops.length));
     }
-
-    /* ==================================================
-       CEILING AND FLOOR
-       ================================================== */
-
-    if (
-      ball.y > H - 22 ||
-      ball.y < 16
-    ) {
+    if (ball.y > H - R - 12 || ball.y < R) {
       over();
-    }
-
-    /* ==================================================
-       SAVE GAME
-
-       Include hoopsPassed so speed is restored.
-       ================================================== */
-
-    if (
-      state === "playing" &&
-      frame - lastSavedFrame >= 30
-    ) {
-      lastSavedFrame = frame;
-
-      set(
-        "run",
-        JSON.stringify({
-          ball,
-          hoops,
-          score,
-          streak,
-          hoopsPassed,
-          frame
-        })
-      );
-    }
-  }
-
-  /* ==================================================
-     DRAW BALL
-     ================================================== */
-
-  function drawBall() {
-    ctx.save();
-
-    ctx.translate(
-      ball.x,
-      ball.y
-    );
-
-    ctx.rotate(frame * 0.025);
-
-    const kind = $("#ball").value;
-    const sprite = textures[kind];
-
-    if (
-      sprite &&
-      sprite.complete &&
-      sprite.naturalWidth
-    ) {
-      ctx.drawImage(
-        sprite,
-        -17,
-        -17,
-        34,
-        34
-      );
-
-      ctx.restore();
-
       return;
     }
-
-    /* Fallback ball */
-
-    ctx.beginPath();
-    ctx.arc(0, 0, 16, 0, Math.PI * 2);
-
-    ctx.fillStyle =
-      kind === "basketball"
-        ? "#f18a2d"
-        : kind === "soccer"
-          ? "#ffffff"
-          : "#c8ed3b";
-
-    ctx.fill();
-
-    ctx.lineWidth = 2;
-
-    ctx.strokeStyle =
-      kind === "basketball"
-        ? "#58351f"
-        : kind === "soccer"
-          ? "#252525"
-          : "#ffffff";
-
-    ctx.stroke();
-
-    ctx.save();
-
-    ctx.beginPath();
-    ctx.arc(0, 0, 16, 0, Math.PI * 2);
-    ctx.clip();
-
-    if (kind === "basketball") {
-
-      ctx.beginPath();
-
-      ctx.moveTo(-16, 0);
-      ctx.lineTo(16, 0);
-
-      ctx.moveTo(0, -16);
-      ctx.lineTo(0, 16);
-
-      ctx.moveTo(-12, -11);
-      ctx.quadraticCurveTo(9, 0, -12, 11);
-
-      ctx.moveTo(12, -11);
-      ctx.quadraticCurveTo(-9, 0, 12, 11);
-
-      ctx.stroke();
-
-    } else if (kind === "soccer") {
-
-      ctx.fillStyle = "#222222";
-
-      ctx.beginPath();
-
-      for (let i = 0; i < 5; i++) {
-        const angle =
-          -Math.PI / 2 + i * Math.PI * 2 / 5;
-
-        ctx.lineTo(
-          Math.cos(angle) * 8,
-          Math.sin(angle) * 8
-        );
-      }
-
-      ctx.closePath();
-      ctx.fill();
-
-      for (let i = 0; i < 5; i++) {
-        const angle = i * Math.PI * 2 / 5;
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-          Math.cos(angle) * 8,
-          Math.sin(angle) * 8
-        );
-
-        ctx.lineTo(
-          Math.cos(angle) * 17,
-          Math.sin(angle) * 17
-        );
-
-        ctx.stroke();
-      }
-
-    } else {
-
-      ctx.beginPath();
-      ctx.arc(-12, 0, 13, -1.2, 1.2);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(12, 0, 13, 1.95, 4.35);
-      ctx.stroke();
+    if (state === "playing" && frame - lastSaved >= 30) {
+      lastSaved = frame;
+      set("run", JSON.stringify({ ball, hoops, score, passed, streak, meters, frame }));
     }
-
-    ctx.restore();
-    ctx.restore();
   }
 
-  /* ==================================================
-     DRAW GAME
-     ================================================== */
-
+  function drawBall() {
+    if (streak >= 4) {
+      for (let i = 0; i < 6; i++) {
+        const angle = frame * 0.11 + i * TAU / 6;
+        const x = ball.x - 8 + Math.cos(angle) * 8;
+        const y = ball.y + Math.sin(angle) * 13;
+        ctx.fillStyle = i % 2 ? "#ff7a17a8" : "#ffe852ac";
+        ctx.beginPath();
+        ctx.ellipse(x - 13, y, 9 + (i % 3) * 3, 5, angle, 0, TAU);
+        ctx.fill();
+      }
+      if (frame % 3 === 0) puff(ball.x - 10, ball.y, 2, true);
+    }
+    const flap = Math.sin(frame * 0.35) * 5;
+    ctx.save(); ctx.translate(ball.x, ball.y);
+    if (!img("wing", -31, -13 + flap / 2, 23, 25)) {
+      ctx.fillStyle = "white"; ctx.fillRect(-26, -7, 15, 11);
+    }
+    ctx.save(); ctx.scale(-1, 1);
+    img("wing", -31, -13 + flap / 2, 23, 25);
+    ctx.restore();
+    ctx.rotate(frame * 0.027);
+    if (!img($("#ball").value, -R, -R, R * 2, R * 2)) {
+      ctx.fillStyle = "#f18a2d";
+      ctx.beginPath(); ctx.arc(0, 0, R, 0, TAU); ctx.fill();
+      ctx.strokeStyle = "#332521"; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawHoop(hoop, foreground) {
+    if (hoop.passed && hoop.baseX < ball.x - 65) return;
+    ctx.save(); ctx.translate(hoop.x, hoop.y); ctx.rotate(hoop.angle);
+    ctx.scale(hoop.width / 42, 1);
+    if (!foreground) {
+      ctx.strokeStyle = "#ffffffb8"; ctx.lineWidth = 2;
+      for (let i = -3; i <= 3; i++) {
+        ctx.beginPath(); ctx.moveTo(i * 10, 6); ctx.lineTo(i * 7, 31); ctx.stroke();
+      }
+      ctx.beginPath(); ctx.moveTo(-23, 31); ctx.lineTo(23, 31); ctx.stroke();
+      if (!img("back", -48, -20, 96, 45)) {
+        ctx.strokeStyle = "#b82124"; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.ellipse(0, 0, 42, 11, 0, Math.PI, TAU); ctx.stroke();
+      }
+    } else if (!img("front", -48, -20, 96, 45)) {
+      ctx.strokeStyle = "#f74743"; ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.ellipse(0, 0, 42, 11, 0, 0, Math.PI); ctx.stroke();
+    }
+    ctx.restore();
+  }
   function draw() {
-    const background = $("#background").value;
-
-    const colors = {
-      sky: ["#7cd7f5", "#d4f5ff"],
-      sunset: ["#e98a93", "#ffcf8a"],
-      night: ["#182747", "#56618b"],
-      mint: ["#9ce5bd", "#dcffdc"]
+    const palettes = {
+      sky: ["#7cd7f5", "#d4f5ff"], sunset: ["#e98a93", "#ffcf8a"],
+      night: ["#182747", "#56618b"], mint: ["#9ce5bd", "#dcffdc"]
     };
-
-    /* Correct background-color selection */
-
-    const selectedColors =
-      colors[background] || colors.sky;
-
-    const gradient =
-      ctx.createLinearGradient(0, 0, 0, H);
-
-    gradient.addColorStop(
-      0,
-      selectedColors[0]
-    );
-
-    gradient.addColorStop(
-      1,
-      selectedColors[1]
-    );
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, W, H);
-
-    /* Background decoration */
-
-    ctx.fillStyle = "#ffffff33";
-
-    for (let i = 0; i < 5; i++) {
-      let x =
-        (i * 120 - frame * 0.2) % (W + 100);
-
-      if (x < 0) {
-        x += W + 100;
-      }
-
+    const [top, bottom] = palettes[$("#background").value] || palettes.sky;
+    const gradient = ctx.createLinearGradient(0, 0, 0, H);
+    gradient.addColorStop(0, top); gradient.addColorStop(1, bottom);
+    ctx.fillStyle = gradient; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#ffffff2b";
+    for (let i = 0; i < 7; i++) {
+      let x = (i * 105 - frame * 0.18) % 480;
+      if (x < -40) x += 480;
       ctx.beginPath();
-
-      ctx.arc(
-        x,
-        90 + i * 75,
-        28,
-        0,
-        Math.PI * 2
-      );
-
+      ctx.arc(x, 85 + (i * 77) % 430, 22 + (i % 3) * 8, 0, TAU);
       ctx.fill();
     }
-
-    /* ==================================================
-       DRAW HOOPS
-       ================================================== */
-
     for (const hoop of hoops) {
-      const hoopBack = textures.hoopBack;
-
-      if (
-        hoopBack.complete &&
-        hoopBack.naturalWidth
-      ) {
-        ctx.drawImage(
-          hoopBack,
-          hoop.x - 44,
-          hoop.y - 12,
-          88,
-          44
-        );
-      }
-
-      /* Hoop ring */
-
-      ctx.strokeStyle = "#eb6550";
-      ctx.lineWidth = 6;
-
-      ctx.beginPath();
-
-      ctx.ellipse(
-        hoop.x,
-        hoop.y,
-        41,
-        11,
-        0,
-        0,
-        Math.PI * 2
-      );
-
-      ctx.stroke();
-
-      /* Hoop net */
-
-      ctx.strokeStyle = "#ffffffa8";
-      ctx.lineWidth = 2;
-
-      for (let j = -3; j <= 3; j++) {
-        ctx.beginPath();
-
-        ctx.moveTo(
-          hoop.x + j * 10,
-          hoop.y + 9
-        );
-
-        ctx.lineTo(
-          hoop.x + j * 7,
-          hoop.y + 33
-        );
-
-        ctx.stroke();
-      }
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        hoop.x - 30,
-        hoop.y + 33
-      );
-
-      ctx.lineTo(
-        hoop.x + 30,
-        hoop.y + 33
-      );
-
-      ctx.stroke();
-
-      const hoopFront = textures.hoopFront;
-
-      if (
-        hoopFront.complete &&
-        hoopFront.naturalWidth
-      ) {
-        ctx.drawImage(
-          hoopFront,
-          hoop.x - 44,
-          hoop.y - 12,
-          88,
-          44
-        );
-      }
-    }
-
-    /* Draw ball */
-
-    drawBall();
-
-    /* ==================================================
-       DRAW SCORE
-       ================================================== */
-
-    ctx.textAlign = "center";
-    ctx.font = "bold 40px Rubik, sans-serif";
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#17273c";
-
-    ctx.strokeText(
-      String(score),
-      W / 2,
-      64
-    );
-
-    ctx.fillStyle = "white";
-
-    ctx.fillText(
-      String(score),
-      W / 2,
-      64
-    );
-
-    /* ==================================================
-       DRAW SWISH BONUS
-       ================================================== */
-
-    if (comboFlash > 0) {
-      ctx.save();
-
-      ctx.globalAlpha = Math.min(
-        1,
-        comboFlash / 16
-      );
-
-      ctx.font = "bold 26px Rubik, sans-serif";
-      ctx.lineWidth = 4;
-
-      ctx.strokeText(
-        comboText,
-        W / 2,
-        110
-      );
-
-      ctx.fillStyle = "#ffe15b";
-
-      ctx.fillText(
-        comboText,
-        W / 2,
-        110
-      );
-
-      ctx.restore();
-    }
-
-    /* Floor */
-
-    ctx.fillStyle = "#d54b55";
-    ctx.fillRect(0, H - 12, W, 12);
-  }
-
-  /* ==================================================
-     ANIMATION LOOP
-     ================================================== */
-
-  function loop(time) {
-    if (!last) {
-      last = time;
-    }
-
-    acc += Math.min(
-      50,
-      time - last
-    );
-
-    last = time;
-
-    while (acc >= 1000 / 60) {
-      if (state === "playing") {
-        tick();
+      if (hoop.type === "static" || hoop.passed) continue;
+      ctx.save(); ctx.strokeStyle = "#ffffff70"; ctx.lineWidth = 2;
+      ctx.setLineDash([5, 7]); ctx.beginPath();
+      if (hoop.type === "vertical") {
+        ctx.moveTo(hoop.baseX, hoop.baseY - hoop.amp);
+        ctx.lineTo(hoop.baseX, hoop.baseY + hoop.amp);
       } else {
-        frame++;
+        ctx.moveTo(hoop.baseX - hoop.amp, hoop.baseY);
+        ctx.lineTo(hoop.baseX + hoop.amp, hoop.baseY);
       }
-
-      acc -= 1000 / 60;
+      ctx.stroke(); ctx.restore();
     }
-
+    for (const hoop of hoops) drawHoop(hoop, false);
+    for (const p of particles) {
+      ctx.globalAlpha = clamp(p.life / p.max, 0, 1);
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, TAU); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    drawBall();
+    for (const hoop of hoops) drawHoop(hoop, true);
+    ctx.textAlign = "center";
+    ctx.font = "bold 40px Rubik, Arial, sans-serif";
+    ctx.strokeStyle = "#17273c"; ctx.lineWidth = 5;
+    ctx.strokeText(String(score), W / 2, 60);
+    ctx.fillStyle = "white"; ctx.fillText(String(score), W / 2, 60);
+    if (flash > 0) {
+      ctx.globalAlpha = Math.min(1, flash / 16);
+      ctx.font = "bold 25px Rubik, Arial, sans-serif";
+      ctx.strokeStyle = "#72300a"; ctx.lineWidth = 5;
+      ctx.strokeText(flashText, W / 2, 110);
+      ctx.fillStyle = streak >= 4 ? "#ff6b18" : "#ffe15b";
+      ctx.fillText(flashText, W / 2, 110);
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = "#d54b55"; ctx.fillRect(0, H - 12, W, 12);
+  }
+  function loop(time) {
+    if (!last) last = time;
+    accumulator += Math.min(50, time - last);
+    last = time;
+    while (accumulator >= STEP) {
+      if (state === "playing") tick();
+      else { frame++; updateParticles(); }
+      accumulator -= STEP;
+    }
     draw();
-
     requestAnimationFrame(loop);
   }
 
-  /* ==================================================
-     CONTROLS
-     ================================================== */
-
-  $("#start").onclick = (event) => {
+  $("#start").addEventListener("click", event => {
     event.stopPropagation();
-    start();
-  };
-
-  canvas.addEventListener(
-    "pointerdown",
-    (event) => {
-      event.preventDefault();
-      start();
+    startFromButton();
+  });
+  canvas.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    if (state === "playing") bounce();
+  });
+  window.addEventListener("keydown", event => {
+    if (event.code !== "Space" && event.code !== "ArrowUp") return;
+    const tag = document.activeElement?.tagName || "";
+    if (["INPUT", "SELECT", "TEXTAREA"].includes(tag)) return;
+    if (state !== "playing") {
+      if (event.code === "Space") event.preventDefault();
+      return;
     }
-  );
+    if (event.repeat) return;
+    event.preventDefault();
+    bounce();
+  }, true);
+  $("#restart").addEventListener("click", reset);
 
-  window.addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        (
-          event.code === "Space" ||
-          event.code === "ArrowUp"
-        ) &&
-        !event.repeat
-      ) {
-        event.preventDefault();
-        start();
-      }
-    }
-  );
-
-  $("#restart").onclick = reset;
-
-  /* ==================================================
-     SAVE SETTINGS
-     ================================================== */
-
-  for (const id of [
-    "ball",
-    "background",
-    "volume",
-    "sound"
-  ]) {
-    $("#" + id).addEventListener(
-      "change",
-      () => {
-        const element = $("#" + id);
-
-        const value =
-          element.type === "checkbox"
-            ? element.checked
-            : element.value;
-
-        set(id, value);
-      }
-    );
-  }
-
-  /* ==================================================
-     RESTORE SAVED GAME
-     ================================================== */
-
+  const previousRun = get("run", "null");
   reset();
-
   try {
-    const saved = JSON.parse(
-      get("run", "null")
-    );
-
-    if (
-      saved &&
-      saved.ball &&
-      Array.isArray(saved.hoops) &&
-      saved.hoops.length
-    ) {
+    const saved = JSON.parse(previousRun);
+    if (saved && saved.ball && Array.isArray(saved.hoops) && saved.hoops.length) {
       ball = saved.ball;
-      hoops = saved.hoops;
-
-      score = Number(saved.score) || 0;
-      streak = Number(saved.streak) || 0;
-      frame = Number(saved.frame) || 0;
-
-      /* Restore difficulty progression */
-
-      hoopsPassed = Math.max(
-        0,
-        Number(saved.hoopsPassed) || 0
-      );
-
+      hoops = saved.hoops.map(hoop => ({
+        ...hoop, baseX: hoop.baseX ?? hoop.x, baseY: hoop.baseY ?? hoop.y,
+        oldX: hoop.x, oldY: hoop.y, type: hoop.type || "static",
+        angle: hoop.angle || 0, width: hoop.width || 42,
+        amp: hoop.amp || 0, phase: hoop.phase || 0, freq: hoop.freq || 0.024
+      }));
+      score = Math.max(0, Number(saved.score) || 0);
+      passed = Math.max(0, Number(saved.passed ?? saved.hoopsPassed) || 0);
+      streak = Math.max(0, Number(saved.streak) || 0);
+      meters = Math.max(0, Number(saved.meters) || 0);
+      frame = Math.max(0, Number(saved.frame) || 0);
       $("#score").textContent = score;
-
       state = "paused";
-
-      show(
-        "Continue Game",
-        `Saved score: ${score}`,
-        "Resume"
-      );
+      show("Continue Game", `Saved score: ${score}`, "Resume");
     }
-  } catch (error) {
-    // Ignore invalid saved game data.
-  }
-
+  } catch (_) { /* Ignore corrupt saved progress. */ }
   requestAnimationFrame(loop);
-
 })();
