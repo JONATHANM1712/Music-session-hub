@@ -1,0 +1,897 @@
+
+/* ==========================================================
+   DOODLE JUMP — MUSIC SESSION HUB
+   FROSTED GLASS GAME SKIN
+
+   Matching Flappy Bird & Flappy Dunk:
+   - Blurred Premium wallpaper
+   - Frosted transparent settings panel
+   - Rubik typography
+   - Yellow buttons and controls
+   - Dark-red Spotify Free restriction
+   - Responsive desktop and mobile layout
+
+   IMPORTANT:
+   Do not modify the shared style.css.
+   ========================================================== */
+
+/* ==========================================================
+   1. PAGE FOUNDATION
+   ========================================================== */
+
+body.doodle-jump-page,
+body.doodle-jump-page * {
+  box-sizing: border-box;
+}
+
+body.music-game-page.doodle-jump-page {
+  margin: 0;
+  min-height: 100vh;
+  color: #ffffff;
+  font: 16px Rubik, Arial, sans-serif;
+}
+
+/* ==========================================================
+   2. PREMIUM BACKGROUND
+
+   Reuses the existing Flappy Dunk wallpaper.
+   The selectable backgrounds INSIDE the game remain
+   unchanged and are controlled by doodle-jump.js.
+   ========================================================== */
+
+body.music-game-page.doodle-jump-page.premium-access {
+  position: relative;
+  isolation: isolate;
+  background: #17202b !important;
+}
+
+body.music-game-page.doodle-jump-page.premium-access::before {
+  content: "";
+  display: block !important;
+
+  position: fixed;
+  inset: -20px;
+
+  background-image:
+    linear-gradient(
+      rgba(9, 16, 28, 0.18),
+      rgba(9, 16, 28, 0.30)
+    ),
+    url("assets/doodle-background.jpg");
+
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  filter: blur(5px);
+
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ==========================================================
+   3. SPOTIFY FREE BACKGROUND
+   ========================================================== */
+
+body.music-game-page.doodle-jump-page.free-access {
+  position: relative;
+  isolation: isolate;
+  background: #5c0000 !important;
+}
+
+body.music-game-page.doodle-jump-page.free-access::before {
+  display: none !important;
+}
+
+/* Disable secondary wallpaper overlays from shared CSS. */
+
+body.music-game-page.doodle-jump-page::after {
+  display: none !important;
+}
+
+/* ==========================================================
+   4. HIDDEN CONTENT
+   ========================================================== */
+
+body.doodle-jump-page [hidden] {
+  display: none !important;
+}
+
+/* ==========================================================
+   5. MAIN CONTENT
+   ========================================================== */
+
+body.doodle-jump-page #game-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ==========================================================
+   6. HEADER
+   ========================================================== */
+
+body.doodle-jump-page .dj-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+body.doodle-jump-page .dj-back {
+  color: #bde8ff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.doodle-jump-page .dj-back:hover {
+  text-decoration: underline;
+}
+
+body.doodle-jump-page .dj-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+body.doodle-jump-page .dj-mark {
+  display: grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 10px;
+  background: #f9cd53;
+  color: #1b2530;
+
+  font-size: 23px;
+  font-weight: 800;
+}
+
+body.doodle-jump-page .dj-tag {
+  padding: 8px 13px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ==========================================================
+   7. RESPONSIVE GAME LAYOUT
+
+   Desktop:
+     Game on left
+     Settings on right
+   ========================================================== */
+
+body.doodle-jump-page .dj-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 420px)
+    minmax(280px, 360px);
+
+  align-items: start;
+  justify-content: center;
+
+  gap: 28px;
+}
+
+body.doodle-jump-page .dj-game-column {
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+}
+
+/* ==========================================================
+   8. GAME CANVAS
+   ========================================================== */
+
+body.doodle-jump-page .dj-game {
+  position: relative;
+
+  width: min(100%, 360px);
+  aspect-ratio: 360 / 620;
+
+  margin: 0 auto;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
+
+  background: #deebe3;
+
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.5);
+
+  touch-action: none;
+}
+
+body.doodle-jump-page .dj-game canvas {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  image-rendering: auto;
+  touch-action: none;
+}
+
+/* ==========================================================
+   9. GAME HUD
+   ========================================================== */
+
+body.doodle-jump-page .dj-hud {
+  position: absolute;
+
+  top: 12px;
+  left: 12px;
+  right: 12px;
+
+  z-index: 2;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  pointer-events: none;
+}
+
+body.doodle-jump-page .dj-hud-score {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 104px;
+  padding: 10px 13px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+
+  background: rgba(23, 32, 43, 0.65);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #ffffff;
+}
+
+body.doodle-jump-page .dj-hud-score span {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+body.doodle-jump-page .dj-hud-score strong {
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+body.doodle-jump-page .dj-hud-score small {
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ==========================================================
+   10. PAUSE BUTTON
+   ========================================================== */
+
+body.doodle-jump-page .dj-icon {
+  display: grid;
+  place-items: center;
+
+  width: 43px;
+  height: 43px;
+
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+
+  background: rgba(23, 32, 43, 0.70);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #ffffff;
+  font: 700 23px Rubik, Arial, sans-serif;
+
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+body.doodle-jump-page .dj-icon:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ==========================================================
+   11. POWER-UP FLIGHT STATUS
+   ========================================================== */
+
+body.doodle-jump-page .dj-flight-status {
+  position: absolute;
+
+  top: 91px;
+  left: 12px;
+
+  z-index: 2;
+
+  padding: 8px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 9px;
+
+  background: rgba(23, 32, 43, 0.70);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   12. GAME OVERLAY
+   ========================================================== */
+
+body.doodle-jump-page .dj-overlay {
+  position: absolute;
+  inset: 0;
+
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 16px;
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.48);
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  color: #ffffff;
+  text-align: center;
+}
+
+body.doodle-jump-page .dj-overlay-icon {
+  display: grid;
+  place-items: center;
+
+  width: 60px;
+  height: 60px;
+
+  border-radius: 15px;
+
+  background: #f9cd53;
+  color: #1b2530;
+
+  font-size: 34px;
+}
+
+body.doodle-jump-page .dj-overlay h1 {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+body.doodle-jump-page .dj-overlay p {
+  max-width: 270px;
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+body.doodle-jump-page .dj-overlay small {
+  max-width: 270px;
+
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================================
+   13. PRIMARY BUTTON
+   ========================================================== */
+
+body.doodle-jump-page .dj-primary {
+  min-width: 160px;
+
+  padding: 12px 20px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #f9cd53;
+  color: #1b2530;
+
+  font: 700 16px Rubik, Arial, sans-serif;
+
+  cursor: pointer;
+}
+
+body.doodle-jump-page .dj-primary:hover {
+  background: #ffdc78;
+}
+
+body.doodle-jump-page .dj-primary:active {
+  transform: translateY(1px);
+}
+
+/* ==========================================================
+   14. STEERING CONTROLS
+   ========================================================== */
+
+body.doodle-jump-page .dj-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  width: min(100%, 360px);
+  margin: 14px auto 0;
+}
+
+body.doodle-jump-page .dj-controls span {
+  color: #ffffff;
+  font-size: 11px;
+  text-align: center;
+}
+
+body.doodle-jump-page .dj-move {
+  flex-shrink: 0;
+
+  width: 73px;
+  height: 52px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+
+  background: rgba(23, 32, 43, 0.55);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #ffffff;
+  font-size: 28px;
+
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+
+body.doodle-jump-page .dj-move:hover,
+body.doodle-jump-page .dj-move.is-held {
+  background: #f9cd53;
+  color: #1b2530;
+}
+
+/* ==========================================================
+   15. FROSTED GLASS SETTINGS PANEL
+
+   This replaces the previous opaque panel.
+   ========================================================== */
+
+body.doodle-jump-page .dj-panel {
+  width: 100%;
+  min-width: 0;
+
+  padding: 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+
+  background: rgba(23, 32, 43, 0.55);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.40);
+
+  color: #ffffff;
+}
+
+body.doodle-jump-page .dj-panel h2 {
+  margin: 0 0 20px;
+
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+body.doodle-jump-page .dj-panel h3 {
+  margin: 0 0 14px;
+
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   16. SCORE PANEL
+   ========================================================== */
+
+body.doodle-jump-page .dj-score-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+body.doodle-jump-page .dj-score-panel > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+  min-width: 0;
+
+  padding: 13px 8px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  color: #ffffff;
+  text-align: center;
+}
+
+body.doodle-jump-page .dj-score-panel span {
+  color: #ffffff;
+  font-size: 12px;
+}
+
+body.doodle-jump-page .dj-score-panel strong {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   17. SETTINGS FIELDS
+   ========================================================== */
+
+body.doodle-jump-page .dj-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 8px;
+  margin-bottom: 20px;
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.doodle-jump-page .dj-field > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+body.doodle-jump-page .dj-field select {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 10px 13px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #1b2530;
+
+  font: 600 14px Rubik, Arial, sans-serif;
+
+  cursor: pointer;
+}
+
+body.doodle-jump-page .dj-field input[type="range"] {
+  width: 100%;
+  accent-color: #f9cd53;
+}
+
+body.doodle-jump-page .dj-field output {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ==========================================================
+   18. CHECKBOXES
+   ========================================================== */
+
+body.doodle-jump-page .dj-check {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+  margin: 0 0 20px;
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+body.doodle-jump-page .dj-check input {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  accent-color: #f9cd53;
+}
+
+/* ==========================================================
+   19. RESTART BUTTON
+   ========================================================== */
+
+body.doodle-jump-page .dj-secondary {
+  display: block;
+  width: 100%;
+
+  padding: 12px 15px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #f9cd53;
+  color: #1b2530;
+
+  font: 700 15px Rubik, Arial, sans-serif;
+
+  cursor: pointer;
+}
+
+body.doodle-jump-page .dj-secondary:hover {
+  background: #ffdc78;
+}
+
+/* ==========================================================
+   20. RESET SETTINGS BUTTON
+   ========================================================== */
+
+body.doodle-jump-page .dj-link-button {
+  display: block;
+
+  margin: 12px auto 0;
+  padding: 8px;
+
+  border: none;
+  background: transparent;
+
+  color: #bde8ff;
+
+  font: 600 13px Rubik, Arial, sans-serif;
+
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   21. NOTES AND DIVIDERS
+   ========================================================== */
+
+body.doodle-jump-page .dj-muted {
+  margin: 12px 0 0;
+
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+body.doodle-jump-page #tilt-status {
+  margin: -10px 0 20px;
+}
+
+body.doodle-jump-page .dj-divider {
+  height: 1px;
+
+  margin: 22px 0;
+
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ==========================================================
+   22. POWER-UP PREVIEW
+   ========================================================== */
+
+body.doodle-jump-page .dj-powerups {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 7px;
+}
+
+body.doodle-jump-page .dj-powerups > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+  min-width: 0;
+  min-height: 92px;
+
+  padding: 8px 3px;
+
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.10);
+}
+
+body.doodle-jump-page .dj-powerups img {
+  width: 48px;
+  height: 48px;
+
+  max-width: 100%;
+
+  object-fit: contain;
+}
+
+body.doodle-jump-page .dj-powerups span {
+  color: #ffffff;
+  font-size: 10px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   23. SPOTIFY PREMIUM REQUIRED
+
+   Matches Flappy Bird and Flappy Dunk.
+   ========================================================== */
+
+body.doodle-jump-page .premium-required {
+  width: calc(100% - 32px);
+  max-width: 540px;
+
+  margin: 12vh auto;
+  padding: 36px 28px;
+
+  border-radius: 24px;
+
+  background: #420000;
+  color: #ffffff;
+
+  text-align: center;
+
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.40);
+}
+
+body.doodle-jump-page .premium-required h1 {
+  margin: 0 0 16px;
+
+  color: #ffffff;
+  font-size: 28px;
+}
+
+body.doodle-jump-page .premium-required p {
+  margin: 0 0 20px;
+
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+body.doodle-jump-page .premium-required a {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   24. RESPONSIVE MOBILE LAYOUT
+   ========================================================== */
+
+@media (max-width: 830px) {
+
+  body.doodle-jump-page #game-content {
+    padding: 16px;
+  }
+
+  body.doodle-jump-page .dj-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  body.doodle-jump-page .dj-game-column {
+    max-width: 420px;
+  }
+
+  body.doodle-jump-page .dj-panel {
+    width: min(100%, 420px);
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  body.doodle-jump-page .dj-header {
+    gap: 12px;
+  }
+
+  body.doodle-jump-page .dj-brand {
+    font-size: 22px;
+  }
+
+  body.doodle-jump-page .dj-tag {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   25. VERY SMALL SCREENS
+   ========================================================== */
+
+@media (max-width: 375px) {
+
+  body.doodle-jump-page .dj-brand {
+    font-size: 20px;
+  }
+
+  body.doodle-jump-page .dj-back {
+    font-size: 12px;
+  }
+
+  body.doodle-jump-page .dj-panel {
+    padding: 16px;
+  }
+
+  body.doodle-jump-page .dj-score-panel {
+    gap: 6px;
+  }
+
+  body.doodle-jump-page .dj-score-panel strong {
+    font-size: 21px;
+  }
+
+  body.doodle-jump-page .dj-powerups span {
+    font-size: 9px;
+  }
+
+  body.doodle-jump-page .dj-move {
+    width: 62px;
+    height: 48px;
+  }
+}

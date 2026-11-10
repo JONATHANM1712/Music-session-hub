@@ -1,0 +1,493 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#17202b"
+  >
+
+  <title>Doodle Jump | Music Session Hub</title>
+
+  <!-- Shared fonts and styles -->
+  <link
+    rel="stylesheet"
+    href="../rubik-font.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="../style.css"
+  >
+
+  <!-- Doodle Jump frosted glass skin -->
+  <link
+    rel="stylesheet"
+    href="doodle-jump.css"
+  >
+
+  <!-- Spotify plan -->
+  <script src="../spotify-plan.js"></script>
+
+  <!-- Existing Premium access gate -->
+  <script
+    src="premium-gate.js"
+    defer
+  ></script>
+
+</head>
+
+<body class="music-game-page doodle-jump-page">
+
+  <!-- ============================================
+       PREMIUM GAME CONTENT
+       ============================================ -->
+
+  <main id="game-content" hidden>
+
+    <!-- Header -->
+
+    <header class="dj-header">
+
+      <a
+        class="dj-back"
+        href="../index.html#games"
+      >
+        ← Back to Games
+      </a>
+
+      <div class="dj-brand">
+        <span class="dj-mark">✦</span>
+        <span>Doodle Jump</span>
+      </div>
+
+      <span class="dj-tag">
+        Original APK artwork
+      </span>
+
+    </header>
+
+    <!-- ==========================================
+         GAME AND SETTINGS LAYOUT
+         ========================================== -->
+
+    <div class="dj-layout">
+
+      <!-- ========================================
+           GAME COLUMN
+           ======================================== -->
+
+      <section
+        class="dj-game-column"
+        aria-label="Game area"
+      >
+
+        <div class="dj-game">
+
+          <!-- Main game canvas -->
+
+          <canvas
+            id="game"
+            width="360"
+            height="620"
+            aria-label="Doodle Jump game"
+          ></canvas>
+
+          <!-- Game HUD -->
+
+          <div class="dj-hud">
+
+            <div class="dj-hud-score">
+
+              <span>HEIGHT</span>
+
+              <strong id="hud-score">
+                0
+              </strong>
+
+              <small id="hud-level">
+                LEVEL 1
+              </small>
+
+            </div>
+
+            <button
+              id="pause"
+              class="dj-icon"
+              type="button"
+              aria-label="Pause game"
+              disabled
+            >
+              Ⅱ
+            </button>
+
+          </div>
+
+          <!-- Flight power-up timer -->
+
+          <div
+            id="flight-status"
+            class="dj-flight-status"
+            hidden
+          ></div>
+
+          <!-- Game overlay -->
+
+          <div
+            id="overlay"
+            class="dj-overlay"
+          >
+
+            <div class="dj-overlay-icon">
+              ✦
+            </div>
+
+            <h1 id="status">
+              Doodle Jump
+            </h1>
+
+            <p id="hint">
+              Climb higher to score.
+              Use ← → or A / D to steer.
+            </p>
+
+            <button
+              id="start"
+              class="dj-primary"
+              type="button"
+            >
+              Play
+            </button>
+
+            <small id="overlay-extra">
+              Score rises with maximum height
+            </small>
+
+          </div>
+
+        </div>
+
+        <!-- ======================================
+             STEERING CONTROLS
+             ====================================== -->
+
+        <div
+          class="dj-controls"
+          aria-label="Steering controls"
+        >
+
+          <button
+            id="move-left"
+            class="dj-move"
+            type="button"
+            aria-label="Move left"
+          >
+            ←
+          </button>
+
+          <span>
+            Keyboard · Touch · Tilt
+          </span>
+
+          <button
+            id="move-right"
+            class="dj-move"
+            type="button"
+            aria-label="Move right"
+          >
+            →
+          </button>
+
+        </div>
+
+      </section>
+
+      <!-- ========================================
+           FROSTED GLASS SETTINGS PANEL
+           ======================================== -->
+
+      <aside class="dj-panel">
+
+        <h2>Game Settings</h2>
+
+        <!-- Score, recent and best -->
+
+        <div class="dj-score-panel">
+
+          <div>
+            <span>Score</span>
+            <strong id="score">0</strong>
+          </div>
+
+          <div>
+            <span>Recent</span>
+            <strong id="recent">—</strong>
+          </div>
+
+          <div>
+            <span>Best</span>
+            <strong id="best">0</strong>
+          </div>
+
+        </div>
+
+        <!-- ======================================
+             BACKGROUND SETTINGS
+             ====================================== -->
+
+        <label class="dj-field">
+
+          <span>Background</span>
+
+          <select id="background">
+
+            <option value="classic">
+              Original Paper
+            </option>
+
+            <option value="sky">
+              Blue Sky
+            </option>
+
+            <option value="mint">
+              Classic Light
+            </option>
+
+            <option value="sunset">
+              Sunset
+            </option>
+
+            <option value="night">
+              Night
+            </option>
+
+          </select>
+
+        </label>
+
+        <!-- ======================================
+             SOUND SETTINGS
+             ====================================== -->
+
+        <label class="dj-check">
+
+          <input
+            id="sound"
+            type="checkbox"
+            checked
+          >
+
+          <span>
+            Sound Enabled
+          </span>
+
+        </label>
+
+        <!-- Volume -->
+
+        <label class="dj-field">
+
+          <span>
+            Sound Volume
+            <output id="volume-label">65%</output>
+          </span>
+
+          <input
+            id="volume"
+            type="range"
+            min="0"
+            max="100"
+            value="65"
+          >
+
+        </label>
+
+        <!-- ======================================
+             TILT CONTROLS
+             ====================================== -->
+
+        <label class="dj-check">
+
+          <input
+            id="tilt"
+            type="checkbox"
+          >
+
+          <span>
+            Use Tilt Controls (Mobile)
+          </span>
+
+        </label>
+
+        <p
+          class="dj-muted"
+          id="tilt-status"
+        >
+          Keyboard and touch controls always work.
+        </p>
+
+        <!-- ======================================
+             RESTART AND RESET
+             ====================================== -->
+
+        <button
+          id="restart"
+          class="dj-secondary"
+          type="button"
+        >
+          ↻ Restart Game
+        </button>
+
+        <button
+          id="reset-settings"
+          class="dj-link-button"
+          type="button"
+        >
+          Reset Settings
+        </button>
+
+        <!-- ======================================
+             POWER-UP INFORMATION
+             ====================================== -->
+
+        <div class="dj-divider"></div>
+
+        <h3>
+          Original APK power-up artwork
+        </h3>
+
+        <div class="dj-powerups">
+
+          <div>
+
+            <img
+              src="assets/doodle-jump/powerups/spring-shoe.png"
+              alt=""
+            >
+
+            <span>Spring</span>
+
+          </div>
+
+          <div>
+
+            <img
+              src="assets/doodle-jump/powerups/double-spring-shoes.png"
+              alt=""
+            >
+
+            <span>Double Spring</span>
+
+          </div>
+
+          <div>
+
+            <img
+              src="assets/doodle-jump/powerups/trampoline.png"
+              alt=""
+            >
+
+            <span>Trampoline</span>
+
+          </div>
+
+          <div>
+
+            <img
+              src="assets/doodle-jump/powerups/propeller-1.png"
+              alt=""
+            >
+
+            <span>Helicopter</span>
+
+          </div>
+
+          <div>
+
+            <img
+              src="assets/doodle-jump/powerups/rocket-1.png"
+              alt=""
+            >
+
+            <span>Rocket</span>
+
+          </div>
+
+        </div>
+
+        <!-- ======================================
+             GAMEPLAY INFORMATION
+             ====================================== -->
+
+        <p class="dj-muted">
+          Scoring is based on maximum height reached,
+          not on platform landings.
+          Moving platforms become faster and farther
+          apart as you climb.
+          Brown platforms break on contact.
+          No enemies or shooting.
+        </p>
+
+        <p class="dj-muted">
+          Helicopter and Rocket flight durations
+          are gameplay approximations.
+          The original APK does not confirm
+          their exact internal timers.
+        </p>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- ============================================
+       SPOTIFY FREE RESTRICTION
+
+       Identical message to Flappy Bird
+       and Flappy Dunk.
+       ============================================ -->
+
+  <section
+    id="premium-required"
+    class="premium-required"
+    role="alert"
+    hidden
+  >
+
+    <h1>
+      Spotify Premium Required
+    </h1>
+
+    <p>
+      You must have Spotify Premium to access this.
+    </p>
+
+    <a href="../index.html#games">
+      ← Back to Games
+    </a>
+
+  </section>
+
+  <!-- ============================================
+       GAME SCRIPT LOADER
+
+       Existing premium-gate.js loads this
+       JavaScript for eligible plans.
+       ============================================ -->
+
+  <script
+    id="game-script-path"
+    type="application/json"
+  >"doodle-jump.js"</script>
+
+</body>
+</html>
