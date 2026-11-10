@@ -1,61 +1,39 @@
 
 /*
-  ==========================================================
-  DOODLE JUMP — MUSIC SESSION HUB
-  Original APK Asset Edition
+  DOODLE JUMP — Music Session Hub
+  Original APK sprite and OGG edition
+  (no generated character/platform/power-up art).
 
-  UPDATED: THREE MOVING PLATFORM SPEEDS
+  Custom gameplay:
+    Score = highest altitude reached (not platform landings);
+    Spring / Double Spring / Trampoline / Helicopter / Rocket;
+    progressive reachable platform gaps;
+    slow/medium/fast moving platforms;
+    breakable brown hazards; no enemies or shooting.
 
-  FEATURES
-  ----------------------------------------------------------
-  - Original APK character and platform sprites
-  - Original APK sound files
-  - Height-based scoring
-  - Progressive platform spacing
-  - Slow, Medium, and Fast moving platforms
-  - Spring
-  - Double Spring
-  - Trampoline
-  - Helicopter
-  - Rocket
-  - Breakable brown platforms
-  - Disappearing gray platforms
-  - Keyboard, touch, and optional tilt controls
-  - Local storage for settings, scores, and saved runs
-  - No enemies
-  - No shooting
+  UPDATE:
+    Moving platforms now travel edge-to-edge.
+    Each platform touches the left/right screen edge,
+    reverses direction, and continues moving.
+    Slow / Medium / Fast use different horizontal speeds.
 
-  Moving platform speeds are custom gameplay settings,
-  not verified numerical constants from the original APK.
-
-  Helicopter and Rocket durations are retained from
-  the supplied JavaScript:
-    Helicopter: 3.0 seconds
-    Rocket:     3.3 seconds
-
-  ==========================================================
+  Helicopter and Rocket flight times below are tuned
+  gameplay approximations. The supplied APK does not
+  establish exact internal flight timer constants.
 */
 
 (() => {
-  "use strict";
-
-  /* ======================================================
-     1. INITIALIZATION
-     ====================================================== */
+  'use strict';
 
   const el = id => document.getElementById(id);
 
-  const canvas = el("game");
+  const canvas = el('game');
 
-  if (!canvas || canvas.dataset.initialized === "1") {
-    return;
-  }
+  if (!canvas || canvas.dataset.initialized === '1') return;
 
-  canvas.dataset.initialized = "1";
+  canvas.dataset.initialized = '1';
 
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) return;
+  const ctx = canvas.getContext('2d');
 
   const W = canvas.width;
   const H = canvas.height;
@@ -67,186 +45,108 @@
   const GRAVITY = 0.42;
   const JUMP = -12.6;
 
-  const START_Y = 529;
+  // ==================================================
+  // MOVING PLATFORM SPEEDS
+  //
+  // Horizontal speeds in canvas pixels per second.
+  // Every moving platform reaches x=0 and x=W-PW.
+  // ==================================================
 
-  const clamp = (value, min, max) =>
-    Math.max(min, Math.min(max, value));
+  const MOVING_SPEEDS = Object.freeze({
+    slow: 100,
+    medium: 300,
+    fast: 500
+  });
 
-  const rand = (min, max) =>
-    min + Math.random() * (max - min);
-
-  /* ======================================================
-     2. FLIGHT POWER-UPS
-
-     Durations retained from the supplied source.
-     These are not verified original APK timer values.
-     ====================================================== */
+  // ==================================================
+  // FLIGHT POWER-UPS
+  // ==================================================
 
   const FLIGHT = Object.freeze({
     helicopter: {
       duration: 3.0,
       vy: -6.4
     },
-
     rocket: {
       duration: 3.3,
       vy: -15.5
     }
   });
 
-  /* ======================================================
-     3. MOVING PLATFORM SPEED PROFILES
+  const clamp = (v, lo, hi) =>
+    Math.max(lo, Math.min(hi, v));
 
-     frequency = horizontal oscillations per second
-     amplitude = horizontal travel radius in pixels
-
-     Three speed categories:
-       SLOW
-       MEDIUM
-       FAST
-     ====================================================== */
-
-  const MOVING_SPEEDS = Object.freeze({
-    slow: {
-      frequency: [0.65, 1.05],
-      amplitude: [12, 24]
-    },
-
-    medium: {
-      frequency: [1.25, 1.85],
-      amplitude: [20, 37]
-    },
-
-    fast: {
-      frequency: [2.15, 3.00],
-      amplitude: [28, 49]
-    }
-  });
-
-  /*
-    Distribution among moving platforms:
-
-    At minimum difficulty:
-      Slow   78%
-      Medium 20%
-      Fast    2%
-
-    At maximum difficulty:
-      Slow   20%
-      Medium 38%
-      Fast   42%
-  */
-
-  function chooseMovingSpeed(difficulty) {
-    const d = clamp(difficulty, 0, 1);
-
-    const slowChance = 0.78 - 0.58 * d;
-    const mediumChance = 0.20 + 0.18 * d;
-
-    const r = Math.random();
-
-    if (r < slowChance) {
-      return "slow";
-    }
-
-    if (r < slowChance + mediumChance) {
-      return "medium";
-    }
-
-    return "fast";
-  }
-
-  /* ======================================================
-     4. ASSET DIRECTORY
-     ====================================================== */
+  const rand = (lo, hi) =>
+    lo + Math.random() * (hi - lo);
 
   const scriptURL =
     document.currentScript?.src ||
-    new URL(
-      "doodle-jump.js",
-      document.baseURI
-    ).href;
+    new URL('doodle-jump.js', document.baseURI).href;
 
-  const asset = path =>
-    new URL(
-      "assets/doodle-jump/" + path,
-      scriptURL
-    ).href;
+  const asset = file =>
+    new URL('assets/doodle-jump/' + file, scriptURL).href;
 
-  /* ======================================================
-     5. LOCAL STORAGE
-     ====================================================== */
+  // ==================================================
+  // LOCAL STORAGE
+  // ==================================================
 
   const KEY = {
-    settings: "msh.doodlejump.settings",
-    best: "msh.doodlejump.height.best",
-    recent: "msh.doodlejump.height.recent",
-    run: "msh.doodlejump.height.run"
+    settings: 'msh.doodlejump.settings',
+    best: 'msh.doodlejump.height.best',
+    recent: 'msh.doodlejump.height.recent',
+    run: 'msh.doodlejump.height.run'
   };
 
   const DEFAULTS = {
-    background: "classic",
+    background: 'classic',
     sound: true,
     volume: 65,
     tilt: false
   };
 
   const storage = {
-    get(key, fallback) {
+    get(k, fallback) {
       try {
-        const value = localStorage.getItem(key);
+        const v = localStorage.getItem(k);
 
-        return value === null
+        return v == null
           ? fallback
-          : JSON.parse(value);
+          : JSON.parse(v);
+
       } catch {
         return fallback;
       }
     },
 
-    put(key, value) {
+    put(k, value) {
       try {
         localStorage.setItem(
-          key,
+          k,
           JSON.stringify(value)
         );
       } catch {}
     },
 
-    remove(key) {
+    remove(k) {
       try {
-        localStorage.removeItem(key);
+        localStorage.removeItem(k);
       } catch {}
     }
   };
 
-  const savedSettings = storage.get(
-    KEY.settings,
-    {}
-  );
-
   let settings = {
     ...DEFAULTS,
-    ...(
-      savedSettings &&
-      typeof savedSettings === "object"
-        ? savedSettings
-        : {}
-    )
+    ...storage.get(KEY.settings, {})
   };
 
-  const validBackgrounds = [
-    "classic",
-    "sky",
-    "mint",
-    "sunset",
-    "night"
-  ];
-
-  if (!validBackgrounds.includes(
-    settings.background
-  )) {
-    settings.background = "classic";
+  if (![
+    'classic',
+    'sky',
+    'mint',
+    'sunset',
+    'night'
+  ].includes(settings.background)) {
+    settings.background = 'classic';
   }
 
   settings.volume = clamp(
@@ -260,119 +160,90 @@
     Number(storage.get(KEY.best, 0)) || 0
   );
 
-  let recent = storage.get(
-    KEY.recent,
-    null
-  );
+  let recent = storage.get(KEY.recent, null);
 
-  /* ======================================================
-     6. ORIGINAL APK GRAPHICS
-     ====================================================== */
+  // ==================================================
+  // IMAGE ASSETS
+  // ==================================================
 
   const atlas = {
-    "doodle-right":
-      "sprites/doodle-right.png",
+    'doodle-right': 'sprites/doodle-right.png',
+    'doodle-left': 'sprites/doodle-left.png',
 
-    "doodle-left":
-      "sprites/doodle-left.png",
+    'doodle-right-jump':
+      'sprites/doodle-right-jump.png',
 
-    "doodle-right-jump":
-      "sprites/doodle-right-jump.png",
+    'doodle-left-jump':
+      'sprites/doodle-left-jump.png',
 
-    "doodle-left-jump":
-      "sprites/doodle-left-jump.png",
+    green: 'sprites/platform-green.png',
+    blue: 'sprites/platform-blue.png',
+    gray: 'sprites/platform-gray.png',
+    brown: 'sprites/platform-brown.png',
 
-    green:
-      "sprites/platform-green.png",
-
-    blue:
-      "sprites/platform-blue.png",
-
-    gray:
-      "sprites/platform-gray.png",
-
-    brown:
-      "sprites/platform-brown.png",
-
-    spring:
-      "powerups/spring-shoe.png",
+    spring: 'powerups/spring-shoe.png',
 
     doubleSpring:
-      "powerups/double-spring-shoes.png",
+      'powerups/double-spring-shoes.png',
 
-    trampoline:
-      "powerups/trampoline.png",
+    trampoline: 'powerups/trampoline.png',
 
     trampolineDown:
-      "powerups/trampoline-compressed.png",
+      'powerups/trampoline-compressed.png',
 
-    classic:
-      "backgrounds/classic-paper.png",
-
-    sky:
-      "backgrounds/sky.svg",
-
-    mint:
-      "backgrounds/mint.svg",
-
-    sunset:
-      "backgrounds/sunset.svg",
-
-    night:
-      "backgrounds/night.svg"
+    classic: 'backgrounds/classic-paper.png',
+    sky: 'backgrounds/sky.svg',
+    mint: 'backgrounds/mint.svg',
+    sunset: 'backgrounds/sunset.svg',
+    night: 'backgrounds/night.svg'
   };
 
   for (let n = 1; n <= 4; n++) {
-    atlas["propeller" + n] =
+    atlas['propeller' + n] =
       `powerups/propeller-${n}.png`;
   }
 
   for (let n = 1; n <= 9; n++) {
-    atlas["rocket" + n] =
+    atlas['rocket' + n] =
       `powerups/rocket-${n}.png`;
   }
 
   const images = {};
 
-  for (const [name, path] of Object.entries(
-    atlas
-  )) {
+  for (const [key, path] of Object.entries(atlas)) {
     const image = new Image();
 
     image.src = asset(path);
 
-    images[name] = image;
+    images[key] = image;
   }
 
-  /* ======================================================
-     7. ORIGINAL APK AUDIO
-     ====================================================== */
+  // ==================================================
+  // SOUND ASSETS
+  // ==================================================
 
   const audioFiles = {
-    jump: "jump.ogg",
-    spring: "feder.ogg",
-    doubleSpring: "springshoes.ogg",
-    trampoline: "trampoline.ogg",
-    helicopter: "propeller1.ogg",
-    rocket: "rocket.ogg",
-    break: "explodingplatform.ogg"
+    jump: 'jump.ogg',
+    spring: 'feder.ogg',
+    doubleSpring: 'springshoes.ogg',
+    trampoline: 'trampoline.ogg',
+    helicopter: 'propeller1.ogg',
+    rocket: 'rocket.ogg',
+    break: 'explodingplatform.ogg'
   };
 
   const sounds = Object.fromEntries(
     Object.entries(audioFiles).map(
-      ([name, path]) => [
-        name,
-        asset("audio/" + path)
+      ([k, v]) => [
+        k,
+        asset('audio/' + v)
       ]
     )
   );
 
   let activeAudio = null;
 
-  function playSound(
-    name,
-    isFlight = false
-  ) {
+  function playSound(name, isFlight = false) {
     if (
       !settings.sound ||
       settings.volume <= 0 ||
@@ -382,19 +253,19 @@
     }
 
     try {
-      const audio = new Audio(
-        sounds[name]
-      );
+      const a = new Audio(sounds[name]);
 
-      audio.volume =
-        settings.volume / 100;
+      a.volume = settings.volume / 100;
 
-      audio.play().catch(() => {});
+      a.play().catch(() => {});
 
       if (isFlight) {
-        activeAudio = audio;
+        activeAudio = a;
       }
-    } catch {}
+
+    } catch {
+      // Sound is optional.
+    }
   }
 
   function stopFlightAudio() {
@@ -409,16 +280,14 @@
     activeAudio = null;
   }
 
-  /* ======================================================
-     8. GAME STATE
-     ====================================================== */
+  // ==================================================
+  // GAME STATE
+  // ==================================================
 
-  let mode = "ready";
+  let mode = 'ready';
 
   let score = 0;
-
   let player = null;
-
   let platforms = [];
 
   let cameraY = 0;
@@ -431,10 +300,9 @@
   let highAltitude = 0;
 
   let flight = null;
-
   let lastFrame = 0;
-  let saveElapsed = 0;
 
+  let saveElapsed = 0;
   let recordAtStart = 0;
 
   let particles = [];
@@ -447,9 +315,9 @@
     right: false
   };
 
-  /* ======================================================
-     9. DIFFICULTY SYSTEM
-     ====================================================== */
+  // ==================================================
+  // DIFFICULTY AND LEVEL
+  // ==================================================
 
   function levelProgress() {
     return clamp(
@@ -462,84 +330,53 @@
   function level() {
     return Math.min(
       10,
-      1 + Math.floor(
-        levelProgress() * 10
-      )
+      1 + Math.floor(levelProgress() * 10)
     );
   }
 
-  /*
-    Platform gaps:
-
-    Beginning:
-      63–87 pixels
-
-    Maximum difficulty:
-      151–174 pixels
-
-    Moving platform probability:
-      8% at the beginning
-      50% at maximum difficulty
-
-    Slow, Medium, Fast distribution changes
-    independently according to altitude.
-  */
-
-  /* ======================================================
-     10. SCORE DISPLAY
-     ====================================================== */
+  // ==================================================
+  // USER INTERFACE
+  // ==================================================
 
   function refreshScore() {
-    el("hud-score").textContent =
-      score;
+    el('hud-score').textContent = score;
 
-    el("hud-level").textContent =
-      "LEVEL " + level();
+    el('hud-level').textContent =
+      'LEVEL ' + level();
 
-    el("score").textContent =
-      score;
+    el('score').textContent = score;
+    el('best').textContent = best;
 
-    el("best").textContent =
-      best;
-
-    el("recent").textContent =
-      recent == null
-        ? "—"
-        : recent;
+    el('recent').textContent =
+      recent == null ? '—' : recent;
   }
 
   function refreshSettings() {
-    el("background").value =
-      settings.background;
+    el('background').value = settings.background;
 
-    el("sound").checked =
-      !!settings.sound;
+    el('sound').checked = !!settings.sound;
 
-    el("volume").value =
-      settings.volume;
+    el('volume').value = settings.volume;
 
-    el("volume-label").textContent =
-      settings.volume + "%";
+    el('volume-label').textContent =
+      settings.volume + '%';
 
-    el("tilt").checked =
-      !!settings.tilt;
+    el('tilt').checked = !!settings.tilt;
   }
 
   function pauseButton() {
-    el("pause").disabled =
-      mode !== "playing" &&
-      mode !== "paused";
+    el('pause').disabled =
+      mode !== 'playing' &&
+      mode !== 'paused';
 
-    el("pause").textContent =
-      mode === "paused"
-        ? "▶"
-        : "Ⅱ";
+    el('pause').textContent =
+      mode === 'paused' ? '▶' : 'Ⅱ';
 
-    el("pause").setAttribute(
-      "aria-label",
-      mode === "paused"
-        ? "Resume game"
-        : "Pause game"
+    el('pause').setAttribute(
+      'aria-label',
+      mode === 'paused'
+        ? 'Resume game'
+        : 'Pause game'
     );
   }
 
@@ -547,264 +384,189 @@
     title,
     description,
     button,
-    extra = "Score = maximum altitude"
+    extra = 'Score = maximum altitude'
   ) {
-    el("status").textContent =
-      title;
+    el('status').textContent = title;
+    el('hint').textContent = description;
+    el('start').textContent = button;
 
-    el("hint").textContent =
-      description;
+    el('overlay-extra').textContent = extra;
 
-    el("start").textContent =
-      button;
-
-    el("overlay-extra").textContent =
-      extra;
-
-    el("overlay").hidden =
-      false;
+    el('overlay').hidden = false;
   }
 
   function flightBadge() {
-    const badge =
-      el("flight-status");
+    el('flight-status').hidden = !flight;
 
-    badge.hidden = !flight;
-
-    if (!flight) return;
-
-    const label =
-      flight.type === "rocket"
-        ? "🚀 Rocket"
-        : "🚁 Helicopter";
-
-    badge.textContent =
-      label +
-      " · " +
-      Math.max(
-        0,
-        flight.remaining
-      ).toFixed(1) +
-      "s";
+    if (flight) {
+      el('flight-status').textContent =
+        (
+          flight.type === 'rocket'
+            ? '🚀 Rocket'
+            : '🚁 Helicopter'
+        ) +
+        ' · ' +
+        Math.max(0, flight.remaining).toFixed(1) +
+        's';
+    }
   }
 
-  /* ======================================================
-     11. MOVING PLATFORM PHYSICS
-
-     Uses a smooth sinusoidal motion.
-
-     Important:
-     Movement remains within the playable width.
-     The platform does not become permanently stuck
-     at the screen edges.
-     ====================================================== */
+  // ==================================================
+  // MOVING PLATFORM — EDGE-TO-EDGE MOVEMENT
+  //
+  // The x position is now the actual platform position.
+  // No sine waves or limited movement amplitude.
+  //
+  // Left boundary:  0
+  // Right boundary: W - PW
+  //
+  // Platforms remain completely inside the game screen.
+  // ==================================================
 
   function platformX(p) {
-    if (p.type !== "moving") {
-      return p.x;
-    }
-
-    const amplitude =
-      Number(p.amplitude) || 0;
-
-    const frequency =
-      Number(p.frequency) || 1;
-
-    const phase =
-      Number(p.phase) || 0;
-
-    const offset =
-      Math.sin(
-        gameTime *
-        Math.PI *
-        2 *
-        frequency +
-        phase
-      ) * amplitude;
-
-    return clamp(
-      p.x + offset,
-      4,
-      W - PW - 4
-    );
+    return p.x;
   }
 
-  /* ======================================================
-     12. PLATFORM TYPE GENERATION
-     ====================================================== */
+  function updateMovingPlatforms(dt) {
+    const leftEdge = 0;
+    const rightEdge = W - PW;
 
-  function anchorType(difficulty) {
-    const d = clamp(
-      difficulty,
-      0,
-      1
-    );
+    for (const p of platforms) {
+      if (p.type !== 'moving') {
+        continue;
+      }
 
-    const movingChance =
-      0.08 + 0.42 * d;
+      // Older saved runs may not contain a direction.
+      if (
+        p.moveDirection !== 1 &&
+        p.moveDirection !== -1
+      ) {
+        p.moveDirection =
+          Number.isFinite(p.phase) &&
+          p.phase >= Math.PI
+            ? -1
+            : 1;
+      }
 
-    const fadingChance =
-      0.02 + 0.12 * d;
+      const speed =
+        MOVING_SPEEDS[p.movingSpeed] ||
+        MOVING_SPEEDS.medium;
 
-    const r = Math.random();
+      // Move according to the selected speed.
+      p.x += p.moveDirection * speed * dt;
 
-    if (r < movingChance) {
-      return "moving";
+      // Right wall: touch edge, then travel left.
+      if (p.x >= rightEdge) {
+        p.x = rightEdge;
+        p.moveDirection = -1;
+      }
+
+      // Left wall: touch edge, then travel right.
+      else if (p.x <= leftEdge) {
+        p.x = leftEdge;
+        p.moveDirection = 1;
+      }
     }
-
-    if (
-      r <
-      movingChance + fadingChance
-    ) {
-      return "fading";
-    }
-
-    return "normal";
   }
 
-  /* ======================================================
-     13. RANDOM POWER-UPS
-     ====================================================== */
+  // ==================================================
+  // SELECT MOVING PLATFORM SPEED
+  //
+  // Higher levels gradually introduce more fast
+  // moving platforms.
+  // ==================================================
 
-  function randomPower(difficulty) {
-    const d = clamp(
-      difficulty,
-      0,
-      1
-    );
-
+  function chooseMovingSpeed(d) {
     const r = Math.random();
 
-    if (r < 0.065) {
-      return "spring";
+    const slowChance =
+      0.78 - 0.58 * d;
+
+    const mediumChance =
+      0.20 + 0.18 * d;
+
+    if (r < slowChance) {
+      return 'slow';
     }
 
-    if (r < 0.095) {
-      return "doubleSpring";
+    if (r < slowChance + mediumChance) {
+      return 'medium';
     }
 
-    if (r < 0.123) {
-      return "trampoline";
+    return 'fast';
+  }
+
+  // ==================================================
+  // PLATFORM GENERATION
+  // ==================================================
+
+  function anchorType(d) {
+    const r = Math.random();
+
+    if (r < 0.08 + 0.42 * d) {
+      return 'moving';
     }
 
-    if (
-      r <
-      0.148 - 0.008 * d
-    ) {
-      return "helicopter";
+    if (r < 0.10 + 0.54 * d) {
+      return 'fading';
     }
 
-    if (
-      r <
-      0.160 - 0.008 * d
-    ) {
-      return "rocket";
+    return 'normal';
+  }
+
+  function randomPower(d) {
+    const r = Math.random();
+
+    if (r < 0.065) return 'spring';
+
+    if (r < 0.095) return 'doubleSpring';
+
+    if (r < 0.123) return 'trampoline';
+
+    if (r < 0.148 - 0.008 * d) {
+      return 'helicopter';
+    }
+
+    if (r < 0.160 - 0.008 * d) {
+      return 'rocket';
     }
 
     return null;
   }
 
-  /* ======================================================
-     14. CREATE PLATFORM
-
-     Each moving platform receives its own:
-       speed category
-       frequency
-       amplitude
-       movement phase
-
-     This prevents all moving platforms from
-     moving in exactly the same pattern.
-     ====================================================== */
-
   function makePlatform(
     y,
     x,
-    type = "normal",
+    type = 'normal',
     power = null
   ) {
     const d = levelProgress();
 
-    let movingSpeed = null;
-    let frequency = 0;
-    let amplitude = 0;
-
-    let centerX = clamp(
-      x,
-      4,
-      W - PW - 4
-    );
-
-    if (type === "moving") {
-      movingSpeed =
-        chooseMovingSpeed(d);
-
-      const profile =
-        MOVING_SPEEDS[movingSpeed];
-
-      frequency = rand(
-        profile.frequency[0],
-        profile.frequency[1]
-      );
-
-      amplitude = rand(
-        profile.amplitude[0],
-        profile.amplitude[1]
-      );
-
-      /*
-        Keep the movement center away from
-        the edges where possible.
-
-        If the movement amplitude exceeds
-        the available horizontal space,
-        reduce it safely.
-      */
-
-      const leftBoundary = 4;
-      const rightBoundary =
-        W - PW - 4;
-
-      const availableHalfWidth =
-        (rightBoundary - leftBoundary) / 2;
-
-      amplitude = Math.min(
-        amplitude,
-        availableHalfWidth
-      );
-
-      centerX = clamp(
-        centerX,
-        leftBoundary + amplitude,
-        rightBoundary - amplitude
-      );
-    }
+    const movingSpeed =
+      type === 'moving'
+        ? chooseMovingSpeed(d)
+        : null;
 
     const p = {
       id: nextId++,
 
-      x: centerX,
+      x: clamp(x, 4, W - PW - 4),
       y,
-
       type,
       power,
 
-      movingSpeed,
-
       counted: false,
-
       broken: false,
       brokenAt: -1,
-
       vanishAt: -1,
 
-      phase: rand(
-        0,
-        Math.PI * 2
-      ),
+      movingSpeed,
 
-      frequency,
-      amplitude,
+      // Start in either direction.
+      moveDirection:
+        type === 'moving'
+          ? (Math.random() < 0.5 ? -1 : 1)
+          : 0,
 
       trampolineBounceAt: -1
     };
@@ -814,65 +576,29 @@
     return p;
   }
 
-  /* ======================================================
-     15. PROGRESSIVE PLATFORM GENERATION
-     ====================================================== */
-
   function growPlatforms() {
-    /*
-      Ordinary jump apex is approximately
-      189 world pixels.
+    // Nominal ordinary jump apex ~189 world px.
+    // Gaps increase with difficulty.
+    // Brown platforms are optional hazards.
 
-      Platform gaps become larger as the
-      player climbs.
-
-      Maximum gap is kept below the ordinary
-      vertical jump height.
-
-      Brown platforms remain optional hazards,
-      not mandatory landing platforms.
-    */
-
-    while (
-      topY > cameraY - 650
-    ) {
+    while (topY > cameraY - 650) {
       const d = levelProgress();
 
-      const minimumGap =
-        63 + d * 88;
-
-      const maximumGap =
-        87 + d * 87;
-
       const gap = rand(
-        minimumGap,
-        maximumGap
+        63 + d * 88,
+        87 + d * 87
       );
 
-      const nextY =
-        topY - gap;
-
-      /*
-        As vertical gaps increase, reduce
-        extreme horizontal separation.
-      */
+      const nextY = topY - gap;
 
       const maxShift = clamp(
-        102 -
-        Math.max(
-          0,
-          gap - 115
-        ) * 0.85,
+        102 - Math.max(0, gap - 115) * 0.85,
         36,
         102
       );
 
       const newX = clamp(
-        lastAnchorX +
-        rand(
-          -maxShift,
-          maxShift
-        ),
+        lastAnchorX + rand(-maxShift, maxShift),
         4,
         W - PW - 4
       );
@@ -884,56 +610,39 @@
         randomPower(d)
       );
 
-      /*
-        Optional brown breakable platform.
-      */
-
-      if (
-        Math.random() <
-        0.06 + 0.36 * d
-      ) {
+      // Never put a breakaway platform
+      // in the mandatory climbing route.
+      if (Math.random() < 0.06 + 0.36 * d) {
         const side =
-          Math.random() < 0.5
-            ? -1
-            : 1;
-
-        const decoyX = clamp(
-          newX +
-          side *
-          rand(90, 175),
-          4,
-          W - PW - 4
-        );
-
-        const decoyY =
-          topY -
-          gap *
-          rand(0.30, 0.65);
+          Math.random() < 0.5 ? -1 : 1;
 
         makePlatform(
-          decoyY,
-          decoyX,
-          "breakable"
+          topY - gap * rand(0.30, 0.65),
+
+          clamp(
+            newX + side * rand(90, 175),
+            4,
+            W - PW - 4
+          ),
+
+          'breakable'
         );
       }
 
       topY = nextY;
-
       lastAnchorX = newX;
     }
   }
 
-  /* ======================================================
-     16. RESET GAME WORLD
-     ====================================================== */
+  // ==================================================
+  // RESET GAME WORLD
+  // ==================================================
 
   function resetWorld() {
     stopFlightAudio();
 
-    mode = "ready";
-
+    mode = 'ready';
     score = 0;
-
     cameraY = 0;
     gameTime = 0;
     highAltitude = 0;
@@ -943,7 +652,6 @@
 
     particles = [];
     flight = null;
-
     platforms = [];
 
     pressed.left = false;
@@ -953,7 +661,7 @@
 
     player = {
       x: W / 2,
-      y: START_Y,
+      y: 529,
       vx: 0,
       vy: JUMP,
       face: 1
@@ -961,14 +669,10 @@
 
     const base = makePlatform(
       558,
-      W / 2 - PW / 2,
-      "normal"
+      W / 2 - PW / 2
     );
 
-    base.counted = true;
-
     topY = base.y;
-
     lastAnchorX = base.x;
 
     growPlatforms();
@@ -978,74 +682,58 @@
     pauseButton();
   }
 
-  /* ======================================================
-     17. SAVE CURRENT RUN
-     ====================================================== */
+  // ==================================================
+  // SAVE CURRENT RUN
+  // ==================================================
 
   function saveRun() {
     if (
-      mode !== "playing" &&
-      mode !== "paused"
+      mode !== 'playing' &&
+      mode !== 'paused'
     ) {
       return;
     }
 
     storage.put(KEY.run, {
-      version: 5,
-
+      version: 6,
       score,
       best,
-
       player,
       platforms,
-
       cameraY,
       topY,
-
       lastAnchorX,
       nextId,
-
       gameTime,
       highAltitude,
-
       flight,
       recordAtStart
     });
   }
 
-  /* ======================================================
-     18. RESTORE SAVED RUN
-
-     Supports previous version 4 saves.
-     Older moving platforms are migrated
-     to the medium speed profile.
-     ====================================================== */
+  // ==================================================
+  // RESTORE SAVED RUN
+  // ==================================================
 
   function restoreRun() {
-    const saved = storage.get(
-      KEY.run,
-      null
-    );
+    const saved = storage.get(KEY.run, null);
 
     if (
       !saved ||
-      ![4, 5].includes(saved.version) ||
+      ![4, 5, 6].includes(saved.version) ||
       !saved.player ||
       !Array.isArray(saved.platforms) ||
       saved.platforms.length > 300 ||
       !Number.isFinite(saved.player.x) ||
       !Number.isFinite(saved.player.y) ||
-      !Number.isFinite(saved.topY) ||
-      !Number.isFinite(saved.cameraY)
+      !Number.isFinite(saved.topY)
     ) {
       return false;
     }
 
     score = Math.max(
       0,
-      Math.floor(
-        Number(saved.highAltitude) || 0
-      )
+      Math.floor(Number(saved.highAltitude) || 0)
     );
 
     best = Math.max(
@@ -1054,7 +742,6 @@
     );
 
     player = saved.player;
-
     platforms = saved.platforms;
 
     cameraY = saved.cameraY;
@@ -1067,109 +754,45 @@
     highAltitude = saved.highAltitude;
 
     flight =
-      saved.flight &&
-      FLIGHT[saved.flight.type]
+      saved.flight?.type in FLIGHT
         ? saved.flight
         : null;
 
     recordAtStart =
       Number(saved.recordAtStart) || 0;
 
-    /*
-      Migrate previous moving platforms.
-
-      The previous version used a different
-      frequency calculation, so convert
-      its angular speed to cycles/second.
-    */
-
-    for (const p of platforms) {
-      if (p.type !== "moving") {
-        continue;
-      }
-
-      if (saved.version === 4) {
-        p.frequency =
-          (Number(p.frequency) || 1.5) /
-          (Math.PI * 2);
-
-        p.movingSpeed = "medium";
-      }
-
-      if (
-        !MOVING_SPEEDS[p.movingSpeed]
-      ) {
-        p.movingSpeed = "medium";
-      }
-
-      if (
-        !Number.isFinite(p.frequency) ||
-        p.frequency <= 0
-      ) {
-        p.frequency = 1.5;
-      }
-
-      if (
-        !Number.isFinite(p.amplitude) ||
-        p.amplitude <= 0
-      ) {
-        p.amplitude = 24;
-      }
-
-      /*
-        Prevent old platforms from moving
-        outside the screen.
-      */
-
-      const a = Math.min(
-        p.amplitude,
-        (W - PW - 8) / 2
-      );
-
-      p.amplitude = a;
-
-      p.x = clamp(
-        p.x,
-        4 + a,
-        W - PW - 4 - a
-      );
-    }
-
-    mode = "paused";
+    mode = 'paused';
 
     refreshScore();
     flightBadge();
     pauseButton();
 
     overlay(
-      "Game Paused",
+      'Game Paused',
       `Your saved run has ${score} points.`,
-      "Resume"
+      'Resume'
     );
 
     return true;
   }
 
-  /* ======================================================
-     19. START GAME
-     ====================================================== */
+  // ==================================================
+  // START / RESUME
+  // ==================================================
 
-  function begin(
-    forceNew = false
-  ) {
+  function begin(forceNew = false) {
     if (
       forceNew ||
-      mode === "ready" ||
-      mode === "over"
+      mode === 'ready' ||
+      mode === 'over'
     ) {
       resetWorld();
-
       storage.remove(KEY.run);
     }
 
-    mode = "playing";
+    mode = 'playing';
 
-    el("overlay").hidden = true;
+    el('overlay').hidden = true;
 
     pauseButton();
 
@@ -1181,24 +804,19 @@
       if (activeAudio) {
         activeAudio.play().catch(() => {});
       } else {
-        playSound(
-          flight.type,
-          true
-        );
+        playSound(flight.type, true);
       }
     }
   }
 
-  /* ======================================================
-     20. PAUSE GAME
-     ====================================================== */
+  // ==================================================
+  // PAUSE GAME
+  // ==================================================
 
   function pause() {
-    if (mode !== "playing") {
-      return;
-    }
+    if (mode !== 'playing') return;
 
-    mode = "paused";
+    mode = 'paused';
 
     pressed.left = false;
     pressed.right = false;
@@ -1208,41 +826,31 @@
     }
 
     saveRun();
-
     pauseButton();
 
     overlay(
-      "Game Paused",
+      'Game Paused',
       `Score ${score} · Level ${level()}`,
-      "Resume"
+      'Resume'
     );
   }
 
-  /* ======================================================
-     21. GAME OVER
-     ====================================================== */
+  // ==================================================
+  // GAME OVER
+  // ==================================================
 
   function endGame() {
-    if (mode !== "playing") {
-      return;
-    }
+    if (mode !== 'playing') return;
 
-    mode = "over";
-
+    mode = 'over';
     flight = null;
 
     stopFlightAudio();
 
     recent = score;
 
-    storage.put(
-      KEY.recent,
-      score
-    );
-
-    storage.remove(
-      KEY.run
-    );
+    storage.put(KEY.recent, score);
+    storage.remove(KEY.run);
 
     pressed.left = false;
     pressed.right = false;
@@ -1255,28 +863,28 @@
       best = score;
     }
 
-    storage.put(
-      KEY.best,
-      best
-    );
+    storage.put(KEY.best, best);
 
     refreshScore();
     flightBadge();
     pauseButton();
 
     overlay(
-      "Game Over",
+      'Game Over',
+
       `Maximum height reached: ${score} points.`,
-      "Play Again",
+
+      'Play Again',
+
       isRecord
-        ? "✦ New personal best!"
+        ? '✦ New personal best!'
         : `Best: ${best}`
     );
   }
 
-  /* ======================================================
-     22. PARTICLE EFFECTS
-     ====================================================== */
+  // ==================================================
+  // PARTICLE EFFECTS
+  // ==================================================
 
   function sprinkle(
     x,
@@ -1284,11 +892,7 @@
     color,
     amount = 10
   ) {
-    for (
-      let i = 0;
-      i < amount;
-      i++
-    ) {
+    for (let i = 0; i < amount; i++) {
       particles.push({
         x,
         y,
@@ -1297,7 +901,6 @@
         dy: rand(-3.4, -0.8),
 
         radius: rand(1.4, 3.3),
-
         life: rand(13, 28),
 
         color
@@ -1305,39 +908,32 @@
     }
   }
 
-  /* ======================================================
-     23. ACTIVATE POWER-UP
-     ====================================================== */
+  // ==================================================
+  // ACTIVATE POWER-UPS
+  // ==================================================
 
-  function activatePower(
-    p,
-    type
-  ) {
+  function activatePower(p, type) {
     p.power = null;
 
     if (
-      type === "spring" ||
-      type === "doubleSpring" ||
-      type === "trampoline"
+      type === 'spring' ||
+      type === 'doubleSpring' ||
+      type === 'trampoline'
     ) {
-      const bounceSpeeds = {
+      player.vy = {
         spring: -17.6,
         doubleSpring: -21.0,
         trampoline: -19.0
-      };
+      }[type];
 
-      player.vy =
-        bounceSpeeds[type];
-
-      if (type === "trampoline") {
-        p.trampolineBounceAt =
-          gameTime;
+      if (type === 'trampoline') {
+        p.trampolineBounceAt = gameTime;
       }
 
       sprinkle(
         player.x,
         p.y,
-        "#fff1a2",
+        '#fff1a2',
         15
       );
 
@@ -1351,42 +947,38 @@
 
       flight = {
         type,
-        remaining:
-          FLIGHT[type].duration
+        remaining: FLIGHT[type].duration
       };
 
-      player.vy =
-        FLIGHT[type].vy;
+      player.vy = FLIGHT[type].vy;
 
       sprinkle(
         player.x,
         player.y,
-        type === "rocket"
-          ? "#fa9c58"
-          : "#99f5e4",
+
+        type === 'rocket'
+          ? '#fa9c58'
+          : '#99f5e4',
+
         18
       );
 
-      playSound(
-        type,
-        true
-      );
-
+      playSound(type, true);
       flightBadge();
     }
   }
 
-  /* ======================================================
-     24. HELICOPTER / ROCKET PICKUPS
-     ====================================================== */
+  // ==================================================
+  // PICKUP DETECTION
+  // ==================================================
 
   function checkPickups() {
     if (flight) return;
 
     for (const p of platforms) {
       if (
-        p.power !== "helicopter" &&
-        p.power !== "rocket"
+        p.power !== 'helicopter' &&
+        p.power !== 'rocket'
       ) {
         continue;
       }
@@ -1401,127 +993,99 @@
         continue;
       }
 
-      const x =
-        platformX(p) + PW / 2;
+      const x = platformX(p) + PW / 2;
 
       const y =
         p.y -
-        (
-          p.power === "rocket"
-            ? 38
-            : 24
-        );
+        (p.power === 'rocket' ? 38 : 24);
 
       if (
         Math.abs(player.x - x) <= 30 &&
         Math.abs(player.y - y) <= 38
       ) {
-        activatePower(
-          p,
-          p.power
-        );
-
+        activatePower(p, p.power);
         return;
       }
     }
   }
 
-  /* ======================================================
-     25. PLATFORM LANDING
-     ====================================================== */
+  // ==================================================
+  // PLATFORM LANDING
+  // ==================================================
 
   function landOn(p) {
     const x = platformX(p);
 
-    if (p.type === "breakable") {
+    if (p.type === 'breakable') {
       p.broken = true;
-
-      p.brokenAt =
-        gameTime;
+      p.brokenAt = gameTime;
 
       sprinkle(
         x + PW / 2,
         p.y,
-        "#c98b50",
+        '#c98b50',
         18
       );
 
-      playSound("break");
+      playSound('break');
 
       return;
     }
 
-    player.y =
-      p.y - HALF_PLAYER;
+    player.y = p.y - HALF_PLAYER;
+    player.vy = JUMP;
 
-    player.vy =
-      JUMP;
-
-    /*
-      Score is NOT awarded for landing.
-
-      Score increases only when the player
-      reaches a new maximum height.
-    */
-
-    if (
-      [
-        "spring",
-        "doubleSpring",
-        "trampoline"
-      ].includes(p.power)
-    ) {
-      const centered =
-        Math.abs(
-          player.x -
-          (x + PW / 2)
-        ) < 29;
-
+    if ([
+      'spring',
+      'doubleSpring',
+      'trampoline'
+    ].includes(p.power)) {
       if (
-        p.power === "trampoline" ||
-        centered
+        p.power === 'trampoline' ||
+        Math.abs(
+          player.x - (x + PW / 2)
+        ) < 29
       ) {
-        activatePower(
-          p,
-          p.power
-        );
+        activatePower(p, p.power);
       } else {
-        playSound("jump");
+        playSound('jump');
       }
     } else {
-      playSound("jump");
+      playSound('jump');
     }
 
-    if (p.type === "fading") {
-      p.vanishAt =
-        gameTime + 0.28;
+    if (p.type === 'fading') {
+      p.vanishAt = gameTime + 0.28;
     }
 
     sprinkle(
       player.x,
       p.y,
-      "#ffffff",
+      '#fff',
       5
     );
   }
 
-  /* ======================================================
-     26. GAME PHYSICS
-     ====================================================== */
+  // ==================================================
+  // MAIN GAME UPDATE
+  // ==================================================
 
   function update(dt) {
-    if (mode !== "playing") {
-      return;
-    }
+    if (mode !== 'playing') return;
 
     const step = dt * 60;
 
     gameTime += dt;
     saveElapsed += dt;
 
-    /* --------------------------------------------------
-       HORIZONTAL PLAYER MOVEMENT
-       -------------------------------------------------- */
+    // NEW:
+    // Move every moving platform across the full width.
+    // Touch the wall, reverse, and continue.
+    updateMovingPlatforms(dt);
+
+    // ==================================================
+    // PLAYER HORIZONTAL MOVEMENT
+    // ==================================================
 
     let horizontal =
       Number(pressed.right) -
@@ -1535,24 +1099,14 @@
       horizontal = tiltAxis;
     }
 
-    if (
-      Math.abs(horizontal) > 0.05
-    ) {
-      player.vx +=
-        horizontal *
-        0.70 *
-        step;
+    if (Math.abs(horizontal) > 0.05) {
+      player.vx += horizontal * 0.70 * step;
 
       player.face =
-        horizontal < 0
-          ? -1
-          : 1;
+        horizontal < 0 ? -1 : 1;
+
     } else {
-      player.vx *=
-        Math.pow(
-          0.80,
-          step
-        );
+      player.vx *= Math.pow(0.80, step);
     }
 
     player.vx = clamp(
@@ -1561,13 +1115,9 @@
       5.3
     );
 
-    player.x +=
-      player.vx * step;
+    player.x += player.vx * step;
 
-    /* --------------------------------------------------
-       HORIZONTAL SCREEN WRAPPING
-       -------------------------------------------------- */
-
+    // Horizontal player screen wrapping.
     if (player.x < -27) {
       player.x = W + 27;
     }
@@ -1576,12 +1126,12 @@
       player.x = -27;
     }
 
+    // ==================================================
+    // PLAYER VERTICAL MOVEMENT
+    // ==================================================
+
     const previousBottom =
       player.y + HALF_PLAYER;
-
-    /* --------------------------------------------------
-       HELICOPTER / ROCKET FLIGHT
-       -------------------------------------------------- */
 
     if (flight) {
       flight.remaining -= dt;
@@ -1589,36 +1139,32 @@
       player.vy =
         FLIGHT[flight.type].vy;
 
-      if (
-        flight.remaining <= 0
-      ) {
+      if (flight.remaining <= 0) {
         flight = null;
-
         player.vy = -4.8;
 
         stopFlightAudio();
         flightBadge();
       }
+
     } else {
       player.vy = Math.min(
         14,
-        player.vy +
-        GRAVITY * step
+        player.vy + GRAVITY * step
       );
     }
 
-    player.y +=
-      player.vy * step;
+    player.y += player.vy * step;
 
-    /* --------------------------------------------------
-       ORIGINAL-STYLE HEIGHT SCORING
-       -------------------------------------------------- */
+    // ==================================================
+    // HEIGHT SCORING
+    // ==================================================
 
     const previousScore = score;
 
     highAltitude = Math.max(
       highAltitude,
-      START_Y - player.y
+      529 - player.y
     );
 
     score = Math.max(
@@ -1626,70 +1172,49 @@
       Math.floor(highAltitude)
     );
 
-    if (
-      score !== previousScore
-    ) {
+    if (score !== previousScore) {
       if (score > best) {
         best = score;
-
-        storage.put(
-          KEY.best,
-          best
-        );
+        storage.put(KEY.best, best);
       }
 
       refreshScore();
     }
 
-    /* --------------------------------------------------
-       POWER-UP PICKUPS
-       -------------------------------------------------- */
-
     checkPickups();
 
-    /* --------------------------------------------------
-       PLATFORM COLLISIONS
-       -------------------------------------------------- */
+    // ==================================================
+    // COLLISION WITH PLATFORMS
+    // ==================================================
 
-    if (
-      !flight &&
-      player.vy > 0
-    ) {
+    if (!flight && player.vy > 0) {
       const bottom =
         player.y + HALF_PLAYER;
 
       let hit = null;
 
       for (const p of platforms) {
-        if (p.broken) {
-          continue;
-        }
-
         if (
-          p.vanishAt >= 0 &&
-          gameTime >= p.vanishAt
+          p.broken ||
+          (
+            p.vanishAt >= 0 &&
+            gameTime >= p.vanishAt
+          )
         ) {
           continue;
         }
 
-        const x =
-          platformX(p);
-
-        const verticalCollision =
-          previousBottom <= p.y + 2 &&
-          bottom >= p.y;
-
-        const horizontalCollision =
-          player.x + 18 > x + 6 &&
-          player.x - 18 < x + PW - 6;
+        // The platform's updated real x position.
+        const x = platformX(p);
 
         if (
-          verticalCollision &&
-          horizontalCollision &&
-          (
-            !hit ||
-            p.y < hit.y
-          )
+          previousBottom <= p.y + 2 &&
+          bottom >= p.y &&
+
+          player.x + 18 > x + 6 &&
+          player.x - 18 < x + PW - 6 &&
+
+          (!hit || p.y < hit.y)
         ) {
           hit = p;
         }
@@ -1700,53 +1225,35 @@
       }
     }
 
-    /* --------------------------------------------------
-       CAMERA FOLLOWING
-       -------------------------------------------------- */
+    // ==================================================
+    // CAMERA AND WORLD GENERATION
+    // ==================================================
 
-    if (
-      player.y - cameraY <
-      H * 0.37
-    ) {
+    if (player.y - cameraY < H * 0.37) {
       cameraY =
-        player.y -
-        H * 0.37;
+        player.y - H * 0.37;
     }
-
-    /* --------------------------------------------------
-       GENERATE MORE PLATFORMS
-       -------------------------------------------------- */
 
     growPlatforms();
 
-    /* --------------------------------------------------
-       REMOVE OLD PLATFORMS
-       -------------------------------------------------- */
-
     platforms = platforms.filter(
       p =>
-        p.y <
-          cameraY + H + 140 &&
+        p.y < cameraY + H + 140 &&
         !(
           p.broken &&
           gameTime - p.brokenAt > 0.4
         )
     );
 
-    /* --------------------------------------------------
-       PARTICLE UPDATES
-       -------------------------------------------------- */
+    // ==================================================
+    // UPDATE PARTICLES
+    // ==================================================
 
     for (const particle of particles) {
-      particle.x +=
-        particle.dx * step;
+      particle.x += particle.dx * step;
+      particle.y += particle.dy * step;
 
-      particle.y +=
-        particle.dy * step;
-
-      particle.dy +=
-        0.17 * step;
-
+      particle.dy += 0.17 * step;
       particle.life -= step;
     }
 
@@ -1754,14 +1261,11 @@
       p => p.life > 0
     );
 
-    /* --------------------------------------------------
-       GAME OVER
-       -------------------------------------------------- */
+    // ==================================================
+    // GAME OVER CHECK
+    // ==================================================
 
-    if (
-      player.y - cameraY >
-      H + 65
-    ) {
+    if (player.y - cameraY > H + 65) {
       endGame();
     }
 
@@ -1769,25 +1273,22 @@
       flightBadge();
     }
 
-    el("hud-level").textContent =
-      "LEVEL " + level();
+    el('hud-level').textContent =
+      'LEVEL ' + level();
 
-    /* --------------------------------------------------
-       AUTOMATIC SAVE
-       -------------------------------------------------- */
+    // ==================================================
+    // AUTOSAVE
+    // ==================================================
 
-    if (
-      saveElapsed >= 3
-    ) {
+    if (saveElapsed >= 3) {
       saveElapsed = 0;
-
       saveRun();
     }
   }
 
-  /* ======================================================
-     27. IMAGE DRAWING
-     ====================================================== */
+  // ==================================================
+  // IMAGE DRAWING
+  // ==================================================
 
   function draw(
     name,
@@ -1799,8 +1300,7 @@
     const img = images[name];
 
     if (
-      !img ||
-      !img.complete ||
+      !img?.complete ||
       !img.naturalWidth
     ) {
       return;
@@ -1815,21 +1315,12 @@
     );
   }
 
-  /* ======================================================
-     28. RENDER GAME
-     ====================================================== */
+  // ==================================================
+  // RENDER GAME
+  // ==================================================
 
   function render() {
-    ctx.clearRect(
-      0,
-      0,
-      W,
-      H
-    );
-
-    /* --------------------------------------------------
-       BACKGROUND
-       -------------------------------------------------- */
+    ctx.clearRect(0, 0, W, H);
 
     draw(
       settings.background,
@@ -1839,19 +1330,15 @@
       H
     );
 
-    /* --------------------------------------------------
-       PLATFORMS
-       -------------------------------------------------- */
+    // ==================================================
+    // DRAW PLATFORMS
+    // ==================================================
 
     for (const p of platforms) {
-      if (p.broken) {
-        continue;
-      }
+      if (p.broken) continue;
 
       const x = platformX(p);
-
-      const y =
-        p.y - cameraY;
+      const y = p.y - cameraY;
 
       if (
         y < -85 ||
@@ -1867,33 +1354,22 @@
         continue;
       }
 
-      if (
-        p.vanishAt >= 0
-      ) {
+      if (p.vanishAt >= 0) {
         ctx.globalAlpha = clamp(
-          (
-            p.vanishAt -
-            gameTime
-          ) / 0.28,
+          (p.vanishAt - gameTime) / 0.28,
           0,
           1
         );
       }
 
-      /*
-        All three moving platform speeds
-        use the original blue platform.
-      */
-
-      const platformSprite = {
-        normal: "green",
-        moving: "blue",
-        fading: "gray",
-        breakable: "brown"
-      }[p.type];
-
       draw(
-        platformSprite,
+        {
+          normal: 'green',
+          moving: 'blue',
+          fading: 'gray',
+          breakable: 'brown'
+        }[p.type],
+
         x,
         y,
         PW,
@@ -1902,85 +1378,68 @@
 
       ctx.globalAlpha = 1;
 
-      /* ------------------------------------------------
-         POWER-UPS
-         ------------------------------------------------ */
+      // ==================================================
+      // DRAW PLATFORM POWER-UPS
+      // ==================================================
 
-      if (!p.power) {
-        continue;
-      }
+      if (!p.power) continue;
 
-      if (
-        p.power === "spring"
-      ) {
+      const cy = y;
+
+      if (p.power === 'spring') {
         draw(
-          "spring",
+          'spring',
           x + PW / 2 - 13,
-          y - 31,
+          cy - 31,
           26,
           34
         );
       }
 
-      else if (
-        p.power === "doubleSpring"
-      ) {
+      else if (p.power === 'doubleSpring') {
         draw(
-          "doubleSpring",
+          'doubleSpring',
           x + PW / 2 - 26,
-          y - 32,
+          cy - 32,
           52,
           34
         );
       }
 
-      else if (
-        p.power === "trampoline"
-      ) {
-        const recentlyBounced =
-          p.trampolineBounceAt >= 0 &&
-          gameTime -
-          p.trampolineBounceAt < 0.18;
-
+      else if (p.power === 'trampoline') {
         draw(
-          recentlyBounced
-            ? "trampolineDown"
-            : "trampoline",
+          'trampoline',
           x + PW / 2 - 43,
-          y - 30,
+          cy - 30,
           86,
           35
         );
       }
 
-      else if (
-        p.power === "helicopter"
-      ) {
+      else if (p.power === 'helicopter') {
         draw(
-          "propeller1",
+          'propeller1',
           x + PW / 2 - 25,
-          y - 42,
+          cy - 42,
           50,
           36
         );
       }
 
-      else if (
-        p.power === "rocket"
-      ) {
+      else if (p.power === 'rocket') {
         draw(
-          "rocket1",
+          'rocket1',
           x + PW / 2 - 18,
-          y - 64,
+          cy - 64,
           36,
           61
         );
       }
     }
 
-    /* --------------------------------------------------
-       PARTICLES
-       -------------------------------------------------- */
+    // ==================================================
+    // DRAW PARTICLES
+    // ==================================================
 
     for (const p of particles) {
       ctx.globalAlpha = clamp(
@@ -1989,8 +1448,7 @@
         1
       );
 
-      ctx.fillStyle =
-        p.color;
+      ctx.fillStyle = p.color;
 
       ctx.beginPath();
 
@@ -2007,44 +1465,39 @@
 
     ctx.globalAlpha = 1;
 
-    /* --------------------------------------------------
-       PLAYER
-       -------------------------------------------------- */
+    // ==================================================
+    // DRAW PLAYER
+    // ==================================================
 
-    const y =
-      player.y - cameraY;
+    const y = player.y - cameraY;
 
-    if (
-      flight?.type === "rocket"
-    ) {
+    if (flight?.type === 'rocket') {
       const frame =
-        1 +
-        Math.floor(
-          gameTime * 11
-        ) % 9;
+        1 + Math.floor(gameTime * 11) % 9;
 
       draw(
-        "rocket" + frame,
+        'rocket' + frame,
         player.x - 29,
         y - 51,
         58,
         105
       );
+
     } else {
       const climbing =
         player.vy < 0;
 
       const sprite =
-        "doodle-" +
+        'doodle-' +
         (
           player.face < 0
-            ? "left"
-            : "right"
+            ? 'left'
+            : 'right'
         ) +
         (
           climbing
-            ? "-jump"
-            : ""
+            ? '-jump'
+            : ''
         );
 
       draw(
@@ -2055,17 +1508,12 @@
         50
       );
 
-      if (
-        flight?.type === "helicopter"
-      ) {
+      if (flight?.type === 'helicopter') {
         const rotorFrame =
-          1 +
-          Math.floor(
-            gameTime * 14
-          ) % 4;
+          1 + Math.floor(gameTime * 14) % 4;
 
         draw(
-          "propeller" + rotorFrame,
+          'propeller' + rotorFrame,
           player.x - 30,
           y - 57,
           60,
@@ -2075,31 +1523,24 @@
     }
   }
 
-  /* ======================================================
-     29. ANIMATION LOOP
-     ====================================================== */
+  // ==================================================
+  // ANIMATION LOOP
+  // ==================================================
 
   function frame(timestamp) {
     const dt = lastFrame
       ? Math.min(
           0.04,
-          (
-            timestamp -
-            lastFrame
-          ) / 1000
+          (timestamp - lastFrame) / 1000
         )
       : 1 / 60;
 
     lastFrame = timestamp;
 
-    if (
-      mode === "playing"
-    ) {
+    if (mode === 'playing') {
       let remaining = dt;
 
-      while (
-        remaining > 0.000001
-      ) {
+      while (remaining > 0.000001) {
         const tick = Math.min(
           remaining,
           1 / 120
@@ -2113,133 +1554,105 @@
 
     render();
 
-    requestAnimationFrame(
-      frame
-    );
+    requestAnimationFrame(frame);
   }
 
-  /* ======================================================
-     30. KEYBOARD CONTROLS
-     ====================================================== */
+  // ==================================================
+  // KEYBOARD CONTROLS
+  // ==================================================
 
-  function keyboard(
-    event,
-    isDown
-  ) {
-    const key =
-      event.key.toLowerCase();
-
-    if (
-      key === " " ||
-      key === "spacebar"
-    ) {
-      event.preventDefault();
+  function keyboard(e, isDown) {
+    if ([
+      ' ',
+      'spacebar'
+    ].includes(e.key.toLowerCase())) {
+      e.preventDefault();
       return;
     }
 
-    if (
-      [
-        "INPUT",
-        "SELECT",
-        "TEXTAREA"
-      ].includes(
-        document.activeElement?.tagName
-      )
-    ) {
+    if ([
+      'INPUT',
+      'SELECT',
+      'TEXTAREA'
+    ].includes(
+      document.activeElement?.tagName
+    )) {
       return;
     }
 
-    if (
-      ![
-        "arrowleft",
-        "arrowright",
-        "a",
-        "d"
-      ].includes(key)
-    ) {
+    const k = e.key.toLowerCase();
+
+    if (![
+      'arrowleft',
+      'arrowright',
+      'a',
+      'd'
+    ].includes(k)) {
       return;
     }
 
-    event.preventDefault();
+    e.preventDefault();
+
+    if (mode !== 'playing') return;
 
     if (
-      mode !== "playing"
-    ) {
-      return;
-    }
-
-    if (
-      key === "arrowleft" ||
-      key === "a"
+      k === 'arrowleft' ||
+      k === 'a'
     ) {
       pressed.left = isDown;
+
     } else {
       pressed.right = isDown;
     }
   }
 
   window.addEventListener(
-    "keydown",
-    event =>
-      keyboard(event, true),
+    'keydown',
+    e => keyboard(e, true),
     { capture: true }
   );
 
   window.addEventListener(
-    "keyup",
-    event =>
-      keyboard(event, false),
+    'keyup',
+    e => keyboard(e, false),
     { capture: true }
   );
 
-  /* ======================================================
-     31. TOUCH CONTROLS
-     ====================================================== */
+  // ==================================================
+  // TOUCH CONTROLS
+  // ==================================================
 
-  function bindTouch(
-    id,
-    direction
-  ) {
+  function bindTouch(id, direction) {
     const button = el(id);
 
     const release = () => {
       pressed[direction] = false;
 
-      button.classList.remove(
-        "is-held"
-      );
+      button.classList.remove('is-held');
     };
 
     button.addEventListener(
-      "pointerdown",
-      event => {
-        event.preventDefault();
+      'pointerdown',
+      e => {
+        e.preventDefault();
 
-        if (
-          mode !== "playing"
-        ) {
-          return;
-        }
+        if (mode !== 'playing') return;
 
         pressed[direction] = true;
 
-        button.classList.add(
-          "is-held"
-        );
+        button.classList.add('is-held');
 
         try {
-          button.setPointerCapture(
-            event.pointerId
-          );
+          button.setPointerCapture(e.pointerId);
         } catch {}
       }
     );
 
     [
-      "pointerup",
-      "pointercancel",
-      "lostpointercapture",
-      "pointerleave"
+      'pointerup',
+      'pointercancel',
+      'lostpointercapture',
+      'pointerleave'
     ].forEach(name => {
       button.addEventListener(
         name,
@@ -2248,22 +1661,15 @@
     });
   }
 
-  bindTouch(
-    "move-left",
-    "left"
-  );
+  bindTouch('move-left', 'left');
+  bindTouch('move-right', 'right');
 
-  bindTouch(
-    "move-right",
-    "right"
-  );
-
-  /* ======================================================
-     32. PAUSE WHEN PAGE IS HIDDEN
-     ====================================================== */
+  // ==================================================
+  // PAGE VISIBILITY AND GAME PAUSE
+  // ==================================================
 
   document.addEventListener(
-    "visibilitychange",
+    'visibilitychange',
     () => {
       if (document.hidden) {
         pause();
@@ -2272,53 +1678,47 @@
   );
 
   window.addEventListener(
-    "blur",
+    'blur',
     pause
   );
 
   window.addEventListener(
-    "pagehide",
+    'pagehide',
     saveRun
   );
 
-  /* ======================================================
-     33. BUTTON EVENTS
-     ====================================================== */
+  // ==================================================
+  // GAME BUTTONS
+  // ==================================================
 
-  el("start").addEventListener(
-    "click",
+  el('start').addEventListener(
+    'click',
     () => begin()
   );
 
-  el("pause").addEventListener(
-    "click",
-    () => {
-      if (
-        mode === "playing"
-      ) {
-        pause();
-      } else if (
-        mode === "paused"
-      ) {
-        begin();
-      }
-    }
+  el('pause').addEventListener(
+    'click',
+    () =>
+      mode === 'playing'
+        ? pause()
+        : mode === 'paused'
+          ? begin()
+          : null
   );
 
-  el("restart").addEventListener(
-    "click",
+  el('restart').addEventListener(
+    'click',
     () => begin(true)
   );
 
-  /* ======================================================
-     34. BACKGROUND SETTINGS
-     ====================================================== */
+  // ==================================================
+  // BACKGROUND SETTINGS
+  // ==================================================
 
-  el("background").addEventListener(
-    "change",
-    event => {
-      settings.background =
-        event.target.value;
+  el('background').addEventListener(
+    'change',
+    e => {
+      settings.background = e.target.value;
 
       storage.put(
         KEY.settings,
@@ -2327,19 +1727,16 @@
     }
   );
 
-  /* ======================================================
-     35. SOUND SETTINGS
-     ====================================================== */
+  // ==================================================
+  // SOUND SETTINGS
+  // ==================================================
 
-  el("sound").addEventListener(
-    "change",
-    event => {
-      settings.sound =
-        event.target.checked;
+  el('sound').addEventListener(
+    'change',
+    e => {
+      settings.sound = e.target.checked;
 
-      if (
-        !settings.sound
-      ) {
+      if (!settings.sound) {
         stopFlightAudio();
       }
 
@@ -2350,17 +1747,21 @@
     }
   );
 
-  el("volume").addEventListener(
-    "input",
-    event => {
+  // ==================================================
+  // VOLUME SETTINGS
+  // ==================================================
+
+  el('volume').addEventListener(
+    'input',
+    e => {
       settings.volume = clamp(
-        Number(event.target.value),
+        Number(e.target.value),
         0,
         100
       );
 
-      el("volume-label").textContent =
-        settings.volume + "%";
+      el('volume-label').textContent =
+        settings.volume + '%';
 
       if (activeAudio) {
         activeAudio.volume =
@@ -2374,16 +1775,16 @@
     }
   );
 
-  /* ======================================================
-     36. DEVICE TILT CONTROLS
-     ====================================================== */
+  // ==================================================
+  // DEVICE TILT CONTROLS
+  // ==================================================
 
   window.addEventListener(
-    "deviceorientation",
-    event => {
+    'deviceorientation',
+    e => {
       if (
         !settings.tilt ||
-        typeof event.gamma !== "number"
+        typeof e.gamma !== 'number'
       ) {
         return;
       }
@@ -2391,61 +1792,50 @@
       tiltReceived = true;
 
       tiltAxis =
-        Math.abs(event.gamma) < 5
+        Math.abs(e.gamma) < 5
           ? 0
           : clamp(
-              event.gamma / 24,
+              e.gamma / 24,
               -1,
               1
             );
 
-      el("tilt-status").textContent =
-        "Tilt detected; keyboard/touch remain available.";
+      el('tilt-status').textContent =
+        'Tilt detected; keyboard/touch remain available.';
     }
   );
 
-  el("tilt").addEventListener(
-    "change",
-    async event => {
+  el('tilt').addEventListener(
+    'change',
+    async e => {
       if (
-        event.target.checked &&
-        typeof DeviceOrientationEvent !==
-          "undefined" &&
-        typeof DeviceOrientationEvent
-          .requestPermission ===
-          "function"
+        e.target.checked &&
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function'
       ) {
         try {
-          const permission =
-            await DeviceOrientationEvent
-              .requestPermission();
-
           if (
-            permission !== "granted"
+            await DeviceOrientationEvent.requestPermission()
+            !== 'granted'
           ) {
-            event.target.checked =
-              false;
+            e.target.checked = false;
           }
         } catch {
-          event.target.checked =
-            false;
+          e.target.checked = false;
         }
       }
 
-      settings.tilt =
-        event.target.checked;
+      settings.tilt = e.target.checked;
 
-      if (
-        !settings.tilt
-      ) {
+      if (!settings.tilt) {
         tiltReceived = false;
         tiltAxis = 0;
       }
 
-      el("tilt-status").textContent =
+      el('tilt-status').textContent =
         settings.tilt
-          ? "Tilt enabled where supported."
-          : "Keyboard and touch controls always work.";
+          ? 'Tilt enabled where supported.'
+          : 'Keyboard and touch controls always work.';
 
       storage.put(
         KEY.settings,
@@ -2454,12 +1844,12 @@
     }
   );
 
-  /* ======================================================
-     37. RESET SETTINGS
-     ====================================================== */
+  // ==================================================
+  // RESET SETTINGS
+  // ==================================================
 
-  el("reset-settings").addEventListener(
-    "click",
+  el('reset-settings').addEventListener(
+    'click',
     () => {
       settings = {
         ...DEFAULTS
@@ -2475,83 +1865,64 @@
 
       refreshSettings();
 
-      el("tilt-status").textContent =
-        "Settings reset. Keyboard and touch controls always work.";
+      el('tilt-status').textContent =
+        'Settings reset. Keyboard and touch controls always work.';
     }
   );
 
-  /* ======================================================
-     38. INITIALIZATION
-     ====================================================== */
+  // ==================================================
+  // INITIALIZE GAME
+  // ==================================================
 
   refreshSettings();
 
   resetWorld();
 
-  if (
-    !restoreRun()
-  ) {
+  if (!restoreRun()) {
     overlay(
-      "Doodle Jump",
-      "Climb higher to increase your score. Use ← → or A / D to steer.",
-      "Play"
+      'Doodle Jump',
+
+      'Climb higher to increase your score. Use ← → or A / D to steer.',
+
+      'Play'
     );
   }
 
   pauseButton();
 
-  requestAnimationFrame(
-    frame
-  );
+  requestAnimationFrame(frame);
 
-  /* ======================================================
-     39. DEBUGGING INFORMATION
-     ====================================================== */
+  // ==================================================
+  // READ-ONLY DEBUG INFORMATION
+  // ==================================================
 
-  window.MSH_DoodleJumpDebug =
-    Object.freeze({
-      state: () => ({
-        mode,
+  window.MSH_DoodleJumpDebug = Object.freeze({
+    state: () => ({
+      mode,
+      score,
+      best,
 
-        score,
-        best,
+      level: level(),
+      highAltitude,
 
-        level: level(),
+      flight:
+        flight && { ...flight },
 
-        highAltitude,
+      platforms: platforms.map(p => ({
+        id: p.id,
+        type: p.type,
+        movingSpeed: p.movingSpeed || null,
 
-        flight: flight
-          ? { ...flight }
-          : null,
+        x: p.x,
+        y: p.y,
 
-        movingSpeedProfiles:
-          MOVING_SPEEDS,
+        moveDirection: p.moveDirection,
 
-        platforms:
-          platforms.map(p => ({
-            id: p.id,
+        power: p.power
+      })),
 
-            type: p.type,
-
-            movingSpeed:
-              p.movingSpeed,
-
-            frequency:
-              p.frequency,
-
-            amplitude:
-              p.amplitude,
-
-            power:
-              p.power,
-
-            y: p.y
-          })),
-
-        player: {
-          ...player
-        }
-      })
-    });
+      player: { ...player }
+    })
+  });
 
 })();
