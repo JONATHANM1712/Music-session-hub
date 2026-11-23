@@ -54,8 +54,8 @@
 
   const MOVING_SPEEDS = Object.freeze({
     slow: 100,
-    medium: 300,
-    fast: 500
+    medium: 250,
+    fast: 400
   });
 
   // ==================================================
